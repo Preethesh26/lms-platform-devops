@@ -9,6 +9,8 @@ import CoursePlayerPage from './pages/user/CoursePlayer';
 import AdminLoginPage from './pages/admin/Login';
 import AdminCoursesPage from './pages/admin/Courses';
 import AdminUsersPage from './pages/admin/Users';
+import ResetPasswordPage from './pages/user/ResetPassword';
+import ContactAdminPage from './pages/user/ContactAdmin';
 
 // Layouts
 import UserLayout from './layouts/UserLayout';
@@ -24,7 +26,9 @@ function App() {
                     <Route path="/login" element={<UserLoginPage />} />
                     <Route path="/my-learning" element={<MyLearningPage />} />
                     <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
+                    <Route path="/contact-admin" element={<ContactAdminPage />} />
                 </Route>
+                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
