@@ -188,18 +188,18 @@ export default function AdminUsersPage() {
                         >
                             <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
                                 <div className={`h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold ${user.role === 'admin'
-                                        ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
-                                        : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
+                                    ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
+                                    : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
                                     }`}>
-                                    {user.name.charAt(0).toUpperCase()}
+                                    {user.name?.charAt(0)?.toUpperCase() || '?'}
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="font-semibold text-lg truncate w-full max-w-[200px]">{user.name}</h3>
+                                    <h3 className="font-semibold text-lg truncate w-full max-w-[200px]">{user.name || 'Unknown User'}</h3>
                                     <p className="text-sm text-muted-foreground truncate w-full max-w-[200px]">{user.email}</p>
                                     <div className="pt-2">
                                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
-                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                             }`}>
                                             {user.role === 'admin' ? 'Administrator' : 'Student'}
                                         </span>
