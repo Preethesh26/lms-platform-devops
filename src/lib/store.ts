@@ -31,6 +31,18 @@ export function useStore() {
     const [users, setUsers] = useState<User[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchUsers = async () => {
+        try {
+            const usersRes = await usersAPI.getAll();
+            setUsers(usersRes.data.data || []);
+            setError(null);
+        } catch (err: any) {
+            console.error('Error fetching users:', err);
+            setError(err.response?.data?.message || 'Failed to fetch users');
+        }
+    };
 
     // Load data from API
     useEffect(() => {
@@ -40,13 +52,13 @@ export function useStore() {
                 const coursesRes = await coursesAPI.getAll();
                 setCourses(coursesRes.data.data || []);
 
-                // Fetch users (admin only, handle error gracefully)
+                // Fetch users (admin only)
+                // We try to fetch users, but if it fails (e.g. not admin), we just log it
+                // and don't block the rest of the initialization
                 try {
-                    const usersRes = await usersAPI.getAll();
-                    setUsers(usersRes.data.data || []);
-                } catch (err) {
-                    // User might not have admin access
-                    console.log('Could not fetch users (admin only)');
+                    await fetchUsers();
+                } catch (e) {
+                    console.log("Initial user fetch failed (likely not admin)");
                 }
 
                 // Check for logged in user
@@ -159,6 +171,7 @@ export function useStore() {
         courses,
         users,
         currentUser,
+        error,
         addCourse,
         updateCourse,
         deleteCourse,
@@ -169,5 +182,6 @@ export function useStore() {
         loginUser,
         logoutUser,
         isInitialized,
+        refetchUsers: fetchUsers
     };
 }

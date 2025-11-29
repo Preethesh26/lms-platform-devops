@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useStore } from "@/lib/store";
 
 export default function AdminUsersPage() {
-    const { users, addUser, updateUser, deleteUser, isInitialized } = useStore();
+    const { users, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [error, setError] = useState("");
     const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
@@ -94,56 +94,71 @@ export default function AdminUsersPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Button>Add User</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add New User</DialogTitle>
-                            <DialogDescription>Create a new user account.</DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleCreate}>
-                            <div className="grid gap-4 py-4">
-                                {error && (
-                                    <div className="text-sm text-red-500 bg-red-500/10 p-2 rounded">
-                                        {error}
-                                    </div>
-                                )}
-                                <div className="grid gap-2">
-                                    <Label htmlFor="role">Role</Label>
-                                    <select
-                                        name="role"
-                                        value={selectedRole}
-                                        onChange={(e) => setSelectedRole(e.target.value)}
-                                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        <option value="user">Student</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" name="email" type="email" required />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="password">Password</Label>
-                                    <Input id="password" name="password" type="password" required />
-                                </div>
-                                {selectedRole === 'user' && (
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => refetchUsers()}>
+                        Refresh List
+                    </Button>
+                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <DialogTrigger asChild>
+                            <Button>Add User</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add New User</DialogTitle>
+                                <DialogDescription>Create a new user account.</DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleCreate}>
+                                <div className="grid gap-4 py-4">
+                                    {error && (
+                                        <div className="text-sm text-red-500 bg-red-500/10 p-2 rounded">
+                                            {error}
+                                        </div>
+                                    )}
                                     <div className="grid gap-2">
-                                        <Label htmlFor="enrollment">Enrollment Number</Label>
-                                        <Input id="enrollment" name="enrollment" placeholder="Required for students" required />
+                                        <Label htmlFor="role">Role</Label>
+                                        <select
+                                            name="role"
+                                            value={selectedRole}
+                                            onChange={(e) => setSelectedRole(e.target.value)}
+                                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <option value="user">Student</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
                                     </div>
-                                )}
-                            </div>
-                            <DialogFooter>
-                                <Button type="submit">Create User</Button>
-                            </DialogFooter>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="email">Email</Label>
+                                        <Input id="email" name="email" type="email" required />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="password">Password</Label>
+                                        <Input id="password" name="password" type="password" required />
+                                    </div>
+                                    {selectedRole === 'user' && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="enrollment">Enrollment Number</Label>
+                                            <Input id="enrollment" name="enrollment" placeholder="Required for students" required />
+                                        </div>
+                                    )}
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Create User</Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
+
+            {fetchError && (
+                <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-md border border-red-200 dark:border-red-900">
+                    <p className="font-medium">Error loading users</p>
+                    <p className="text-sm">{fetchError}</p>
+                    <Button variant="link" className="p-0 h-auto text-red-600 underline" onClick={() => refetchUsers()}>
+                        Try Again
+                    </Button>
+                </div>
+            )}
 
             <div className="grid gap-4">
                 {users.length === 0 ? (
@@ -276,7 +291,7 @@ export default function AdminUsersPage() {
                                         ) : (
                                             <>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8-11-8-11-8z" />
                                                     <circle cx="12" cy="12" r="3" />
                                                 </svg>
                                                 Show
