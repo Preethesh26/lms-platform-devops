@@ -32,10 +32,13 @@ exports.register = async (req, res) => {
             role: role || 'user'
         });
 
-        // Send welcome email
-        if (role !== 'admin') { // Don't send welcome email for admin creation via script usually, but here it's fine.
-            // Actually, we want to send it for any user created via this endpoint.
+        // Send welcome email (non-blocking - don't fail registration if email fails)
+        try {
             await sendWelcomeEmail(email, name, password, enrollment);
+            console.log(`Welcome email sent to ${email}`);
+        } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+            // Continue with registration even if email fails
         }
 
         const token = generateToken(user._id);
