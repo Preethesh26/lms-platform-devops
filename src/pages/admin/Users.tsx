@@ -20,6 +20,7 @@ export default function AdminUsersPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [error, setError] = useState("");
     const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState("user");
 
@@ -66,8 +67,13 @@ export default function AdminUsersPage() {
         const updates: any = {
             email: formData.get("email") as string,
             role: selectedRole,
-            password: formData.get("password") as string, // Password is now required
         };
+
+        // Only update password if provided
+        const password = formData.get("password") as string;
+        if (password) {
+            updates.password = password;
+        }
 
         if (selectedRole === 'user') {
             updates.enrollment = formData.get("enrollment") as string;
@@ -212,9 +218,9 @@ export default function AdminUsersPage() {
                                 <Input id="edit-email" name="email" type="email" defaultValue={editingUser?.email} required />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-password">New Password</Label>
-                                <Input id="edit-password" name="password" type="password" placeholder="Enter new password" required />
-                                <p className="text-xs text-muted-foreground">You must set a new password when updating the user</p>
+                                <Label htmlFor="edit-password">New Password (Optional)</Label>
+                                <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current password" />
+                                <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
                             </div>
                             {selectedRole === 'user' && (
                                 <div className="grid gap-2">
@@ -252,8 +258,35 @@ export default function AdminUsersPage() {
                                 </div>
                             )}
                             <div>
-                                <Label className="text-xs text-muted-foreground">Password</Label>
-                                <p className="font-mono text-sm font-medium text-primary">{createdUserCredentials?.password}</p>
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs text-muted-foreground">Password</Label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="text-xs text-primary hover:underline flex items-center gap-1"
+                                    >
+                                        {showPassword ? (
+                                            <>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                                </svg>
+                                                Hide
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                                Show
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                                <p className="font-mono text-sm font-medium text-primary">
+                                    {showPassword ? createdUserCredentials?.password : '••••••••'}
+                                </p>
                             </div>
                         </div>
                         <div className="text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
@@ -261,7 +294,10 @@ export default function AdminUsersPage() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button onClick={() => setCreatedUserCredentials(null)}>Close</Button>
+                        <Button onClick={() => {
+                            setCreatedUserCredentials(null);
+                            setShowPassword(false);
+                        }}>Close</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
