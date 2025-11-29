@@ -21,7 +21,7 @@ const sendPasswordResetEmail = async (to, resetUrl) => {
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'noreply@lms-platform.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = 'Password Reset Request';
         sendSmtpEmail.htmlContent = `
@@ -52,7 +52,7 @@ const sendContactAdminEmail = async (adminEmail, userEmail, userName, message) =
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'noreply@lms-platform.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
         sendSmtpEmail.to = [{ email: adminEmail }];
         sendSmtpEmail.replyTo = { email: userEmail, name: userName };
         sendSmtpEmail.subject = `Support Request from ${userName}`;
@@ -89,7 +89,7 @@ const sendWelcomeEmail = async (to, name, password, enrollment) => {
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'noreply@lms-platform.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = 'Welcome to LMS Platform - Your Credentials';
         sendSmtpEmail.htmlContent = `
