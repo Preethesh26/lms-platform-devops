@@ -72,12 +72,6 @@ const sendContactAdminEmail = async (adminEmail, userEmail, userName, message) =
     }
 };
 
-module.exports = {
-    sendPasswordResetEmail,
-    sendContactAdminEmail,
-    sendWelcomeEmail
-};
-
 // Send welcome email with credentials
 const sendWelcomeEmail = async (to, name, password, enrollment) => {
     try {
@@ -115,4 +109,10 @@ const sendWelcomeEmail = async (to, name, password, enrollment) => {
         console.error('Email service error:', error);
         return { success: false, error: error.message };
     }
+};
+
+module.exports = {
+    sendPasswordResetEmail,
+    sendContactAdminEmail,
+    sendWelcomeEmail
 };
