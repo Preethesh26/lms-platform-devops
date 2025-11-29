@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log("RESEND_API_KEY loaded:", process.env.RESEND_API_KEY ? "Yes" : "No");
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');

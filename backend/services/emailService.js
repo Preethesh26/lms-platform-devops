@@ -1,6 +1,12 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
+    : { emails: { send: async () => ({ error: { message: "Resend API Key missing" } }) } };
+
+if (!process.env.RESEND_API_KEY) {
+    console.warn("⚠️ RESEND_API_KEY is missing. Email features will not work.");
+}
 
 // Send password reset email
 const sendPasswordResetEmail = async (to, resetUrl) => {
