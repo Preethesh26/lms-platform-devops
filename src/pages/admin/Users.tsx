@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useStore } from "@/lib/store";
 
@@ -60,11 +61,11 @@ export default function AdminUsersPage() {
         }
     };
 
-    const [editingUser, setEditingUser] = useState<any>(null);
+    const [selectedUser, setSelectedUser] = useState<any>(null);
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!editingUser) return;
+        if (!selectedUser) return;
 
         const formData = new FormData(e.currentTarget);
         const updates: any = {
@@ -84,8 +85,8 @@ export default function AdminUsersPage() {
         }
 
         try {
-            await updateUser(editingUser.id, updates);
-            setEditingUser(null);
+            await updateUser(selectedUser.id, updates);
+            setSelectedUser(null);
             setSelectedRole("user");
         } catch (err: any) {
             console.error(err);
@@ -177,7 +178,14 @@ export default function AdminUsersPage() {
                     </Card>
                 ) : (
                     users.map((user) => (
-                        <Card key={user.id}>
+                        <Card
+                            key={user.id}
+                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                            onClick={() => {
+                                setSelectedUser(user);
+                                setSelectedRole(user.role);
+                            }}
+                        >
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between text-base">
                                     <div className="flex flex-col">
@@ -188,17 +196,7 @@ export default function AdminUsersPage() {
                                             {user.enrollment && ` • ${user.enrollment}`}
                                         </span>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                setEditingUser(user);
-                                                setSelectedRole(user.role);
-                                            }}
-                                        >
-                                            Edit
-                                        </Button>
+                                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                                         <Button
                                             variant="destructive"
                                             size="sm"
@@ -215,52 +213,110 @@ export default function AdminUsersPage() {
                 )}
             </div>
 
-            {/* Edit User Dialog */}
-            <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
-                <DialogContent>
+            {/* User Details & Edit Dialog */}
+            <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
+                <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Edit User</DialogTitle>
-                        <DialogDescription>Update user details and reset password.</DialogDescription>
+                        <DialogTitle>User Details</DialogTitle>
+                        <DialogDescription>View and manage user information.</DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleUpdate}>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-role">Role</Label>
-                                <select
-                                    id="edit-role"
-                                    name="role"
-                                    value={selectedRole}
-                                    onChange={(e) => setSelectedRole(e.target.value)}
-                                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    <option value="user">Student</option>
-                                    <option value="admin">Admin</option>
-                                </select>
+
+                    <Tabs defaultValue="details" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="details">Details</TabsTrigger>
+                            <TabsTrigger value="edit">Edit Profile</TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="details" className="space-y-4 py-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Name</Label>
+                                    <p className="font-medium">{selectedUser?.name}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Email</Label>
+                                    <p className="font-medium">{selectedUser?.email}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Role</Label>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${selectedUser?.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                            }`}>
+                                            {selectedUser?.role === 'admin' ? 'Administrator' : 'Student'}
+                                        </span>
+                                    </div>
+                                </div>
+                                {selectedUser?.enrollment && (
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Enrollment Number</Label>
+                                        <p className="font-mono text-sm">{selectedUser?.enrollment}</p>
+                                    </div>
+                                )}
+                                <div className="space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Enrolled Courses</Label>
+                                    <p className="font-medium">{selectedUser?.enrolledCourses?.length || 0} Courses</p>
+                                </div>
                             </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-name">Name</Label>
-                                <Input id="edit-name" name="name" type="text" defaultValue={editingUser?.name} required />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-email">Email</Label>
-                                <Input id="edit-email" name="email" type="email" defaultValue={editingUser?.email} required />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-password">New Password (Optional)</Label>
-                                <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current password" />
-                                <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
-                            </div>
-                            {selectedRole === 'user' && (
-                                <div className="grid gap-2">
-                                    <Label htmlFor="edit-enrollment">Enrollment Number</Label>
-                                    <Input id="edit-enrollment" name="enrollment" defaultValue={editingUser?.enrollment} placeholder="Required for students" required />
+
+                            {selectedUser?.enrolledCourses?.length > 0 && (
+                                <div className="mt-4 pt-4 border-t">
+                                    <Label className="text-xs text-muted-foreground mb-2 block">Course List</Label>
+                                    <div className="grid gap-2">
+                                        {/* Since enrolledCourses is just IDs in the user object currently, 
+                                            we might need to populate this or just show count. 
+                                            For now showing count is safer unless we populate on backend. */}
+                                        <p className="text-sm text-muted-foreground">
+                                            User is enrolled in {selectedUser.enrolledCourses.length} courses.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
-                        </div>
-                        <DialogFooter>
-                            <Button type="submit">Save Changes</Button>
-                        </DialogFooter>
-                    </form>
+                        </TabsContent>
+
+                        <TabsContent value="edit">
+                            <form onSubmit={handleUpdate}>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="edit-role">Role</Label>
+                                        <select
+                                            id="edit-role"
+                                            name="role"
+                                            value={selectedRole}
+                                            onChange={(e) => setSelectedRole(e.target.value)}
+                                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <option value="user">Student</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="edit-name">Name</Label>
+                                        <Input id="edit-name" name="name" type="text" defaultValue={selectedUser?.name} required />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="edit-email">Email</Label>
+                                        <Input id="edit-email" name="email" type="email" defaultValue={selectedUser?.email} required />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="edit-password">New Password (Optional)</Label>
+                                        <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current password" />
+                                        <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
+                                    </div>
+                                    {selectedRole === 'user' && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="edit-enrollment">Enrollment Number</Label>
+                                            <Input id="edit-enrollment" name="enrollment" defaultValue={selectedUser?.enrollment} placeholder="Required for students" required />
+                                        </div>
+                                    )}
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Save Changes</Button>
+                                </DialogFooter>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
                 </DialogContent>
             </Dialog>
 
