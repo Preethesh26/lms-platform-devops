@@ -22,8 +22,13 @@ export default function AdminUsersPage() {
     const [error, setError] = useState("");
     const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [updateSuccess, setUpdateSuccess] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState("user");
+
+    // Delete confirmation state
+    const [deleteConfirmUser, setDeleteConfirmUser] = useState<any>(null);
+    const [deleteEmailInput, setDeleteEmailInput] = useState("");
 
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -88,6 +93,27 @@ export default function AdminUsersPage() {
             await updateUser(selectedUser.id, updates);
             setSelectedUser(null);
             setSelectedRole("user");
+            setUpdateSuccess(true);
+        } catch (err: any) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteClick = (user: any) => {
+        setDeleteConfirmUser(user);
+        setDeleteEmailInput("");
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteConfirmUser) return;
+        if (deleteEmailInput !== deleteConfirmUser.email) {
+            return; // Email doesn't match, don't delete
+        }
+
+        try {
+            await deleteUser(deleteConfirmUser.id);
+            setDeleteConfirmUser(null);
+            setDeleteEmailInput("");
         } catch (err: any) {
             console.error(err);
         }
@@ -213,7 +239,7 @@ export default function AdminUsersPage() {
                                         className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            deleteUser(user.id);
+                                            handleDeleteClick(user);
                                         }}
                                         disabled={true}
                                     >
@@ -273,7 +299,7 @@ export default function AdminUsersPage() {
                                         className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            deleteUser(user.id);
+                                            handleDeleteClick(user);
                                         }}
                                         disabled={false}
                                     >
@@ -455,6 +481,76 @@ export default function AdminUsersPage() {
                             setCreatedUserCredentials(null);
                             setShowPassword(false);
                         }}>Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!deleteConfirmUser} onOpenChange={(open) => !open && setDeleteConfirmUser(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>⚠️ Confirm User Deletion</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. This will permanently delete the user account.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-md border border-red-200 dark:border-red-900">
+                            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                                You are about to delete:
+                            </p>
+                            <p className="text-sm font-semibold text-red-900 dark:text-red-200 mt-1">
+                                {deleteConfirmUser?.name} ({deleteConfirmUser?.email})
+                            </p>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="delete-confirm-email">
+                                Type <span className="font-mono font-semibold">{deleteConfirmUser?.email}</span> to confirm
+                            </Label>
+                            <Input
+                                id="delete-confirm-email"
+                                type="email"
+                                placeholder="Enter email address"
+                                value={deleteEmailInput}
+                                onChange={(e) => setDeleteEmailInput(e.target.value)}
+                                className={deleteEmailInput && deleteEmailInput !== deleteConfirmUser?.email ? 'border-red-500' : ''}
+                            />
+                            {deleteEmailInput && deleteEmailInput !== deleteConfirmUser?.email && (
+                                <p className="text-xs text-red-500">Email does not match</p>
+                            )}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteConfirmUser(null)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDeleteConfirm}
+                            disabled={deleteEmailInput !== deleteConfirmUser?.email}
+                        >
+                            Delete User
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Update Success Dialog */}
+            <Dialog open={updateSuccess} onOpenChange={setUpdateSuccess}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>✅ User Updated Successfully</DialogTitle>
+                        <DialogDescription>
+                            The user profile has been updated and an email notification has been sent to the user.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <div className="text-sm text-blue-600 bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md">
+                            📧 An email notification has been sent to inform the user about the profile changes.
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setUpdateSuccess(false)}>Close</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

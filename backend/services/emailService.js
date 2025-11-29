@@ -117,8 +117,64 @@ const sendWelcomeEmail = async (to, name, password, enrollment) => {
     }
 };
 
+// Send profile update notification email
+const sendProfileUpdateEmail = async (to, name, changes) => {
+    if (!apiInstance) {
+        console.error('Brevo API not initialized');
+        return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+        const loginUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+        // Build list of changes
+        let changesHtml = '';
+        if (changes.name) changesHtml += `<li>Name updated</li>`;
+        if (changes.email) changesHtml += `<li>Email address changed to: ${changes.email}</li>`;
+        if (changes.role) changesHtml += `<li>Role changed to: ${changes.role === 'admin' ? 'Administrator' : 'Student'}</li>`;
+        if (changes.password) changesHtml += `<li>Password has been reset</li>`;
+        if (changes.enrollment) changesHtml += `<li>Enrollment number updated to: ${changes.enrollment}</li>`;
+
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.to = [{ email: to }];
+        sendSmtpEmail.subject = 'Your LMS Profile Has Been Updated';
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">Profile Update Notification</h2>
+                <p>Hello ${name},</p>
+                <p>Your LMS account profile has been updated by an administrator. Here are the changes:</p>
+                
+                <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                    <ul style="list-style-type: none; padding: 0;">
+                        ${changesHtml}
+                    </ul>
+                </div>
+
+                ${changes.password ? `
+                    <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <p style="margin: 0; color: #856404;"><strong>⚠️ Important:</strong> Your password has been reset. Please log in and change it immediately for security.</p>
+                    </div>
+                ` : ''}
+
+                <a href="${loginUrl}/login" style="display: inline-block; padding: 12px 24px; background-color: #0070f3; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">Login to Dashboard</a>
+                
+                <p style="color: #666; font-size: 14px;">If you have any questions about these changes, please contact your administrator.</p>
+            </div>
+        `;
+
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Email service error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendPasswordResetEmail,
     sendContactAdminEmail,
-    sendWelcomeEmail
+    sendWelcomeEmail,
+    sendProfileUpdateEmail
 };
