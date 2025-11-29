@@ -169,47 +169,102 @@ export default function AdminUsersPage() {
                 </div>
             )}
 
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {users.length === 0 ? (
-                    <Card>
+                    <Card className="col-span-full">
                         <CardContent className="pt-6">
-                            <p className="text-muted-foreground">No users found.</p>
+                            <p className="text-muted-foreground text-center">No users found.</p>
                         </CardContent>
                     </Card>
                 ) : (
-                    users.map((user) => (
-                        <Card
-                            key={user.id}
-                            className="cursor-pointer hover:bg-muted/50 transition-colors"
-                            onClick={() => {
-                                setSelectedUser(user);
-                                setSelectedRole(user.role);
-                            }}
-                        >
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between text-base">
-                                    <div className="flex flex-col">
-                                        <span className="font-medium">{user.name}</span>
-                                        <span className="text-sm">{user.email}</span>
-                                        <span className="text-sm font-normal text-muted-foreground">
-                                            {user.role === 'admin' ? 'Administrator' : 'Student'}
-                                            {user.enrollment && ` • ${user.enrollment}`}
+                    users
+                        .sort((a, b) => {
+                            // Sort by Role (Admin first)
+                            if (a.role === 'admin' && b.role !== 'admin') return -1;
+                            if (a.role !== 'admin' && b.role === 'admin') return 1;
+
+                            // Then sort by Enrollment (if both are students)
+                            if (a.role === 'user' && b.role === 'user') {
+                                return (a.enrollment || '').localeCompare(b.enrollment || '');
+                            }
+
+                            // Fallback to name
+                            return a.name.localeCompare(b.name);
+                        })
+                        .map((user) => (
+                            <Card
+                                key={user.id}
+                                className={`cursor-pointer hover:shadow-md transition-all border-l-4 ${user.role === 'admin'
+                                        ? 'border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10'
+                                        : 'border-l-blue-500 bg-white dark:bg-card'
+                                    }`}
+                                onClick={() => {
+                                    setSelectedUser(user);
+                                    setSelectedRole(user.role);
+                                }}
+                            >
+                                <CardHeader className="pb-2">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <CardTitle className="text-lg font-semibold leading-none tracking-tight">
+                                                {user.name}
+                                            </CardTitle>
+                                            <p className="text-sm text-muted-foreground break-all">
+                                                {user.email}
+                                            </p>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                            }`}>
+                                            {user.role === 'admin' ? 'Admin' : 'Student'}
                                         </span>
                                     </div>
-                                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                </CardHeader>
+                                <CardContent>
+                                    {user.role === 'user' && (
+                                        <div className="space-y-3 mt-2">
+                                            <div className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded-md">
+                                                <span className="text-muted-foreground">Enrollment:</span>
+                                                <span className="font-mono font-medium">{user.enrollment || 'N/A'}</span>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <div className="flex justify-between text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                                    Performance
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="h-2 flex-1 bg-secondary rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-green-500 rounded-full"
+                                                            style={{ width: `${Math.min((user.enrolledCourses?.length || 0) * 10, 100)}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs font-medium whitespace-nowrap">
+                                                        {user.enrolledCourses?.length || 0} Courses
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-end mt-4 pt-2 border-t border-border/50">
                                         <Button
-                                            variant="destructive"
+                                            variant="ghost"
                                             size="sm"
-                                            onClick={() => deleteUser(user.id)}
+                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-2"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteUser(user.id);
+                                            }}
                                             disabled={user.role === 'admin'}
                                         >
-                                            Delete
+                                            Delete User
                                         </Button>
                                     </div>
-                                </CardTitle>
-                            </CardHeader>
-                        </Card>
-                    ))
+                                </CardContent>
+                            </Card>
+                        ))
                 )}
             </div>
 
@@ -241,8 +296,8 @@ export default function AdminUsersPage() {
                                     <Label className="text-xs text-muted-foreground">Role</Label>
                                     <div className="flex items-center gap-2">
                                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${selectedUser?.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
-                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                             }`}>
                                             {selectedUser?.role === 'admin' ? 'Administrator' : 'Student'}
                                         </span>
