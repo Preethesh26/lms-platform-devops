@@ -1,8 +1,24 @@
+import { useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useStore } from "@/lib/store";
 
 export default function AdminLayout() {
     const navigate = useNavigate();
+    const { currentUser, logoutUser, isInitialized } = useStore();
+
+    useEffect(() => {
+        if (isInitialized) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                navigate("/admin/login");
+            }
+        }
+    }, [currentUser, isInitialized, navigate]);
+
+    if (!isInitialized) return null;
+
+    // If not admin (and waiting for redirect), don't render content
+    if (!currentUser || currentUser.role !== 'admin') return null;
 
     return (
         <div className="min-h-screen flex">
@@ -39,12 +55,14 @@ export default function AdminLayout() {
                 <header className="h-16 border-b flex items-center px-6 justify-between">
                     <h1 className="font-semibold text-lg">Admin Dashboard</h1>
                     <div className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground">Admin User</span>
+                        <span className="text-sm text-muted-foreground">
+                            {currentUser.email}
+                        </span>
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                                document.cookie = "admin_session=; path=/; max-age=0";
+                                logoutUser();
                                 navigate("/admin/login");
                             }}
                         >
