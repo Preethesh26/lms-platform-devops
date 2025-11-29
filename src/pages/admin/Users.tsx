@@ -340,7 +340,7 @@ export default function AdminUsersPage() {
                                         <Label className="text-xs text-muted-foreground mb-2 block">Course List</Label>
                                         <div className="grid gap-2">
                                             <p className="text-sm text-muted-foreground">
-                                                User is enrolled in {selectedUser.enrolledCourses.length} courses.
+                                                User is enrolled in {selectedUser?.enrolledCourses?.length} courses.
                                             </p>
                                         </div>
                                     </div>
