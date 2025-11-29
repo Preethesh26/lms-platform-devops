@@ -9,6 +9,7 @@ import { authAPI } from "@/lib/api";
 
 export default function UserLogin() {
     const [email, setEmail] = useState("");
+    const [enrollment, setEnrollment] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,11 +25,18 @@ export default function UserLogin() {
             const response = await authAPI.login({ email, password });
             const { token, user } = response.data;
 
+            // Verify enrollment number matches (for students only)
+            if (user.role === 'user' && user.enrollment !== enrollment) {
+                setError("Invalid enrollment number");
+                setLoading(false);
+                return;
+            }
+
             loginUser(user, token);
             navigate("/");
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.message || "Invalid email or password.");
+            setError(err.response?.data?.message || "Invalid credentials.");
         } finally {
             setLoading(false);
         }
@@ -40,7 +48,7 @@ export default function UserLogin() {
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Student Login</CardTitle>
                     <CardDescription className="text-center">
-                        Enter your email and password to access your courses
+                        Enter your credentials to access your courses
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -50,6 +58,18 @@ export default function UserLogin() {
                                 {error}
                             </div>
                         )}
+                        <div className="space-y-2">
+                            <Label htmlFor="enrollment">Enrollment Number</Label>
+                            <Input
+                                id="enrollment"
+                                type="text"
+                                placeholder="Enter your enrollment number"
+                                value={enrollment}
+                                onChange={(e) => setEnrollment(e.target.value)}
+                                required
+                                disabled={loading}
+                            />
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -80,7 +100,7 @@ export default function UserLogin() {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-gray-500">
-                        Don't have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
+                        Need help? <Link to="/admin/login" className="text-primary hover:underline">Contact Admin</Link>
                     </p>
                 </CardFooter>
             </Card>

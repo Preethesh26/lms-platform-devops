@@ -19,6 +19,7 @@ export default function AdminUsersPage() {
     const { users, addUser, updateUser, deleteUser, isInitialized } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [error, setError] = useState("");
+    const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
 
     const [selectedRole, setSelectedRole] = useState("user");
 
@@ -27,15 +28,28 @@ export default function AdminUsersPage() {
         setError("");
         const formData = new FormData(e.currentTarget);
 
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        const enrollment = formData.get("enrollment") as string;
+
         try {
             await addUser({
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
-                enrollment: formData.get("enrollment") as string,
+                email,
+                password,
+                enrollment,
                 role: selectedRole,
             });
+
+            // Show success dialog with credentials
+            setCreatedUserCredentials({
+                email,
+                password,
+                enrollment: selectedRole === 'user' ? enrollment : undefined
+            });
+
             setIsCreateOpen(false);
-            setSelectedRole("user"); // Reset role
+            setSelectedRole("user");
+            e.currentTarget.reset();
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Failed to create user");
@@ -52,13 +66,8 @@ export default function AdminUsersPage() {
         const updates: any = {
             email: formData.get("email") as string,
             role: selectedRole,
+            password: formData.get("password") as string, // Password is now required
         };
-
-        // Only add password if it's provided (not empty)
-        const password = formData.get("password") as string;
-        if (password) {
-            updates.password = password;
-        }
 
         if (selectedRole === 'user') {
             updates.enrollment = formData.get("enrollment") as string;
@@ -70,7 +79,6 @@ export default function AdminUsersPage() {
             setSelectedRole("user");
         } catch (err: any) {
             console.error(err);
-            // You might want to show an error state here
         }
     };
 
@@ -165,7 +173,7 @@ export default function AdminUsersPage() {
                                             variant="destructive"
                                             size="sm"
                                             onClick={() => deleteUser(user.id)}
-                                            disabled={user.role === 'admin'} // Prevent deleting admins for safety in this demo
+                                            disabled={user.role === 'admin'}
                                         >
                                             Delete
                                         </Button>
@@ -182,7 +190,7 @@ export default function AdminUsersPage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Edit User</DialogTitle>
-                        <DialogDescription>Update user details.</DialogDescription>
+                        <DialogDescription>Update user details and reset password.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleUpdate}>
                         <div className="grid gap-4 py-4">
@@ -204,8 +212,9 @@ export default function AdminUsersPage() {
                                 <Input id="edit-email" name="email" type="email" defaultValue={editingUser?.email} required />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="edit-password">New Password (Optional)</Label>
-                                <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current" />
+                                <Label htmlFor="edit-password">New Password</Label>
+                                <Input id="edit-password" name="password" type="password" placeholder="Enter new password" required />
+                                <p className="text-xs text-muted-foreground">You must set a new password when updating the user</p>
                             </div>
                             {selectedRole === 'user' && (
                                 <div className="grid gap-2">
@@ -218,6 +227,42 @@ export default function AdminUsersPage() {
                             <Button type="submit">Save Changes</Button>
                         </DialogFooter>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Success Dialog - Show Credentials */}
+            <Dialog open={!!createdUserCredentials} onOpenChange={(open) => !open && setCreatedUserCredentials(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>✅ User Created Successfully</DialogTitle>
+                        <DialogDescription>
+                            Please save these credentials and share them with the user. The password will not be shown again.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="grid gap-2 p-4 bg-muted rounded-lg">
+                            <div>
+                                <Label className="text-xs text-muted-foreground">Email</Label>
+                                <p className="font-mono text-sm font-medium">{createdUserCredentials?.email}</p>
+                            </div>
+                            {createdUserCredentials?.enrollment && (
+                                <div>
+                                    <Label className="text-xs text-muted-foreground">Enrollment Number</Label>
+                                    <p className="font-mono text-sm font-medium">{createdUserCredentials.enrollment}</p>
+                                </div>
+                            )}
+                            <div>
+                                <Label className="text-xs text-muted-foreground">Password</Label>
+                                <p className="font-mono text-sm font-medium text-primary">{createdUserCredentials?.password}</p>
+                            </div>
+                        </div>
+                        <div className="text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
+                            ⚠️ Make sure to copy and save these credentials now. The password is securely hashed in the database and cannot be retrieved later.
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setCreatedUserCredentials(null)}>Close</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
