@@ -15,7 +15,8 @@ const createAdmin = async () => {
         let admin = await User.findOne({ role: 'admin' });
 
         if (admin) {
-            console.log('Admin user found. Updating password...');
+            console.log(`Admin user found with email: ${admin.email}`);
+            console.log('Updating password...');
             admin.password = adminPassword; // Will be hashed by pre-save hook
             await admin.save();
             console.log(`Admin password updated to: ${adminPassword}`);
