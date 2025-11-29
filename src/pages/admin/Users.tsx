@@ -195,10 +195,7 @@ export default function AdminUsersPage() {
                         .map((user) => (
                             <Card
                                 key={user.id}
-                                className={`cursor-pointer hover:shadow-md transition-all border-l-4 ${user.role === 'admin'
-                                    ? 'border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10'
-                                    : 'border-l-blue-500 bg-white dark:bg-card'
-                                    }`}
+                                className="cursor-pointer hover:shadow-md transition-all"
                                 onClick={() => {
                                     setSelectedUser(user);
                                     setSelectedRole(user.role);
