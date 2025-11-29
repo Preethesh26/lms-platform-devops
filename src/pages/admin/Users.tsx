@@ -27,7 +27,8 @@ export default function AdminUsersPage() {
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
-        const formData = new FormData(e.currentTarget);
+        const form = e.currentTarget; // Store reference before async
+        const formData = new FormData(form);
 
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
@@ -52,7 +53,7 @@ export default function AdminUsersPage() {
 
             setIsCreateOpen(false);
             setSelectedRole("user");
-            e.currentTarget.reset();
+            form.reset(); // Use stored reference
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Failed to create user");
