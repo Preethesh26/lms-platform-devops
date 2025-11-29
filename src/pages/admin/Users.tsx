@@ -169,63 +169,121 @@ export default function AdminUsersPage() {
                 </div>
             )}
 
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {users.length === 0 ? (
-                    <Card className="col-span-full">
-                        <CardContent className="pt-6 text-center">
-                            <p className="text-muted-foreground">No users found.</p>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    users.map((user) => (
-                        <Card
-                            key={user.id}
-                            className="cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] hover:shadow-md aspect-square flex flex-col justify-between"
-                            onClick={() => {
-                                setSelectedUser(user);
-                                setSelectedRole(user.role);
-                            }}
-                        >
-                            <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
-                                <div className={`h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold ${user.role === 'admin'
-                                    ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
-                                    : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
-                                    }`}>
-                                    {user.name?.charAt(0)?.toUpperCase() || '?'}
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="font-semibold text-lg truncate w-full max-w-[200px]">{user.name || 'Unknown User'}</h3>
-                                    <p className="text-sm text-muted-foreground truncate w-full max-w-[200px]">{user.email}</p>
-                                    <div className="pt-2">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user.role === 'admin'
-                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
-                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                                            }`}>
-                                            {user.role === 'admin' ? 'Administrator' : 'Student'}
-                                        </span>
-                                    </div>
-                                    {user.enrollment && (
-                                        <p className="text-xs font-mono text-muted-foreground pt-1">{user.enrollment}</p>
-                                    )}
-                                </div>
-                            </CardHeader>
-                            <CardContent className="pb-6 flex justify-center">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        deleteUser(user.id);
-                                    }}
-                                    disabled={user.role === 'admin'}
-                                >
-                                    Delete User
-                                </Button>
+            {/* Administrators Section */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-semibold">Administrators</h3>
+                    <span className="text-sm text-muted-foreground">({users.filter(u => u.role === 'admin').length})</span>
+                </div>
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {users.filter(u => u.role === 'admin').length === 0 ? (
+                        <Card className="col-span-full">
+                            <CardContent className="pt-6 text-center">
+                                <p className="text-muted-foreground">No administrators found.</p>
                             </CardContent>
                         </Card>
-                    ))
-                )}
+                    ) : (
+                        users.filter(u => u.role === 'admin').map((user) => (
+                            <Card
+                                key={user.id}
+                                className="cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] hover:shadow-md aspect-square flex flex-col justify-between"
+                                onClick={() => {
+                                    setSelectedUser(user);
+                                    setSelectedRole(user.role);
+                                }}
+                            >
+                                <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
+                                    <div className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
+                                        {user.name?.charAt(0)?.toUpperCase() || '?'}
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="font-semibold text-lg truncate w-full max-w-[200px]">{user.name || 'Unknown User'}</h3>
+                                        <p className="text-sm text-muted-foreground truncate w-full max-w-[200px]">{user.email}</p>
+                                        <div className="pt-2">
+                                            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                                Administrator
+                                            </span>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="pb-6 flex justify-center">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteUser(user.id);
+                                        }}
+                                        disabled={true}
+                                    >
+                                        Delete User
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Students Section */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-semibold">Students</h3>
+                    <span className="text-sm text-muted-foreground">({users.filter(u => u.role === 'user').length})</span>
+                </div>
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {users.filter(u => u.role === 'user').length === 0 ? (
+                        <Card className="col-span-full">
+                            <CardContent className="pt-6 text-center">
+                                <p className="text-muted-foreground">No students found.</p>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        users.filter(u => u.role === 'user').map((user) => (
+                            <Card
+                                key={user.id}
+                                className="cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] hover:shadow-md aspect-square flex flex-col justify-between"
+                                onClick={() => {
+                                    setSelectedUser(user);
+                                    setSelectedRole(user.role);
+                                }}
+                            >
+                                <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
+                                    <div className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+                                        {user.name?.charAt(0)?.toUpperCase() || '?'}
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className="font-semibold text-lg truncate w-full max-w-[200px]">{user.name || 'Unknown User'}</h3>
+                                        <p className="text-sm text-muted-foreground truncate w-full max-w-[200px]">{user.email}</p>
+                                        <div className="pt-2">
+                                            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                                Student
+                                            </span>
+                                        </div>
+                                        {user.enrollment && (
+                                            <p className="text-xs font-mono text-muted-foreground pt-1">{user.enrollment}</p>
+                                        )}
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="pb-6 flex justify-center">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteUser(user.id);
+                                        }}
+                                        disabled={false}
+                                    >
+                                        Delete User
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* User Details & Edit Dialog */}
