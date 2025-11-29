@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 import { useStore } from "@/lib/store";
 
@@ -24,6 +24,7 @@ export default function AdminUsersPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState("user");
+    const [activeTab, setActiveTab] = useState("details");
 
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -195,12 +196,13 @@ export default function AdminUsersPage() {
                             <Card
                                 key={user.id}
                                 className={`cursor-pointer hover:shadow-md transition-all border-l-4 ${user.role === 'admin'
-                                        ? 'border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10'
-                                        : 'border-l-blue-500 bg-white dark:bg-card'
+                                    ? 'border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10'
+                                    : 'border-l-blue-500 bg-white dark:bg-card'
                                     }`}
                                 onClick={() => {
                                     setSelectedUser(user);
                                     setSelectedRole(user.role);
+                                    setActiveTab("details");
                                 }}
                             >
                                 <CardHeader className="pb-2">
@@ -214,8 +216,8 @@ export default function AdminUsersPage() {
                                             </p>
                                         </div>
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
-                                                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                            ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                             }`}>
                                             {user.role === 'admin' ? 'Admin' : 'Student'}
                                         </span>
@@ -269,6 +271,7 @@ export default function AdminUsersPage() {
             </div>
 
             {/* User Details & Edit Dialog */}
+            {/* User Details & Edit Dialog */}
             <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
@@ -276,102 +279,119 @@ export default function AdminUsersPage() {
                         <DialogDescription>View and manage user information.</DialogDescription>
                     </DialogHeader>
 
-                    <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="details">Details</TabsTrigger>
-                            <TabsTrigger value="edit">Edit Profile</TabsTrigger>
-                        </TabsList>
+                    <div className="w-full">
+                        <div className="grid w-full grid-cols-2 mb-4 bg-muted p-1 rounded-md">
+                            <button
+                                onClick={() => setActiveTab("details")}
+                                className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${activeTab === "details"
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:bg-background/50"
+                                    }`}
+                            >
+                                Details
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("edit")}
+                                className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${activeTab === "edit"
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-muted-foreground hover:bg-background/50"
+                                    }`}
+                            >
+                                Edit Profile
+                            </button>
+                        </div>
 
-                        <TabsContent value="details" className="space-y-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Name</Label>
-                                    <p className="font-medium">{selectedUser?.name}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Email</Label>
-                                    <p className="font-medium">{selectedUser?.email}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Role</Label>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${selectedUser?.role === 'admin'
-                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
-                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                                            }`}>
-                                            {selectedUser?.role === 'admin' ? 'Administrator' : 'Student'}
-                                        </span>
-                                    </div>
-                                </div>
-                                {selectedUser?.enrollment && (
+                        {activeTab === "details" && (
+                            <div className="space-y-4 py-4 animate-in fade-in-50 duration-300">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <Label className="text-xs text-muted-foreground">Enrollment Number</Label>
-                                        <p className="font-mono text-sm">{selectedUser?.enrollment}</p>
+                                        <Label className="text-xs text-muted-foreground">Name</Label>
+                                        <p className="font-medium">{selectedUser?.name}</p>
                                     </div>
-                                )}
-                                <div className="space-y-1">
-                                    <Label className="text-xs text-muted-foreground">Enrolled Courses</Label>
-                                    <p className="font-medium">{selectedUser?.enrolledCourses?.length || 0} Courses</p>
-                                </div>
-                            </div>
-
-                            {selectedUser?.enrolledCourses?.length > 0 && (
-                                <div className="mt-4 pt-4 border-t">
-                                    <Label className="text-xs text-muted-foreground mb-2 block">Course List</Label>
-                                    <div className="grid gap-2">
-                                        {/* Since enrolledCourses is just IDs in the user object currently, 
-                                            we might need to populate this or just show count. 
-                                            For now showing count is safer unless we populate on backend. */}
-                                        <p className="text-sm text-muted-foreground">
-                                            User is enrolled in {selectedUser.enrolledCourses.length} courses.
-                                        </p>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Email</Label>
+                                        <p className="font-medium">{selectedUser?.email}</p>
                                     </div>
-                                </div>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="edit">
-                            <form onSubmit={handleUpdate}>
-                                <div className="grid gap-4 py-4">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="edit-role">Role</Label>
-                                        <select
-                                            id="edit-role"
-                                            name="role"
-                                            value={selectedRole}
-                                            onChange={(e) => setSelectedRole(e.target.value)}
-                                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        >
-                                            <option value="user">Student</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Role</Label>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${selectedUser?.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                                }`}>
+                                                {selectedUser?.role === 'admin' ? 'Administrator' : 'Student'}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="edit-name">Name</Label>
-                                        <Input id="edit-name" name="name" type="text" defaultValue={selectedUser?.name} required />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="edit-email">Email</Label>
-                                        <Input id="edit-email" name="email" type="email" defaultValue={selectedUser?.email} required />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="edit-password">New Password (Optional)</Label>
-                                        <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current password" />
-                                        <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
-                                    </div>
-                                    {selectedRole === 'user' && (
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="edit-enrollment">Enrollment Number</Label>
-                                            <Input id="edit-enrollment" name="enrollment" defaultValue={selectedUser?.enrollment} placeholder="Required for students" required />
+                                    {selectedUser?.enrollment && (
+                                        <div className="space-y-1">
+                                            <Label className="text-xs text-muted-foreground">Enrollment Number</Label>
+                                            <p className="font-mono text-sm">{selectedUser?.enrollment}</p>
                                         </div>
                                     )}
+                                    <div className="space-y-1">
+                                        <Label className="text-xs text-muted-foreground">Enrolled Courses</Label>
+                                        <p className="font-medium">{selectedUser?.enrolledCourses?.length || 0} Courses</p>
+                                    </div>
                                 </div>
-                                <DialogFooter>
-                                    <Button type="submit">Save Changes</Button>
-                                </DialogFooter>
-                            </form>
-                        </TabsContent>
-                    </Tabs>
+
+                                {selectedUser?.enrolledCourses?.length > 0 && (
+                                    <div className="mt-4 pt-4 border-t">
+                                        <Label className="text-xs text-muted-foreground mb-2 block">Course List</Label>
+                                        <div className="grid gap-2">
+                                            <p className="text-sm text-muted-foreground">
+                                                User is enrolled in {selectedUser.enrolledCourses.length} courses.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "edit" && (
+                            <div className="animate-in fade-in-50 duration-300">
+                                <form onSubmit={handleUpdate}>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="edit-role">Role</Label>
+                                            <select
+                                                id="edit-role"
+                                                name="role"
+                                                value={selectedRole}
+                                                onChange={(e) => setSelectedRole(e.target.value)}
+                                                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                <option value="user">Student</option>
+                                                <option value="admin">Admin</option>
+                                            </select>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="edit-name">Name</Label>
+                                            <Input id="edit-name" name="name" type="text" defaultValue={selectedUser?.name} required />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="edit-email">Email</Label>
+                                            <Input id="edit-email" name="email" type="email" defaultValue={selectedUser?.email} required />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="edit-password">New Password (Optional)</Label>
+                                            <Input id="edit-password" name="password" type="password" placeholder="Leave blank to keep current password" />
+                                            <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
+                                        </div>
+                                        {selectedRole === 'user' && (
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="edit-enrollment">Enrollment Number</Label>
+                                                <Input id="edit-enrollment" name="enrollment" defaultValue={selectedUser?.enrollment} placeholder="Required for students" required />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <DialogFooter>
+                                        <Button type="submit">Save Changes</Button>
+                                    </DialogFooter>
+                                </form>
+                            </div>
+                        )}
+                    </div>
                 </DialogContent>
             </Dialog>
 
