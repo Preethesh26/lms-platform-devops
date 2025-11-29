@@ -20,6 +20,7 @@ export type Course = {
 
 export type User = {
     id: string;
+    name: string;
     enrollment: string;
     email: string;
     role: "admin" | "user";
@@ -109,7 +110,7 @@ export function useStore() {
         }
     };
 
-    const addUser = async (userData: { email: string; password: string; enrollment?: string; role?: string }) => {
+    const addUser = async (userData: { name: string; email: string; password: string; enrollment?: string; role?: string }) => {
         try {
             const res = await authAPI.register(userData);
             setUsers([...users, res.data.user]);

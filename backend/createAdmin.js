@@ -23,6 +23,7 @@ const createAdmin = async () => {
         } else {
             console.log('Admin user not found. Creating new admin...');
             admin = await User.create({
+                name: 'Administrator',
                 email: adminEmail,
                 password: adminPassword,
                 role: 'admin',

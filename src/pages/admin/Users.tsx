@@ -29,12 +29,14 @@ export default function AdminUsersPage() {
         setError("");
         const formData = new FormData(e.currentTarget);
 
+        const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         const enrollment = formData.get("enrollment") as string;
 
         try {
             await addUser({
+                name,
                 email,
                 password,
                 enrollment,
@@ -65,6 +67,7 @@ export default function AdminUsersPage() {
 
         const formData = new FormData(e.currentTarget);
         const updates: any = {
+            name: formData.get("name") as string,
             email: formData.get("email") as string,
             role: selectedRole,
         };
@@ -127,6 +130,10 @@ export default function AdminUsersPage() {
                                         </select>
                                     </div>
                                     <div className="grid gap-2">
+                                        <Label htmlFor="name">Name</Label>
+                                        <Input id="name" name="name" type="text" required />
+                                    </div>
+                                    <div className="grid gap-2">
                                         <Label htmlFor="email">Email</Label>
                                         <Input id="email" name="email" type="email" required />
                                     </div>
@@ -173,7 +180,8 @@ export default function AdminUsersPage() {
                             <CardHeader>
                                 <CardTitle className="flex items-center justify-between text-base">
                                     <div className="flex flex-col">
-                                        <span>{user.email}</span>
+                                        <span className="font-medium">{user.name}</span>
+                                        <span className="text-sm">{user.email}</span>
                                         <span className="text-sm font-normal text-muted-foreground">
                                             {user.role === 'admin' ? 'Administrator' : 'Student'}
                                             {user.enrollment && ` • ${user.enrollment}`}
@@ -227,6 +235,10 @@ export default function AdminUsersPage() {
                                     <option value="user">Student</option>
                                     <option value="admin">Admin</option>
                                 </select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="edit-name">Name</Label>
+                                <Input id="edit-name" name="name" type="text" defaultValue={editingUser?.name} required />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="edit-email">Email</Label>

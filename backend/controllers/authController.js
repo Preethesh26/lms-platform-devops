@@ -8,12 +8,14 @@ const generateToken = (id) => {
     });
 };
 
+const { sendWelcomeEmail } = require('../services/emailService');
+
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res) => {
     try {
-        const { email, password, enrollment, role } = req.body;
+        const { name, email, password, enrollment, role } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -23,11 +25,18 @@ exports.register = async (req, res) => {
 
         // Create user
         const user = await User.create({
+            name,
             email,
             password,
             enrollment,
             role: role || 'user'
         });
+
+        // Send welcome email
+        if (role !== 'admin') { // Don't send welcome email for admin creation via script usually, but here it's fine.
+            // Actually, we want to send it for any user created via this endpoint.
+            await sendWelcomeEmail(email, name, password, enrollment);
+        }
 
         const token = generateToken(user._id);
 
@@ -36,6 +45,7 @@ exports.register = async (req, res) => {
             token,
             user: {
                 id: user._id,
+                name: user.name,
                 email: user.email,
                 role: user.role,
                 enrollment: user.enrollment
