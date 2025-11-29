@@ -270,7 +270,7 @@ export default function AdminUsersPage() {
                     <DialogHeader>
                         <DialogTitle>✅ User Created Successfully</DialogTitle>
                         <DialogDescription>
-                            Please save these credentials and share them with the user. The password will not be shown again.
+                            A welcome email with these credentials has been sent to the user's email address. Please save these credentials as backup.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
@@ -317,8 +317,8 @@ export default function AdminUsersPage() {
                                 </p>
                             </div>
                         </div>
-                        <div className="text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
-                            ⚠️ Make sure to copy and save these credentials now. The password is securely hashed in the database and cannot be retrieved later.
+                        <div className="text-sm text-blue-600 bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md">
+                            📧 A welcome email has been sent to the user with their login credentials. You can also save these credentials as backup.
                         </div>
                     </div>
                     <DialogFooter>
