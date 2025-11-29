@@ -170,7 +170,7 @@ export default function AdminUsersPage() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid gap-4">
                 {users.length === 0 ? (
                     <Card className="col-span-full">
                         <CardContent className="pt-6">
@@ -195,7 +195,10 @@ export default function AdminUsersPage() {
                         .map((user) => (
                             <Card
                                 key={user.id}
-                                className="cursor-pointer hover:shadow-md transition-all"
+                                className={`cursor-pointer hover:shadow-md transition-all border-l-4 ${user.role === 'admin'
+                                    ? 'border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10'
+                                    : 'border-l-blue-500 bg-white dark:bg-card'
+                                    }`}
                                 onClick={() => {
                                     setSelectedUser(user);
                                     setSelectedRole(user.role);
