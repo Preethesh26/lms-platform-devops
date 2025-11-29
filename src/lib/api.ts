@@ -30,7 +30,11 @@ export const authAPI = {
         api.post('/auth/register', data),
     login: (data: { email: string; password: string }) =>
         api.post('/auth/login', data),
-    getMe: () => api.get('/auth/me')
+    getMe: () => api.get('/auth/me'),
+    forgotPassword: (data: { email: string }) =>
+        api.post('/auth/forgot-password', data),
+    resetPassword: (token: string, data: { password: string }) =>
+        api.post(`/auth/reset-password/${token}`, data)
 };
 
 // Courses API
@@ -50,6 +54,12 @@ export const usersAPI = {
     delete: (id: string) => api.delete(`/users/${id}`),
     enroll: (userId: string, courseId: string) =>
         api.post(`/users/${userId}/enroll`, { courseId })
+};
+
+// Support API
+export const supportAPI = {
+    contactAdmin: (data: { name: string; email: string; message: string }) =>
+        api.post('/support/contact-admin', data)
 };
 
 export default api;

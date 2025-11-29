@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/support', require('./routes/support'));
 
 // Error handler
 app.use(errorHandler);

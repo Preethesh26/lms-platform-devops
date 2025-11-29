@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useStore } from "@/lib/store";
 import { authAPI } from "@/lib/api";
 
@@ -13,6 +14,10 @@ export default function UserLogin() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotMessage, setForgotMessage] = useState("");
+    const [forgotLoading, setForgotLoading] = useState(false);
     const navigate = useNavigate();
     const { loginUser } = useStore();
 
@@ -39,6 +44,22 @@ export default function UserLogin() {
             setError(err.response?.data?.message || "Invalid credentials.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setForgotMessage("");
+        setForgotLoading(true);
+
+        try {
+            const response = await authAPI.forgotPassword({ email: forgotEmail });
+            setForgotMessage(response.data.message);
+            setForgotEmail("");
+        } catch (err: any) {
+            setForgotMessage(err.response?.data?.message || "Error sending reset email");
+        } finally {
+            setForgotLoading(false);
         }
     };
 
@@ -83,7 +104,16 @@ export default function UserLogin() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Password</Label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForgotPassword(true)}
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    Forgot Password?
+                                </button>
+                            </div>
                             <Input
                                 id="password"
                                 type="password"
@@ -100,10 +130,54 @@ export default function UserLogin() {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-gray-500">
-                        Need help? <Link to="/admin/login" className="text-primary hover:underline">Contact Admin</Link>
+                        Need help? <Link to="/contact-admin" className="text-primary hover:underline">Contact Admin</Link>
                     </p>
                 </CardFooter>
             </Card>
+
+            {/* Forgot Password Dialog */}
+            <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Forgot Password</DialogTitle>
+                        <DialogDescription>
+                            Enter your email address and we'll send you a link to reset your password.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleForgotPassword}>
+                        <div className="space-y-4 py-4">
+                            {forgotMessage && (
+                                <div className={`p-3 text-sm rounded-md ${forgotMessage.includes('sent')
+                                        ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
+                                        : 'text-red-500 bg-red-500/10'
+                                    }`}>
+                                    {forgotMessage}
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <Label htmlFor="forgot-email">Email</Label>
+                                <Input
+                                    id="forgot-email"
+                                    type="email"
+                                    placeholder="your.email@example.com"
+                                    value={forgotEmail}
+                                    onChange={(e) => setForgotEmail(e.target.value)}
+                                    required
+                                    disabled={forgotLoading}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setShowForgotPassword(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={forgotLoading}>
+                                {forgotLoading ? "Sending..." : "Send Reset Link"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
