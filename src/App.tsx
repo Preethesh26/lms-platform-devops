@@ -16,33 +16,29 @@ import ContactAdminPage from './pages/user/ContactAdmin';
 import UserLayout from './layouts/UserLayout';
 import AdminLayout from './layouts/AdminLayout';
 
-import { StoreProvider } from './lib/store';
-
 function App() {
     return (
-        <StoreProvider>
-            <Router>
-                <Routes>
-                    {/* User Routes */}
-                    <Route element={<UserLayout />}>
-                        <Route path="/" element={<UserHomePage />} />
-                        <Route path="/login" element={<UserLoginPage />} />
-                        <Route path="/my-learning" element={<MyLearningPage />} />
-                        <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
-                        <Route path="/contact-admin" element={<ContactAdminPage />} />
-                    </Route>
-                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Router>
+            <Routes>
+                {/* User Routes */}
+                <Route element={<UserLayout />}>
+                    <Route path="/" element={<UserHomePage />} />
+                    <Route path="/login" element={<UserLoginPage />} />
+                    <Route path="/my-learning" element={<MyLearningPage />} />
+                    <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
+                    <Route path="/contact-admin" element={<ContactAdminPage />} />
+                </Route>
+                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-                    {/* Admin Routes */}
-                    <Route path="/admin/login" element={<AdminLoginPage />} />
-                    <Route element={<AdminLayout />}>
-                        <Route path="/admin/courses" element={<AdminCoursesPage />} />
-                        <Route path="/admin/users" element={<AdminUsersPage />} />
-                    </Route>
-                </Routes>
-                {/* <Toaster /> */}
-            </Router>
-        </StoreProvider>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
+                <Route element={<AdminLayout />}>
+                    <Route path="/admin/courses" element={<AdminCoursesPage />} />
+                    <Route path="/admin/users" element={<AdminUsersPage />} />
+                </Route>
+            </Routes>
+            {/* <Toaster /> */}
+        </Router>
     );
 }
 

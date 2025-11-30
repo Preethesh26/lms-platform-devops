@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useStore } from "@/lib/store";
+import { useStore, type Course } from "@/lib/store";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function UserHomePage() {
@@ -99,7 +99,7 @@ export default function UserHomePage() {
                     <Button variant="ghost" className="text-primary hover:text-primary/80">View All Courses →</Button>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {courses.map((course) => {
+                    {courses.map((course: Course) => {
                         const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
                         return (
                             <Card key={course.id} className="group overflow-hidden border-muted/40 bg-card/50 backdrop-blur-sm transition-all hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 flex flex-col">
@@ -121,9 +121,7 @@ export default function UserHomePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex items-center justify-between border-t bg-muted/20 px-6 py-4">
-                                    <span className="text-lg font-bold text-primary">
-                                        {course.price > 0 ? `₹${course.price}` : 'Free'}
-                                    </span>
+                                    <span className="text-lg font-bold text-primary">{course.price}</span>
                                     {isEnrolled ? (
                                         <Link to={`/courses/${course.id}`} className="w-full ml-4">
                                             <Button size="sm" className="w-full rounded-full" variant="secondary">Continue Learning</Button>
