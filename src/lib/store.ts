@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { coursesAPI, usersAPI, authAPI, paymentAPI } from "./api";
 
 export type Lesson = {
@@ -28,7 +28,29 @@ export type User = {
     enrolledCourses: string[];
 };
 
-export function useStore() {
+type StoreContextType = {
+    courses: Course[];
+    users: User[];
+    currentUser: User | null;
+    error: string | null;
+    isInitialized: boolean;
+    addCourse: (course: Omit<Course, "id">) => Promise<void>;
+    updateCourse: (id: string, updates: Partial<Course>) => Promise<void>;
+    deleteCourse: (id: string) => Promise<void>;
+    addUser: (userData: { name: string; email: string; password: string; enrollment?: string; role?: string }) => Promise<void>;
+    updateUser: (id: string, updates: Partial<User>) => Promise<void>;
+    deleteUser: (id: string) => Promise<void>;
+    enrollUser: (userId: string, courseId: string) => Promise<void>;
+    createOrder: (courseId: string) => Promise<any>;
+    verifyPayment: (data: { transactionId: string }) => Promise<any>;
+    loginUser: (userData: User, token: string) => void;
+    logoutUser: () => void;
+    refetchUsers: () => Promise<void>;
+};
+
+const StoreContext = createContext<StoreContextType | null>(null);
+
+export function StoreProvider({ children }: { children: ReactNode }) {
     const [courses, setCourses] = useState<Course[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
@@ -54,21 +76,21 @@ export function useStore() {
                 const coursesRes = await coursesAPI.getAll();
                 setCourses(coursesRes.data.data || []);
 
-                // Fetch users (admin only)
-                // We try to fetch users, but if it fails (e.g. not admin), we just log it
-                // and don't block the rest of the initialization
-                try {
-                    await fetchUsers();
-                } catch (e) {
-                    console.log("Initial user fetch failed (likely not admin)");
-                }
-
                 // Check for logged in user
                 const token = localStorage.getItem('token');
                 const userDataStr = localStorage.getItem('userData');
                 if (token && userDataStr) {
                     const userData = JSON.parse(userDataStr);
                     setCurrentUser(userData);
+
+                    // If user is admin, fetch users
+                    if (userData.role === 'admin') {
+                        try {
+                            await fetchUsers();
+                        } catch (e) {
+                            console.log("Initial user fetch failed");
+                        }
+                    }
                 }
 
                 setIsInitialized(true);
@@ -125,6 +147,13 @@ export function useStore() {
         try {
             const res = await usersAPI.update(id, updates);
             setUsers(users.map((u) => (u.id === id ? res.data.data : u)));
+
+            // If updating current user, update local state
+            if (currentUser && currentUser.id === id) {
+                const updatedUser = res.data.data;
+                setCurrentUser(updatedUser);
+                localStorage.setItem('userData', JSON.stringify(updatedUser));
+            }
         } catch (error) {
             console.error('Error updating user:', error);
             throw error;
@@ -173,12 +202,6 @@ export function useStore() {
 
             // Update user enrollment locally after successful payment
             if (currentUser) {
-                // We need to refetch the user or manually update the state
-                // For now, let's just update the enrolledCourses array if we have the courseId
-                // But since we don't have courseId here easily, we might want to refetch user profile
-                // Or rely on the fact that the backend updated it
-
-                // Let's refetch the user profile to be safe and get fresh data
                 const userRes = await authAPI.getMe();
                 setCurrentUser(userRes.data.data);
                 localStorage.setItem('userData', JSON.stringify(userRes.data.data));
@@ -195,6 +218,11 @@ export function useStore() {
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(userData));
         setCurrentUser(userData);
+
+        // If admin, fetch users
+        if (userData.role === 'admin') {
+            fetchUsers().catch(console.error);
+        }
     };
 
     const logoutUser = () => {
@@ -203,23 +231,36 @@ export function useStore() {
         setCurrentUser(null);
     };
 
-    return {
+    return (
+        <StoreContext.Provider value= {{
         courses,
-        users,
-        currentUser,
-        error,
-        addCourse,
-        updateCourse,
-        deleteCourse,
-        addUser,
-        updateUser,
-        deleteUser,
-        enrollUser,
-        createOrder,
-        verifyPayment,
-        loginUser,
-        logoutUser,
-        isInitialized,
-        refetchUsers: fetchUsers
-    };
+            users,
+            currentUser,
+            error,
+            addCourse,
+            updateCourse,
+            deleteCourse,
+            addUser,
+            updateUser,
+            deleteUser,
+            enrollUser,
+            createOrder,
+            verifyPayment,
+            loginUser,
+            logoutUser,
+            isInitialized,
+            refetchUsers: fetchUsers
+    }
+}>
+    { children }
+    </StoreContext.Provider>
+    );
+}
+
+export function useStore() {
+    const context = useContext(StoreContext);
+    if (!context) {
+        throw new Error("useStore must be used within a StoreProvider");
+    }
+    return context;
 }

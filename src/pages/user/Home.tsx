@@ -121,7 +121,9 @@ export default function UserHomePage() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex items-center justify-between border-t bg-muted/20 px-6 py-4">
-                                    <span className="text-lg font-bold text-primary">{course.price}</span>
+                                    <span className="text-lg font-bold text-primary">
+                                        {course.price > 0 ? `₹${course.price}` : 'Free'}
+                                    </span>
                                     {isEnrolled ? (
                                         <Link to={`/courses/${course.id}`} className="w-full ml-4">
                                             <Button size="sm" className="w-full rounded-full" variant="secondary">Continue Learning</Button>
