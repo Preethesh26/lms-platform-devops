@@ -137,19 +137,29 @@ export default function CoursePlayerPage() {
                         <div className="bg-muted/30 p-6 rounded-xl border">
                             <h3 className="font-semibold mb-3">What you'll learn:</h3>
                             <ul className="space-y-2">
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Full lifetime access
+                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <span className="text-primary mt-1">•</span>
+                                    <span>Comprehensive curriculum designed by experts</span>
                                 </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Access on mobile and desktop
+                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <span className="text-primary mt-1">•</span>
+                                    <span>Hands-on projects and real-world examples</span>
                                 </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Certificate of completion
-                                </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> {course.lessons.length} comprehensive lessons
+                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <span className="text-primary mt-1">•</span>
+                                    <span>Certificate of completion upon finishing</span>
                                 </li>
                             </ul>
+                        </div>
+
+                        {/* TEMPORARY DEBUG INFO */}
+                        <div className="bg-yellow-100 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 text-xs font-mono">
+                            <p className="font-bold text-yellow-800 dark:text-yellow-200 mb-2">Debug Info (Take Screenshot):</p>
+                            <p>User ID: {currentUser?.id}</p>
+                            <p>Role: {currentUser?.role}</p>
+                            <p>Course ID: {course.id}</p>
+                            <p>Is Enrolled: {isEnrolled ? 'YES' : 'NO'}</p>
+                            <p>Enrolled Courses: {JSON.stringify(currentUser?.enrolledCourses)}</p>
                         </div>
                     </div>
 
