@@ -26,7 +26,7 @@ export default function AdminCoursesPage() {
         addCourse({
             title: formData.get("title") as string,
             description: formData.get("description") as string,
-            price: formData.get("price") as string,
+            price: Number(formData.get("price")) || 0,
             videoUrl: formData.get("videoUrl") as string,
             lessons: [],
             color: "bg-blue-500/10 text-blue-500", // Default color for now
@@ -41,7 +41,7 @@ export default function AdminCoursesPage() {
         updateCourse(editingCourse.id, {
             title: formData.get("title") as string,
             description: formData.get("description") as string,
-            price: formData.get("price") as string,
+            price: Number(formData.get("price")) || 0,
             videoUrl: formData.get("videoUrl") as string,
         });
         setEditingCourse(null);
@@ -101,8 +101,8 @@ export default function AdminCoursesPage() {
                                     <Input id="description" name="description" required />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="price">Price</Label>
-                                    <Input id="price" name="price" defaultValue="$49.99" required />
+                                    <Label htmlFor="price">Price (₹)</Label>
+                                    <Input id="price" name="price" type="number" min="0" step="1" defaultValue="499" required />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="videoUrl">Preview Video URL (YouTube)</Label>
