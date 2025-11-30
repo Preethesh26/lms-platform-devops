@@ -28,10 +28,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // If user is deleted or token is invalid, clear session and redirect to login
+        // Only auto-logout on authentication errors, not on permission errors
+        // For example, students getting 401 on /users is expected and shouldn't log them out
         if (error.response?.status === 401 || error.response?.status === 403) {
-            // Check if it's an authentication error (not just missing token)
-            if (localStorage.getItem('token')) {
+            const url = error.config?.url || '';
+
+            // Only logout if it's an auth-related endpoint (not /users, /courses, etc.)
+            // This prevents students from being logged out when they can't access admin endpoints
+            const isAuthEndpoint = url.includes('/auth/') || url.includes('/me');
+
+            if (isAuthEndpoint && localStorage.getItem('token')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userData');
                 window.location.href = '/login';
