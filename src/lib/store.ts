@@ -82,7 +82,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
                 if (token && userDataStr) {
                     const userData = JSON.parse(userDataStr);
                     setCurrentUser(userData);
-
+                    
                     // If user is admin, fetch users
                     if (userData.role === 'admin') {
                         try {
@@ -147,7 +147,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         try {
             const res = await usersAPI.update(id, updates);
             setUsers(users.map((u) => (u.id === id ? res.data.data : u)));
-
+            
             // If updating current user, update local state
             if (currentUser && currentUser.id === id) {
                 const updatedUser = res.data.data;
@@ -218,7 +218,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(userData));
         setCurrentUser(userData);
-
+        
         // If admin, fetch users
         if (userData.role === 'admin') {
             fetchUsers().catch(console.error);
@@ -232,8 +232,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <StoreContext.Provider value= {{
-        courses,
+        <StoreContext.Provider value={{
+            courses,
             users,
             currentUser,
             error,
@@ -250,10 +250,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             logoutUser,
             isInitialized,
             refetchUsers: fetchUsers
-    }
-}>
-    { children }
-    </StoreContext.Provider>
+        }}>
+            {children}
+        </StoreContext.Provider>
     );
 }
 
