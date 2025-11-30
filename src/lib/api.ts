@@ -24,6 +24,23 @@ api.interceptors.request.use(
     }
 );
 
+// Handle response errors (auto-logout on 401/403)
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // If user is deleted or token is invalid, clear session and redirect to login
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            // Check if it's an authentication error (not just missing token)
+            if (localStorage.getItem('token')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Auth API
 export const authAPI = {
     register: (data: { email: string; password: string; enrollment?: string; role?: string }) =>
