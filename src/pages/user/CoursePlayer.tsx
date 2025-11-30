@@ -152,15 +152,18 @@ export default function CoursePlayerPage() {
                             </ul>
                         </div>
 
-                        {/* TEMPORARY DEBUG INFO */}
-                        <div className="bg-yellow-100 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 text-xs font-mono">
-                            <p className="font-bold text-yellow-800 dark:text-yellow-200 mb-2">Debug Info (Take Screenshot):</p>
-                            <p>User ID: {currentUser?.id}</p>
-                            <p>Role: {currentUser?.role}</p>
-                            <p>Course ID: {course.id}</p>
-                            <p>Is Enrolled: {isEnrolled ? 'YES' : 'NO'}</p>
-                            <p>Enrolled Courses: {JSON.stringify(currentUser?.enrolledCourses)}</p>
-                        </div>
+                        {/* Admin View Indicator */}
+                        {currentUser?.role === 'admin' && (
+                            <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                                    A
+                                </div>
+                                <div>
+                                    <p className="font-bold text-blue-800 dark:text-blue-200">Admin Access</p>
+                                    <p className="text-xs text-blue-600 dark:text-blue-300">You have full access to all courses.</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/10">
