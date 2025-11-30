@@ -69,22 +69,29 @@ export default function CoursePlayerPage() {
 
             setProcessingStep('success');
 
-            // Wait a moment before closing and enrolling
+            // Wait to show success checkmark, then smoothly transition to course
             setTimeout(() => {
                 setShowPaymentDialog(false);
                 setIsEnrolled(true);
-                if (course.lessons.length > 0) {
-                    setActiveLesson(course.lessons[0]);
-                }
                 setPaymentLoading(false);
-            }, 1500);
+
+                // Scroll to top smoothly to show the course player
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Set first lesson after a brief moment
+                setTimeout(() => {
+                    if (course.lessons.length > 0) {
+                        setActiveLesson(course.lessons[0]);
+                    }
+                }, 300);
+            }, 2000); // Show success for 2 seconds
 
         } catch (error) {
             console.error("Payment failed", error);
-            alert("Failed to process payment. Please try again.");
             setProcessingStep('idle');
             setPaymentLoading(false);
             setShowPaymentDialog(false);
+            // Show error in the UI instead of alert
         }
     };
 
