@@ -30,7 +30,7 @@ const courseSchema = new mongoose.Schema({
     },
     thumbnail: {
         type: String,
-        required: [true, 'Please provide a thumbnail URL']
+        required: false
     },
     price: {
         type: Number,
