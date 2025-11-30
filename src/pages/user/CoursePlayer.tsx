@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useStore, type Course, type Lesson } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export default function CoursePlayerPage() {
@@ -13,6 +14,8 @@ export default function CoursePlayerPage() {
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [paymentLoading, setPaymentLoading] = useState(false);
+    const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+    const [processingStep, setProcessingStep] = useState<'idle' | 'processing' | 'success'>('idle');
 
     useEffect(() => {
         if (isInitialized && params.courseId) {
@@ -42,58 +45,46 @@ export default function CoursePlayerPage() {
 
     const handlePayment = async () => {
         if (!course || !currentUser) return;
+        setShowPaymentDialog(true);
+        setProcessingStep('idle');
+    };
+
+    const processMockPayment = async () => {
+        if (!course) return;
 
         try {
+            setProcessingStep('processing');
             setPaymentLoading(true);
 
-            // 1. Create Order
+            // 1. Create Order (Mock)
             const orderData = await createOrder(course.id);
 
-            // 2. Open Razorpay Checkout
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_YOUR_KEY_HERE", // Replace with env var
-                amount: orderData.order.amount,
-                currency: orderData.order.currency,
-                name: "LMS Platform",
-                description: `Enrollment for ${course.title}`,
-                order_id: orderData.order.id,
-                handler: async function (response: any) {
-                    try {
-                        // 3. Verify Payment
-                        await verifyPayment({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature
-                        });
+            // Simulate network delay for realism
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-                        // Success!
-                        setIsEnrolled(true);
-                        if (course.lessons.length > 0) {
-                            setActiveLesson(course.lessons[0]);
-                        }
-                        alert("Enrollment successful! You can now access the course.");
-                    } catch (error) {
-                        console.error("Payment verification failed", error);
-                        alert("Payment verification failed. Please contact support.");
-                    }
-                },
-                prefill: {
-                    name: currentUser.name,
-                    email: currentUser.email,
-                    contact: "" // Can add if we have phone number
-                },
-                theme: {
-                    color: "#3b82f6"
+            // 2. Verify Payment (Mock)
+            await verifyPayment({
+                transactionId: orderData.order.id
+            });
+
+            setProcessingStep('success');
+
+            // Wait a moment before closing and enrolling
+            setTimeout(() => {
+                setShowPaymentDialog(false);
+                setIsEnrolled(true);
+                if (course.lessons.length > 0) {
+                    setActiveLesson(course.lessons[0]);
                 }
-            };
+                setPaymentLoading(false);
+            }, 1500);
 
-            const rzp = new (window as any).Razorpay(options);
-            rzp.open();
         } catch (error) {
             console.error("Payment failed", error);
-            alert("Failed to initiate payment. Please try again.");
-        } finally {
+            alert("Failed to process payment. Please try again.");
+            setProcessingStep('idle');
             setPaymentLoading(false);
+            setShowPaymentDialog(false);
         }
     };
 
@@ -198,6 +189,76 @@ export default function CoursePlayerPage() {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Mock Payment Dialog */}
+                <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>
+                                {processingStep === 'idle' && 'Confirm Payment'}
+                                {processingStep === 'processing' && 'Processing Payment...'}
+                                {processingStep === 'success' && 'Payment Successful!'}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {processingStep === 'idle' && `You are about to enroll in ${course.title}`}
+                                {processingStep === 'processing' && 'Please wait while we process your payment'}
+                                {processingStep === 'success' && 'You have been successfully enrolled!'}
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="py-6">
+                            {processingStep === 'idle' && (
+                                <div className="space-y-4">
+                                    <div className="bg-muted/30 p-4 rounded-lg">
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-medium">Course:</span>
+                                            <span className="text-muted-foreground">{course.title}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center mt-2">
+                                            <span className="font-medium">Amount:</span>
+                                            <span className="text-lg font-bold text-primary">
+                                                {course.price > 0 ? `₹${course.price}` : 'Free'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            className="flex-1"
+                                            onClick={() => setShowPaymentDialog(false)}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            className="flex-1"
+                                            onClick={processMockPayment}
+                                        >
+                                            {course.price > 0 ? 'Pay Now' : 'Enroll Free'}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {processingStep === 'processing' && (
+                                <div className="flex flex-col items-center justify-center space-y-4">
+                                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-sm text-muted-foreground">Processing your payment...</p>
+                                </div>
+                            )}
+
+                            {processingStep === 'success' && (
+                                <div className="flex flex-col items-center justify-center space-y-4">
+                                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                        <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">Redirecting to course...</p>
+                                </div>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }

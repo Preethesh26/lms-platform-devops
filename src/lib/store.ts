@@ -167,7 +167,7 @@ export function useStore() {
         }
     };
 
-    const verifyPayment = async (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+    const verifyPayment = async (data: { transactionId: string }) => {
         try {
             const res = await paymentAPI.verifyPayment(data);
 
