@@ -6,9 +6,10 @@
   
   # Output directory
   publish = "dist"
-  
-  # Environment variables (set these in Netlify dashboard)
-  # VITE_API_URL = your backend URL
+
+[build.environment]
+  # Backend API URL
+  VITE_API_URL = "https://lms-platform-l92a.onrender.com/api"
 
 # SPA redirect rules
 [[redirects]]
