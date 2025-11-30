@@ -5,6 +5,13 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
+// Route imports
+const authRoutes = require('./routes/auth');
+const courseRoutes = require('./routes/courses');
+const userRoutes = require('./routes/users');
+const supportRoutes = require('./routes/support');
+const paymentRoutes = require('./routes/payment');
+
 // Connect to database
 connectDB();
 
@@ -16,10 +23,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/courses', require('./routes/courses'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/support', require('./routes/support'));
+app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/support', supportRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Error handler
 app.use(errorHandler);

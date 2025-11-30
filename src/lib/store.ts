@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { coursesAPI, usersAPI, authAPI } from "./api";
+import { coursesAPI, usersAPI, authAPI, paymentAPI } from "./api";
 
 export type Lesson = {
     id: string;
@@ -12,7 +12,8 @@ export type Course = {
     id: string;
     title: string;
     description: string;
-    price: string;
+    price: number;
+    thumbnail?: string;
     lessons: Lesson[];
     color: string;
     videoUrl?: string;
@@ -156,6 +157,40 @@ export function useStore() {
         }
     };
 
+    const createOrder = async (courseId: string) => {
+        try {
+            const res = await paymentAPI.createOrder(courseId);
+            return res.data;
+        } catch (error) {
+            console.error('Error creating order:', error);
+            throw error;
+        }
+    };
+
+    const verifyPayment = async (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+        try {
+            const res = await paymentAPI.verifyPayment(data);
+
+            // Update user enrollment locally after successful payment
+            if (currentUser) {
+                // We need to refetch the user or manually update the state
+                // For now, let's just update the enrolledCourses array if we have the courseId
+                // But since we don't have courseId here easily, we might want to refetch user profile
+                // Or rely on the fact that the backend updated it
+
+                // Let's refetch the user profile to be safe and get fresh data
+                const userRes = await authAPI.getMe();
+                setCurrentUser(userRes.data.data);
+                localStorage.setItem('userData', JSON.stringify(userRes.data.data));
+            }
+
+            return res.data;
+        } catch (error) {
+            console.error('Error verifying payment:', error);
+            throw error;
+        }
+    };
+
     const loginUser = (userData: User, token: string) => {
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(userData));
@@ -180,6 +215,8 @@ export function useStore() {
         updateUser,
         deleteUser,
         enrollUser,
+        createOrder,
+        verifyPayment,
         loginUser,
         logoutUser,
         isInitialized,

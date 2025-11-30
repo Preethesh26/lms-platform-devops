@@ -28,9 +28,14 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a course description']
     },
-    price: {
+    thumbnail: {
         type: String,
-        required: [true, 'Please provide a price']
+        required: [true, 'Please provide a thumbnail URL']
+    },
+    price: {
+        type: Number,
+        required: true,
+        default: 0
     },
     videoUrl: {
         type: String,

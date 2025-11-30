@@ -62,4 +62,11 @@ export const supportAPI = {
         api.post('/support/contact-admin', data)
 };
 
+// Payment API
+export const paymentAPI = {
+    createOrder: (courseId: string) => api.post('/payment/create-order', { courseId }),
+    verifyPayment: (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+        api.post('/payment/verify', data)
+};
+
 export default api;

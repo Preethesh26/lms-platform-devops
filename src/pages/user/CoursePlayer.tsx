@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 export default function CoursePlayerPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const { courses, isInitialized, currentUser } = useStore();
+    const { courses, isInitialized, currentUser, createOrder, verifyPayment } = useStore();
     const [course, setCourse] = useState<Course | null>(null);
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     useEffect(() => {
         if (isInitialized && params.courseId) {
@@ -23,15 +25,13 @@ export default function CoursePlayerPage() {
             const foundCourse = courses.find((c) => c.id === params.courseId);
 
             if (foundCourse) {
-                // Check enrollment
-                const isEnrolled = currentUser.enrolledCourses.includes(foundCourse.id);
-                if (!isEnrolled && currentUser.role !== 'admin') {
-                    navigate("/"); // Redirect to home if not enrolled
-                    return;
-                }
-
                 setCourse(foundCourse);
-                if (foundCourse.lessons.length > 0) {
+
+                // Check enrollment
+                const enrolled = currentUser.enrolledCourses.includes(foundCourse.id) || currentUser.role === 'admin';
+                setIsEnrolled(enrolled);
+
+                if (enrolled && foundCourse.lessons.length > 0) {
                     setActiveLesson(foundCourse.lessons[0]);
                 }
             } else {
@@ -40,8 +40,166 @@ export default function CoursePlayerPage() {
         }
     }, [isInitialized, params.courseId, courses, navigate, currentUser]);
 
+    const handlePayment = async () => {
+        if (!course || !currentUser) return;
+
+        try {
+            setPaymentLoading(true);
+
+            // 1. Create Order
+            const orderData = await createOrder(course.id);
+
+            // 2. Open Razorpay Checkout
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_YOUR_KEY_HERE", // Replace with env var
+                amount: orderData.order.amount,
+                currency: orderData.order.currency,
+                name: "LMS Platform",
+                description: `Enrollment for ${course.title}`,
+                order_id: orderData.order.id,
+                handler: async function (response: any) {
+                    try {
+                        // 3. Verify Payment
+                        await verifyPayment({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        });
+
+                        // Success!
+                        setIsEnrolled(true);
+                        if (course.lessons.length > 0) {
+                            setActiveLesson(course.lessons[0]);
+                        }
+                        alert("Enrollment successful! You can now access the course.");
+                    } catch (error) {
+                        console.error("Payment verification failed", error);
+                        alert("Payment verification failed. Please contact support.");
+                    }
+                },
+                prefill: {
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    contact: "" // Can add if we have phone number
+                },
+                theme: {
+                    color: "#3b82f6"
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            console.error("Payment failed", error);
+            alert("Failed to initiate payment. Please try again.");
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
+
     if (!isInitialized || !course) {
         return <div className="p-8 text-center">Loading course...</div>;
+    }
+
+    // If not enrolled, show Course Details & Payment UI
+    if (!isEnrolled) {
+        return (
+            <div className="container mx-auto p-4 max-w-5xl py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <h1 className="text-4xl font-bold tracking-tight">{course.title}</h1>
+                            <p className="text-xl text-muted-foreground">{course.description}</p>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <div className="text-3xl font-bold text-primary">
+                                {course.price > 0 ? `₹${course.price}` : "Free"}
+                            </div>
+                            {course.price > 0 && (
+                                <span className="text-sm text-muted-foreground line-through">₹{course.price + 1000}</span>
+                            )}
+                        </div>
+
+                        <div className="pt-4">
+                            <Button
+                                size="lg"
+                                className="w-full md:w-auto text-lg px-8"
+                                onClick={handlePayment}
+                                disabled={paymentLoading}
+                            >
+                                {paymentLoading ? "Processing..." : course.price > 0 ? "Buy Now & Enroll" : "Enroll for Free"}
+                            </Button>
+                            <p className="text-xs text-muted-foreground mt-3 text-center md:text-left">
+                                Secure payment via Razorpay. Instant access after payment.
+                            </p>
+                        </div>
+
+                        <div className="bg-muted/30 p-6 rounded-xl border">
+                            <h3 className="font-semibold mb-3">What you'll learn:</h3>
+                            <ul className="space-y-2">
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Full lifetime access
+                                </li>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Access on mobile and desktop
+                                </li>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Certificate of completion
+                                </li>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> {course.lessons.length} comprehensive lessons
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/10">
+                        <img
+                            src={course.thumbnail || "/placeholder-course.jpg"}
+                            alt={course.title}
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center pl-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-primary">
+                                        <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Course Content Preview */}
+                <div className="mt-16">
+                    <h2 className="text-2xl font-bold mb-6">Course Content</h2>
+                    <Card>
+                        <CardContent className="p-0">
+                            <div className="divide-y">
+                                {course.lessons.map((lesson, index) => (
+                                    <div key={lesson.id} className="p-4 flex items-center justify-between opacity-60">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+                                                {index + 1}
+                                            </div>
+                                            <div>
+                                                <p className="font-medium">{lesson.title}</p>
+                                                <p className="text-xs text-muted-foreground">{lesson.duration}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
+                                            Locked 🔒
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
     }
 
     return (
