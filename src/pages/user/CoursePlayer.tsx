@@ -69,21 +69,14 @@ export default function CoursePlayerPage() {
 
             setProcessingStep('success');
 
-            // Wait to show success checkmark, then smoothly transition to course
+            // Wait to show success checkmark, then redirect to My Learning
             setTimeout(() => {
                 setShowPaymentDialog(false);
                 setIsEnrolled(true);
                 setPaymentLoading(false);
 
-                // Scroll to top smoothly to show the course player
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // Set first lesson after a brief moment
-                setTimeout(() => {
-                    if (course.lessons.length > 0) {
-                        setActiveLesson(course.lessons[0]);
-                    }
-                }, 300);
+                // Redirect to My Learning page
+                navigate("/my-learning");
             }, 2000); // Show success for 2 seconds
 
         } catch (error) {
