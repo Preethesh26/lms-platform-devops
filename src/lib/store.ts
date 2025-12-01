@@ -26,6 +26,7 @@ export type User = {
     email: string;
     role: "admin" | "user";
     enrolledCourses: string[];
+    password?: string; // Optional for updates
 };
 
 export function useStore() {

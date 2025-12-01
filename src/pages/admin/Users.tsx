@@ -18,7 +18,7 @@ import { useStore, type User } from "@/lib/store";
 import { toast } from "sonner";
 
 export default function AdminUsersPage() {
-    const { users, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
+    const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [error, setError] = useState("");
@@ -421,14 +421,14 @@ export default function AdminUsersPage() {
                                                     {courses.length === 0 ? (
                                                         <p className="text-sm text-muted-foreground">No courses available.</p>
                                                     ) : (
-                                                        courses.map((course) => {
+                                                        courses.map((course: any) => {
                                                             const isEnrolled = selectedEnrollments.includes(course.id);
                                                             return (
                                                                 <div key={course.id} className="flex items-center space-x-2">
                                                                     <Checkbox
                                                                         id={`course-${course.id}`}
                                                                         checked={isEnrolled}
-                                                                        onCheckedChange={(checked) => {
+                                                                        onCheckedChange={(checked: boolean) => {
                                                                             if (checked) {
                                                                                 setSelectedEnrollments([...selectedEnrollments, course.id]);
                                                                             } else {
