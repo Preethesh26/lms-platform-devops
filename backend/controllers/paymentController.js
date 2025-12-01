@@ -9,26 +9,19 @@ const crypto = require('crypto');
 exports.createOrder = async (req, res) => {
     try {
         const { courseId } = req.body;
-        console.log('Create order request:', { courseId, userId: req.user?.id });
 
         const course = await Course.findById(courseId);
 
         if (!course) {
-            console.log('Course not found:', courseId);
             return res.status(404).json({ success: false, message: 'Course not found' });
         }
 
         // Check if user already enrolled
         const user = await User.findById(req.user.id);
-        console.log('Checking enrollment for user:', user.email);
-        console.log('User enrolled courses:', user.enrolledCourses);
-        console.log('Target course ID:', courseId);
-
         // Ensure we are comparing strings
         const isEnrolled = user.enrolledCourses.some(id => id.toString() === courseId.toString());
 
         if (isEnrolled) {
-            console.log('User ALREADY enrolled (Backend Check):', { userId: user.id, courseId });
             return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
         }
 
@@ -43,8 +36,6 @@ exports.createOrder = async (req, res) => {
             transactionId: transactionId,
             status: 'pending'
         });
-
-        console.log('Order created successfully:', transactionId);
 
         res.status(200).json({
             success: true,
