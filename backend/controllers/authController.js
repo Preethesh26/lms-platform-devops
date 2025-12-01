@@ -106,7 +106,7 @@ exports.login = async (req, res) => {
 // @access  Private
 exports.getMe = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).populate('enrolledCourses');
+        const user = await User.findById(req.user.id);
         res.status(200).json({ success: true, data: user });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
