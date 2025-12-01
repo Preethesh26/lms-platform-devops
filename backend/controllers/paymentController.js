@@ -20,10 +20,17 @@ exports.createOrder = async (req, res) => {
 
         // Check if user already enrolled
         const user = await User.findById(req.user.id);
-        if (user.enrolledCourses.includes(courseId)) {
-            console.log('User already enrolled:', { userId: user.id, courseId });
-            return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
-        }
+        console.log('Checking enrollment for user:', user.email);
+        console.log('User enrolled courses:', user.enrolledCourses);
+        console.log('Target course ID:', courseId);
+
+        // Ensure we are comparing strings
+        // const isEnrolled = user.enrolledCourses.some(id => id.toString() === courseId.toString());
+
+        // if (isEnrolled) {
+        //     console.log('User ALREADY enrolled (Backend Check):', { userId: user.id, courseId });
+        //     return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
+        // }
 
         // Generate a mock transaction ID
         const transactionId = `mock_txn_${crypto.randomBytes(8).toString('hex')}`;
