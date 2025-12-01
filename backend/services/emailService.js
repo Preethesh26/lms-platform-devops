@@ -172,9 +172,45 @@ const sendProfileUpdateEmail = async (to, name, changes) => {
     }
 };
 
+// Send admin notification for new user registration
+const sendAdminNewUserNotification = async (adminEmail, userName, userEmail, enrollmentNumber) => {
+    if (!apiInstance) {
+        console.error('Brevo API not initialized');
+        return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.to = [{ email: adminEmail }];
+        sendSmtpEmail.subject = `New Student Registration - ${userName}`;
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">New Student Registration</h2>
+                <p>A new student has registered on the LMS platform:</p>
+                <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 8px 0;"><strong>Name:</strong> ${userName}</p>
+                    <p style="margin: 8px 0;"><strong>Email:</strong> ${userEmail}</p>
+                    <p style="margin: 8px 0;"><strong>Enrollment Number:</strong> ${enrollmentNumber}</p>
+                    <p style="margin: 8px 0;"><strong>Registration Date:</strong> ${new Date().toLocaleDateString()}</p>
+                </div>
+                <p style="color: #666; font-size: 14px;">The student can now log in and enroll in courses.</p>
+            </div>
+        `;
+
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Email service error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendPasswordResetEmail,
     sendContactAdminEmail,
     sendWelcomeEmail,
-    sendProfileUpdateEmail
+    sendProfileUpdateEmail,
+    sendAdminNewUserNotification
 };

@@ -126,6 +126,13 @@ export default function UserLogin() {
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? "Signing in..." : "Sign In"}
                         </Button>
+
+                        <p className="text-sm text-center text-muted-foreground">
+                            Don't have an account?{" "}
+                            <Link to="/signup" className="text-primary hover:underline font-medium">
+                                Sign Up
+                            </Link>
+                        </p>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-center">
@@ -148,8 +155,8 @@ export default function UserLogin() {
                         <div className="space-y-4 py-4">
                             {forgotMessage && (
                                 <div className={`p-3 text-sm rounded-md ${forgotMessage.includes('sent')
-                                        ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
-                                        : 'text-red-500 bg-red-500/10'
+                                    ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
+                                    : 'text-red-500 bg-red-500/10'
                                     }`}>
                                     {forgotMessage}
                                 </div>

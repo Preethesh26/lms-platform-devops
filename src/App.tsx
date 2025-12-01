@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Pages (will be moved/refactored)
 import UserHomePage from './pages/user/Home';
 import UserLoginPage from './pages/user/Login';
+import UserSignupPage from './pages/user/Signup';
 import MyLearningPage from './pages/user/MyLearning';
 import CoursePlayerPage from './pages/user/CoursePlayer';
 import AdminLoginPage from './pages/admin/Login';
@@ -24,6 +25,7 @@ function App() {
                 <Route element={<UserLayout />}>
                     <Route path="/" element={<UserHomePage />} />
                     <Route path="/login" element={<UserLoginPage />} />
+                    <Route path="/signup" element={<UserSignupPage />} />
                     <Route path="/my-learning" element={<MyLearningPage />} />
                     <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
                     <Route path="/contact-admin" element={<ContactAdminPage />} />

@@ -8,19 +8,33 @@ const generateToken = (id) => {
     });
 };
 
-const { sendWelcomeEmail } = require('../services/emailService');
+
+const { sendWelcomeEmail, sendAdminNewUserNotification } = require('../services/emailService');
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, enrollment, role } = req.body;
+        let { name, email, password, enrollment, role } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        // Auto-generate enrollment number if not provided (for self-registration)
+        if (!enrollment) {
+            const year = new Date().getFullYear();
+            const userCount = await User.countDocuments({ role: 'user' });
+            const counter = (userCount + 1).toString().padStart(5, '0');
+            enrollment = `ENR-${year}-${counter}`;
+        }
+
+        // Force role to 'user' if not explicitly set (for public registrations)
+        if (!role) {
+            role = 'user';
         }
 
         // Create user
@@ -29,16 +43,24 @@ exports.register = async (req, res) => {
             email,
             password,
             enrollment,
-            role: role || 'user'
+            role
         });
 
-        // Send welcome email (non-blocking - don't fail registration if email fails)
+        // Send welcome email to user (non-blocking)
         try {
             await sendWelcomeEmail(email, name, password, enrollment);
             console.log(`Welcome email sent to ${email}`);
         } catch (emailError) {
             console.error('Failed to send welcome email:', emailError);
-            // Continue with registration even if email fails
+        }
+
+        // Send notification to admin (non-blocking)
+        try {
+            const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'admin@example.com';
+            await sendAdminNewUserNotification(adminEmail, name, email, enrollment);
+            console.log(`Admin notification sent to ${adminEmail}`);
+        } catch (emailError) {
+            console.error('Failed to send admin notification:', emailError);
         }
 
         const token = generateToken(user._id);
