@@ -280,10 +280,27 @@ export default function CoursePlayerPage() {
                         {activeLesson ? (
                             activeLesson.videoUrl.includes("youtube.com") || activeLesson.videoUrl.includes("youtu.be") ? (
                                 <iframe
-                                    src={activeLesson.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")}
+                                    src={(() => {
+                                        let url = activeLesson.videoUrl;
+                                        // Handle youtube.com/watch?v=ID format
+                                        if (url.includes("watch?v=")) {
+                                            const videoId = url.split("watch?v=")[1]?.split("&")[0];
+                                            return `https://www.youtube.com/embed/${videoId}`;
+                                        }
+                                        // Handle youtu.be/ID format
+                                        if (url.includes("youtu.be/")) {
+                                            const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+                                            return `https://www.youtube.com/embed/${videoId}`;
+                                        }
+                                        // Handle youtube.com/embed/ID format (already correct)
+                                        if (url.includes("/embed/")) {
+                                            return url;
+                                        }
+                                        return url;
+                                    })()}
                                     title={activeLesson.title}
                                     className="w-full h-full"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
                                     allowFullScreen
                                 />
                             ) : (
