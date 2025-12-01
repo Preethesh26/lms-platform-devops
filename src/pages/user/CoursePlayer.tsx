@@ -31,7 +31,15 @@ export default function CoursePlayerPage() {
                 setCourse(foundCourse);
 
                 // Check enrollment
-                const enrolled = currentUser.enrolledCourses.includes(foundCourse.id) || currentUser.role === 'admin';
+                console.log('Checking enrollment:', {
+                    courseId: foundCourse.id,
+                    userRole: currentUser.role,
+                    enrolledCourses: currentUser.enrolledCourses,
+                    isEnrolledInCourse: currentUser.enrolledCourses?.includes(foundCourse.id),
+                    isAdmin: currentUser.role === 'admin'
+                });
+
+                const enrolled = currentUser.enrolledCourses?.includes(foundCourse.id) || currentUser.role === 'admin';
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
