@@ -13,18 +13,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { useStore } from "@/lib/store";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useStore, type User } from "@/lib/store";
+import { toast } from "sonner";
 
 export default function AdminUsersPage() {
     const { users, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [error, setError] = useState("");
     const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [updateSuccess, setUpdateSuccess] = useState(false);
 
     const [selectedRole, setSelectedRole] = useState("user");
+    const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
 
     // Delete confirmation state
     const [deleteConfirmUser, setDeleteConfirmUser] = useState<any>(null);
@@ -73,35 +76,43 @@ export default function AdminUsersPage() {
         if (!selectedUser) return;
 
         const formData = new FormData(e.currentTarget);
-        const updates: any = {
-            name: formData.get("name") as string,
-            email: formData.get("email") as string,
-            role: selectedRole,
-        };
-
-        // Only update password if provided
         const password = formData.get("password") as string;
-        if (password) {
-            updates.password = password;
-        }
-
-        if (selectedRole === 'user') {
-            updates.enrollment = formData.get("enrollment") as string;
-        }
 
         try {
-            await updateUser(selectedUser.id, updates);
+            await updateUser(selectedUser.id, {
+                name: formData.get("name") as string,
+                email: formData.get("email") as string,
+                role: selectedRole as "admin" | "user",
+                enrollment: formData.get("enrollment") as string,
+                password: password || undefined, // Only send password if it's not empty
+                enrolledCourses: selectedEnrollments // Send updated enrollments
+            });
             setSelectedUser(null);
             setSelectedRole("user");
-            setUpdateSuccess(true);
+            setSelectedEnrollments([]);
+            setIsEditDialogOpen(false);
+            toast.success("User updated successfully!");
         } catch (err: any) {
             console.error(err);
+            toast.error(err.response?.data?.message || "Failed to update user");
         }
     };
 
     const handleDeleteClick = (user: any) => {
         setDeleteConfirmUser(user);
         setDeleteEmailInput("");
+    };
+
+    const handleEditClick = (user: User) => {
+        setSelectedUser(user);
+        setSelectedRole(user.role);
+        // Initialize selected enrollments from user data
+        // Ensure we handle both string IDs and objects if populated
+        const userEnrollments = user.enrolledCourses?.map(c =>
+            typeof c === 'string' ? c : (c as any).id || (c as any)._id
+        ) || [];
+        setSelectedEnrollments(userEnrollments);
+        setIsEditDialogOpen(true);
     };
 
     const handleDeleteConfirm = async () => {
@@ -213,10 +224,7 @@ export default function AdminUsersPage() {
                             <Card
                                 key={user.id}
                                 className="cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] hover:shadow-md aspect-square flex flex-col justify-between"
-                                onClick={() => {
-                                    setSelectedUser(user);
-                                    setSelectedRole(user.role);
-                                }}
+                                onClick={() => handleEditClick(user)}
                             >
                                 <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
                                     <div className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300">
@@ -270,10 +278,7 @@ export default function AdminUsersPage() {
                             <Card
                                 key={user.id}
                                 className="cursor-pointer hover:bg-muted/50 transition-all hover:scale-[1.02] hover:shadow-md aspect-square flex flex-col justify-between"
-                                onClick={() => {
-                                    setSelectedUser(user);
-                                    setSelectedRole(user.role);
-                                }}
+                                onClick={() => handleEditClick(user)}
                             >
                                 <CardHeader className="flex flex-col items-center text-center space-y-4 pt-8">
                                     <div className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
@@ -404,10 +409,46 @@ export default function AdminUsersPage() {
                                         <p className="text-xs text-muted-foreground">Only enter a password if you want to change it</p>
                                     </div>
                                     {selectedRole === 'user' && (
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="edit-enrollment">Enrollment Number</Label>
-                                            <Input id="edit-enrollment" name="enrollment" defaultValue={selectedUser?.enrollment} placeholder="Required for students" required />
-                                        </div>
+                                        <>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="edit-enrollment">Enrollment Number</Label>
+                                                <Input id="edit-enrollment" name="enrollment" defaultValue={selectedUser?.enrollment} placeholder="Required for students" required />
+                                            </div>
+
+                                            <div className="grid gap-2 mt-2">
+                                                <Label className="mb-2">Enrolled Courses</Label>
+                                                <div className="border rounded-md p-4 space-y-3 max-h-60 overflow-y-auto">
+                                                    {courses.length === 0 ? (
+                                                        <p className="text-sm text-muted-foreground">No courses available.</p>
+                                                    ) : (
+                                                        courses.map((course) => {
+                                                            const isEnrolled = selectedEnrollments.includes(course.id);
+                                                            return (
+                                                                <div key={course.id} className="flex items-center space-x-2">
+                                                                    <Checkbox
+                                                                        id={`course-${course.id}`}
+                                                                        checked={isEnrolled}
+                                                                        onCheckedChange={(checked) => {
+                                                                            if (checked) {
+                                                                                setSelectedEnrollments([...selectedEnrollments, course.id]);
+                                                                            } else {
+                                                                                setSelectedEnrollments(selectedEnrollments.filter(id => id !== course.id));
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <Label
+                                                                        htmlFor={`course-${course.id}`}
+                                                                        className="text-sm font-normal cursor-pointer"
+                                                                    >
+                                                                        {course.title}
+                                                                    </Label>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </>
                                     )}
                                 </div>
                                 <DialogFooter>

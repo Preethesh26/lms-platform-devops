@@ -64,11 +64,21 @@ export function useStore() {
                 }
 
                 // Check for logged in user
+                // Check for logged in user
                 const token = localStorage.getItem('token');
-                const userDataStr = localStorage.getItem('userData');
-                if (token && userDataStr) {
-                    const userData = JSON.parse(userDataStr);
-                    setCurrentUser(userData);
+                if (token) {
+                    try {
+                        // Verify token and get fresh user data
+                        const userRes = await authAPI.getMe();
+                        setCurrentUser(userRes.data.data);
+                        localStorage.setItem('userData', JSON.stringify(userRes.data.data));
+                    } catch (error) {
+                        console.error('Failed to fetch current user:', error);
+                        // If token is invalid, clear it
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userData');
+                        setCurrentUser(null);
+                    }
                 }
 
                 setIsInitialized(true);
