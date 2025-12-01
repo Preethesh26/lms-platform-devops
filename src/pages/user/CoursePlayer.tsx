@@ -32,14 +32,6 @@ export default function CoursePlayerPage() {
 
                 // Check enrollment
                 const enrolled = currentUser.enrolledCourses.includes(foundCourse.id) || currentUser.role === 'admin';
-
-                console.log('Enrollment Check:', {
-                    courseId: foundCourse.id,
-                    userRole: currentUser.role,
-                    enrolledCourses: currentUser.enrolledCourses,
-                    isEnrolled: enrolled
-                });
-
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
@@ -137,33 +129,20 @@ export default function CoursePlayerPage() {
                         <div className="bg-muted/30 p-6 rounded-xl border">
                             <h3 className="font-semibold mb-3">What you'll learn:</h3>
                             <ul className="space-y-2">
-                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                                    <span className="text-primary mt-1">•</span>
-                                    <span>Comprehensive curriculum designed by experts</span>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Full lifetime access
                                 </li>
-                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                                    <span className="text-primary mt-1">•</span>
-                                    <span>Hands-on projects and real-world examples</span>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Access on mobile and desktop
                                 </li>
-                                <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                                    <span className="text-primary mt-1">•</span>
-                                    <span>Certificate of completion upon finishing</span>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> Certificate of completion
+                                </li>
+                                <li className="flex items-center gap-2 text-sm">
+                                    <span className="text-green-500">✓</span> {course.lessons.length} comprehensive lessons
                                 </li>
                             </ul>
                         </div>
-
-                        {/* Admin View Indicator */}
-                        {currentUser?.role === 'admin' && (
-                            <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-                                    A
-                                </div>
-                                <div>
-                                    <p className="font-bold text-blue-800 dark:text-blue-200">Admin Access</p>
-                                    <p className="text-xs text-blue-600 dark:text-blue-300">You have full access to all courses.</p>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/10">

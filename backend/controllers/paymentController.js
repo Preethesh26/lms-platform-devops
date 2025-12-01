@@ -9,15 +9,19 @@ const crypto = require('crypto');
 exports.createOrder = async (req, res) => {
     try {
         const { courseId } = req.body;
+        console.log('Create order request:', { courseId, userId: req.user?.id });
+
         const course = await Course.findById(courseId);
 
         if (!course) {
+            console.log('Course not found:', courseId);
             return res.status(404).json({ success: false, message: 'Course not found' });
         }
 
         // Check if user already enrolled
         const user = await User.findById(req.user.id);
         if (user.enrolledCourses.includes(courseId)) {
+            console.log('User already enrolled:', { userId: user.id, courseId });
             return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
         }
 
@@ -33,6 +37,8 @@ exports.createOrder = async (req, res) => {
             status: 'pending'
         });
 
+        console.log('Order created successfully:', transactionId);
+
         res.status(200).json({
             success: true,
             order: {
@@ -43,7 +49,7 @@ exports.createOrder = async (req, res) => {
         });
     } catch (error) {
         console.error('Create Order Error:', error);
-        res.status(500).json({ success: false, message: 'Payment initiation failed' });
+        res.status(500).json({ success: false, message: 'Payment initiation failed', error: error.message });
     }
 };
 
