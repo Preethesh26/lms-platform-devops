@@ -56,7 +56,7 @@ export default function UserLayout() {
             <footer className="border-t border-white/10 bg-muted/30 py-12">
                 <div className="container mx-auto px-4 flex items-center justify-center">
                     <p className="text-center text-sm leading-loose text-muted-foreground">
-                        © 2025 LMS Platform. Built with Vite & React.
+                        © LMS Platform. Built with Vite & React.
                     </p>
                 </div>
             </footer>
