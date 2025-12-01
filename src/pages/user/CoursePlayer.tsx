@@ -39,7 +39,7 @@ export default function CoursePlayerPage() {
                     isAdmin: currentUser.role === 'admin'
                 });
 
-                const enrolled = currentUser.enrolledCourses?.includes(foundCourse.id) || currentUser.role === 'admin';
+                const enrolled = currentUser.enrolledCourses?.some(id => id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {

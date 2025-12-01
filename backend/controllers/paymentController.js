@@ -25,12 +25,12 @@ exports.createOrder = async (req, res) => {
         console.log('Target course ID:', courseId);
 
         // Ensure we are comparing strings
-        // const isEnrolled = user.enrolledCourses.some(id => id.toString() === courseId.toString());
+        const isEnrolled = user.enrolledCourses.some(id => id.toString() === courseId.toString());
 
-        // if (isEnrolled) {
-        //     console.log('User ALREADY enrolled (Backend Check):', { userId: user.id, courseId });
-        //     return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
-        // }
+        if (isEnrolled) {
+            console.log('User ALREADY enrolled (Backend Check):', { userId: user.id, courseId });
+            return res.status(400).json({ success: false, message: 'Already enrolled in this course' });
+        }
 
         // Generate a mock transaction ID
         const transactionId = `mock_txn_${crypto.randomBytes(8).toString('hex')}`;
