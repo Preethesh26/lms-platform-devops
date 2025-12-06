@@ -8,6 +8,7 @@ import UserSignupPage from './pages/user/Signup';
 import MyLearningPage from './pages/user/MyLearning';
 import CoursePlayerPage from './pages/user/CoursePlayer';
 import AdminLoginPage from './pages/admin/Login';
+import AdminDashboardPage from './pages/admin/Dashboard';
 import AdminCoursesPage from './pages/admin/Courses';
 import AdminUsersPage from './pages/admin/Users';
 import ResetPasswordPage from './pages/user/ResetPassword';
@@ -35,6 +36,7 @@ function App() {
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route element={<AdminLayout />}>
+                    <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                     <Route path="/admin/courses" element={<AdminCoursesPage />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
                 </Route>

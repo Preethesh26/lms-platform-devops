@@ -30,6 +30,11 @@ export default function AdminLayout() {
                     </Link>
                 </div>
                 <nav className="flex flex-col gap-2 p-4">
+                    <Link to="/admin/dashboard">
+                        <Button variant="ghost" className="w-full justify-start">
+                            Dashboard
+                        </Button>
+                    </Link>
                     <Link to="/admin/courses">
                         <Button variant="ghost" className="w-full justify-start">
                             Courses

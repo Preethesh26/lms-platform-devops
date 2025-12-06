@@ -36,3 +36,29 @@ DEBUG: Using admin email: kulalpreethesh20@gmail.com
 DEBUG: Env var value was: kulalpreethesh20@gmail.com
 Admin notification result: {"success":true,"data":{"response":{"_events":{},"_readableState":{"highWaterMark":65536,"buffer":[{"type":"Buffer","data":[123,34,109,101,115,115,97,103,101,73,100,34,58,34,60,50,48,50,53,49,50,48,54,49,48,50,48,46,56,56,54,50,51,56,57,52,49,52,51,64,115,109,116,112,45,114,101,108,97,121,46,109,97,105,108,105,110,46,102,114,62,34,125]}],"bufferIndex":0,"length":63,"pipes":[],"awaitDrainWriters":null},"socket":{"remoteAddress":"","remoteFamily":"","remotePort":0,"localAddress":"","localPort":0,"bytesRead":0,"bytesWritten":0,"connecting":false,"destroyed":false,"readable":true,"writable":false,"allowHalfOpen":false,"timeout":0},"httpVersionMajor":null,"httpVersionMinor":null,"httpVersion":null,"complete":false,"rawHeaders":[],"rawTrailers":[],"joinDuplicateHeaders":false,"aborted":false,"upgrade":null,"url":"","method":null,"statusCode":201,"statusMessage":"Created","client":{"remoteAddress":"","remoteFamily":"","remotePort":0,"localAddress":"","localPort":0,"bytesRead":0,"bytesWritten":0,"connecting":false,"destroyed":false,"readable":true,"writable":false,"allowHalfOpen":false,"timeout":0},"_consuming":false,"_dumped":false},"body":{"messageId":"<202512061020.88623894143@smtp-relay.mailin.fr>"}}}
 Admin notification sent to kulalpreethesh20@gmail.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-02.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-01.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-02.fqsiyfg.mongodb.net
