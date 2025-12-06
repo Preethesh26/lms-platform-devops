@@ -13,6 +13,7 @@ const userRoutes = require('./routes/users');
 const supportRoutes = require('./routes/support');
 const paymentRoutes = require('./routes/payment');
 const analyticsRoutes = require('./routes/analytics');
+const progressRoutes = require('./routes/progress');
 
 // Connect to database
 connectDB();
@@ -35,6 +36,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Error handler
 app.use(errorHandler);

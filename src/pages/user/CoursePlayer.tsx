@@ -1,10 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStore, type Course, type Lesson } from "@/lib/store";
+import { progressAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import ReactPlayer from 'react-player';
+import { CheckCircle, PlayCircle, Lock } from "lucide-react";
+
+const ReactPlayerAny = ReactPlayer as any;
+
+type ProgressState = {
+    [lessonId: string]: {
+        completed: boolean;
+        lastPosition: number;
+    };
+};
 
 export default function CoursePlayerPage() {
     const params = useParams();
@@ -16,7 +28,12 @@ export default function CoursePlayerPage() {
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const [processingStep, setProcessingStep] = useState<'idle' | 'processing' | 'success'>('idle');
+    const [progress, setProgress] = useState<ProgressState>({});
+    const playerRef = useRef<any>(null); // Type 'any' to avoid LegacyRef mismatch issues
+    const progressUpdateTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+    const [isVideoReady, setIsVideoReady] = useState(false);
 
+    // Fetch Course & Enrollment Logic
     useEffect(() => {
         if (isInitialized && params.courseId) {
             // Check authentication
@@ -35,13 +52,104 @@ export default function CoursePlayerPage() {
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
-                    setActiveLesson(foundCourse.lessons[0]);
+                    // Set default lesson only if none selected
+                    if (!activeLesson) {
+                        setActiveLesson(foundCourse.lessons[0]);
+                    }
+
+                    // Fetch existing progress
+                    fetchProgress(foundCourse.id);
                 }
             } else {
                 navigate("/my-learning");
             }
         }
     }, [isInitialized, params.courseId, courses, navigate, currentUser]);
+
+    // Fetch Progress from API
+    const fetchProgress = async (courseId: string) => {
+        try {
+            const res = await progressAPI.getCourseProgress(courseId);
+            const progressMap: ProgressState = {};
+
+            res.data.data.forEach((p: any) => {
+                progressMap[p.lessonId] = {
+                    completed: p.completed,
+                    lastPosition: p.lastPosition
+                };
+            });
+
+            setProgress(progressMap);
+        } catch (error) {
+            console.error("Failed to fetch progress:", error);
+        }
+    };
+
+    // Save Progress to API
+    const saveProgress = useCallback(async (completed: boolean = false, position: number = 0) => {
+        if (!course || !activeLesson) return;
+
+        try {
+            await progressAPI.update({
+                courseId: course.id,
+                lessonId: activeLesson.id,
+                completed: completed,
+                lastPosition: position,
+                totalDuration: playerRef.current?.getDuration() || 0
+            });
+
+            // Update local state
+            setProgress(prev => ({
+                ...prev,
+                [activeLesson.id]: {
+                    completed: completed || (prev[activeLesson.id]?.completed ?? false),
+                    lastPosition: position
+                }
+            }));
+        } catch (error) {
+            console.error("Failed to save progress:", error);
+        }
+    }, [course, activeLesson]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (progressUpdateTimeout.current) clearTimeout(progressUpdateTimeout.current);
+        };
+    }, []);
+
+    // Handle Lesson Change
+    const handleLessonChange = (lesson: Lesson) => {
+        setActiveLesson(lesson);
+        setIsVideoReady(false);
+    };
+
+    // Player Events
+    const handleProgress = (state: { playedSeconds: number; played: number; loaded: number; loadedSeconds: number }) => {
+        // Only save every 5 seconds to reduce API calls
+        if (!progressUpdateTimeout.current) {
+            progressUpdateTimeout.current = setTimeout(() => {
+                saveProgress(false, state.playedSeconds);
+                progressUpdateTimeout.current = undefined;
+            }, 5000);
+        }
+    };
+
+    const handleEnded = () => {
+        saveProgress(true, playerRef.current?.getCurrentTime() || 0);
+    };
+
+    const handleReady = () => {
+        setIsVideoReady(true);
+        // Seek to saved position if exists and not completed
+        if (activeLesson && progress[activeLesson.id]?.lastPosition) {
+            const savedTime = progress[activeLesson.id].lastPosition;
+            // Don't seek if we are at the very beginning (0-5s) to avoid seeking loops on restart
+            if (savedTime > 5) {
+                playerRef.current?.seekTo(savedTime, 'seconds');
+            }
+        }
+    };
 
     const handlePayment = async () => {
         if (!course || !currentUser) return;
@@ -89,10 +197,10 @@ export default function CoursePlayerPage() {
     };
 
     if (!isInitialized || !course) {
-        return <div className="p-8 text-center">Loading course...</div>;
+        return <div className="p-8 text-center animate-pulse">Loading course data...</div>;
     }
 
-    // If not enrolled, show Course Details & Payment UI
+    // If not enrolled, show Course Details & Payment UI.
     if (!isEnrolled) {
         return (
             <div className="container mx-auto p-4 max-w-5xl py-12">
@@ -154,9 +262,7 @@ export default function CoursePlayerPage() {
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center pl-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-primary">
-                                        <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
-                                    </svg>
+                                    <Lock className="w-6 h-6 text-primary" />
                                 </div>
                             </div>
                         </div>
@@ -249,9 +355,7 @@ export default function CoursePlayerPage() {
                             {processingStep === 'success' && (
                                 <div className="flex flex-col items-center justify-center space-y-4">
                                     <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                        <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                        <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
                                     </div>
                                     <p className="text-sm text-muted-foreground">Redirecting to course...</p>
                                 </div>
@@ -269,8 +373,12 @@ export default function CoursePlayerPage() {
                 <Button variant="ghost" className="mb-4 pl-0 hover:pl-2 transition-all" onClick={() => navigate("/my-learning")}>
                     ← Back to My Learning
                 </Button>
-                <h1 className="text-3xl font-bold tracking-tight">{course.title}</h1>
-                <p className="text-muted-foreground mt-2">{course.description}</p>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">{course.title}</h1>
+                        <p className="text-muted-foreground mt-2">{course.description}</p>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -278,41 +386,20 @@ export default function CoursePlayerPage() {
                 <div className="lg:col-span-2 space-y-4">
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative group">
                         {activeLesson ? (
-                            activeLesson.videoUrl.includes("youtube.com") || activeLesson.videoUrl.includes("youtu.be") ? (
-                                <iframe
-                                    src={(() => {
-                                        let url = activeLesson.videoUrl;
-                                        // Handle youtube.com/watch?v=ID format
-                                        if (url.includes("watch?v=")) {
-                                            const videoId = url.split("watch?v=")[1]?.split("&")[0];
-                                            return `https://www.youtube.com/embed/${videoId}`;
-                                        }
-                                        // Handle youtu.be/ID format
-                                        if (url.includes("youtu.be/")) {
-                                            const videoId = url.split("youtu.be/")[1]?.split("?")[0];
-                                            return `https://www.youtube.com/embed/${videoId}`;
-                                        }
-                                        // Handle youtube.com/embed/ID format (already correct)
-                                        if (url.includes("/embed/")) {
-                                            return url;
-                                        }
-                                        return url;
-                                    })()}
-                                    title={activeLesson.title}
-                                    className="w-full h-full"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-                                    allowFullScreen
+                            <div className="w-full h-full relative">
+                                <ReactPlayerAny
+                                    ref={playerRef}
+                                    url={activeLesson.videoUrl}
+                                    width="100%"
+                                    height="100%"
+                                    controls={true}
+                                    playing={false}
+                                    onProgress={handleProgress as any}
+                                    onEnded={handleEnded}
+                                    onReady={handleReady}
+                                    progressInterval={5000} // Fire onProgress every 5s
                                 />
-                            ) : (
-                                <video
-                                    src={activeLesson.videoUrl}
-                                    controls
-                                    className="w-full h-full"
-                                    poster="/placeholder-video.jpg"
-                                >
-                                    Your browser does not support the video tag.
-                                </video>
-                            )
+                            </div>
                         ) : (
                             <div className="flex items-center justify-center h-full text-muted-foreground bg-muted/20">
                                 <div className="text-center">
@@ -323,9 +410,26 @@ export default function CoursePlayerPage() {
                         )}
                     </div>
                     {activeLesson && (
-                        <div className="p-4 rounded-lg bg-card border shadow-sm">
-                            <h2 className="text-xl font-semibold">{activeLesson.title}</h2>
-                            <p className="text-sm text-muted-foreground mt-1">Duration: {activeLesson.duration}</p>
+                        <div className="p-4 rounded-lg bg-card border shadow-sm flex justify-between items-center">
+                            <div>
+                                <h2 className="text-xl font-semibold">{activeLesson.title}</h2>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Duration: {activeLesson.duration} •
+                                    {progress[activeLesson.id]?.completed ? " Completed" : " In Progress"}
+                                </p>
+                            </div>
+                            <Button
+                                variant={progress[activeLesson.id]?.completed ? "outline" : "default"}
+                                onClick={() => saveProgress(!progress[activeLesson.id]?.completed, playerRef.current?.getCurrentTime() || 0)}
+                            >
+                                {progress[activeLesson.id]?.completed ? (
+                                    <>
+                                        <CheckCircle className="mr-2 h-4 w-4" /> Completed
+                                    </>
+                                ) : (
+                                    "Mark as Complete"
+                                )}
+                            </Button>
                         </div>
                     )}
                 </div>
@@ -335,7 +439,16 @@ export default function CoursePlayerPage() {
                     <Card className="h-full max-h-[600px] flex flex-col">
                         <div className="p-4 border-b bg-muted/30">
                             <h3 className="font-semibold">Course Content</h3>
-                            <p className="text-xs text-muted-foreground mt-1">{course.lessons.length} Lessons</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                {Object.values(progress).filter(p => p.completed).length} / {course.lessons.length} Completed
+                            </p>
+                            {/* Progress Bar */}
+                            <div className="w-full bg-secondary h-2 rounded-full mt-2">
+                                <div
+                                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${(Object.values(progress).filter(p => p.completed).length / course.lessons.length) * 100}%` }}
+                                ></div>
+                            </div>
                         </div>
                         <CardContent className="p-0 flex-1 overflow-y-auto">
                             {course.lessons.length === 0 ? (
@@ -344,37 +457,43 @@ export default function CoursePlayerPage() {
                                 </div>
                             ) : (
                                 <div className="divide-y">
-                                    {course.lessons.map((lesson, index) => (
-                                        <button
-                                            key={lesson.id}
-                                            onClick={() => setActiveLesson(lesson)}
-                                            className={cn(
-                                                "w-full text-left p-4 hover:bg-muted/50 transition-colors flex gap-3 group",
-                                                activeLesson?.id === lesson.id ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-primary" : "border-l-2 border-transparent"
-                                            )}
-                                        >
-                                            <div className={cn(
-                                                "flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium shrink-0 transition-colors",
-                                                activeLesson?.id === lesson.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
-                                            )}>
-                                                {index + 1}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className={cn(
-                                                    "text-sm font-medium truncate",
-                                                    activeLesson?.id === lesson.id ? "text-primary" : "text-foreground"
+                                    {course.lessons.map((lesson, index) => {
+                                        const isCompleted = progress[lesson.id]?.completed;
+                                        const isActive = activeLesson?.id === lesson.id;
+
+                                        return (
+                                            <button
+                                                key={lesson.id}
+                                                onClick={() => handleLessonChange(lesson)}
+                                                className={cn(
+                                                    "w-full text-left p-4 hover:bg-muted/50 transition-colors flex gap-3 group relative",
+                                                    isActive ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-primary" : "border-l-2 border-transparent"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium shrink-0 transition-colors",
+                                                    isCompleted ? "bg-green-100 text-green-600" : (isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")
                                                 )}>
-                                                    {lesson.title}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration}</p>
-                                            </div>
-                                            {activeLesson?.id === lesson.id && (
-                                                <div className="ml-auto self-center">
-                                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                                                    {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
                                                 </div>
-                                            )}
-                                        </button>
-                                    ))}
+                                                <div className="min-w-0 flex-1">
+                                                    <p className={cn(
+                                                        "text-sm font-medium truncate",
+                                                        isActive ? "text-primary" : "text-foreground",
+                                                        isCompleted && !isActive && "text-muted-foreground line-through decoration-slate-400/50"
+                                                    )}>
+                                                        {lesson.title}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration}</p>
+                                                </div>
+                                                {isActive && (
+                                                    <div className="ml-auto self-center">
+                                                        <PlayCircle className="w-4 h-4 text-primary animate-pulse" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </CardContent>

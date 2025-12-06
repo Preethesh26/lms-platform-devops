@@ -62,3 +62,44 @@ BREVO_API_KEY loaded: Yes
 ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
 Server running in development mode on port 5000
 MongoDB Connected: ac-n7m9pnv-shard-00-02.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-01.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-00.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-01.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-02.fqsiyfg.mongodb.net
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node server.js`[39m
+BREVO_API_KEY loaded: Yes
+ADMIN_NOTIFICATION_EMAIL loaded: kulalpreethesh20@gmail.com
+Server running in development mode on port 5000
+MongoDB Connected: ac-n7m9pnv-shard-00-00.fqsiyfg.mongodb.net
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

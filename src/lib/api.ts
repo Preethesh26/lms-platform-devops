@@ -92,4 +92,11 @@ export const paymentAPI = {
         api.post('/payment/verify', data)
 };
 
+// Progress API
+export const progressAPI = {
+    update: (data: { courseId: string; lessonId: string; completed?: boolean; lastPosition?: number; totalDuration?: number }) =>
+        api.post('/progress/update', data),
+    getCourseProgress: (courseId: string) => api.get(`/progress/${courseId}`)
+};
+
 export default api;
