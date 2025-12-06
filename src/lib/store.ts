@@ -51,34 +51,34 @@ export function useStore() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch courses
-                const coursesRes = await coursesAPI.getAll();
-                setCourses(coursesRes.data.data || []);
-
-                // Fetch users (admin only)
-                // We try to fetch users, but if it fails (e.g. not admin), we just log it
-                // and don't block the rest of the initialization
-                try {
-                    await fetchUsers();
-                } catch (e) {
-                    console.log("Initial user fetch failed (likely not admin)");
-                }
-
-                // Check for logged in user
-                // Check for logged in user
+                // 1. Check & Fetch Current User First
                 const token = localStorage.getItem('token');
+                let userRole = null;
+
                 if (token) {
                     try {
-                        // Verify token and get fresh user data
                         const userRes = await authAPI.getMe();
                         setCurrentUser(userRes.data.data);
                         localStorage.setItem('userData', JSON.stringify(userRes.data.data));
+                        userRole = userRes.data.data.role;
                     } catch (error) {
                         console.error('Failed to fetch current user:', error);
-                        // If token is invalid, clear it
                         localStorage.removeItem('token');
                         localStorage.removeItem('userData');
                         setCurrentUser(null);
+                    }
+                }
+
+                // 2. Fetch Courses (Available to all)
+                const coursesRes = await coursesAPI.getAll();
+                setCourses(coursesRes.data.data || []);
+
+                // 3. Fetch Users (Only if Admin)
+                if (userRole === 'admin') {
+                    try {
+                        await fetchUsers();
+                    } catch (e) {
+                        console.log("Admin user fetch failed");
                     }
                 }
 
