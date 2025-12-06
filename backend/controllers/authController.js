@@ -68,8 +68,12 @@ exports.register = async (req, res) => {
 
         // Send notification to admin (non-blocking)
         try {
-            const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'admin@example.com';
-            console.log(`Attempting to send admin notification to: ${adminEmail}`);
+            // Fallback to hardcoded email if env var is missing or undefined
+            const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'kulalpreethesh20@gmail.com';
+
+            console.log(`DEBUG: Using admin email: ${adminEmail}`);
+            console.log(`DEBUG: Env var value was: ${process.env.ADMIN_NOTIFICATION_EMAIL}`);
+
             const emailResult = await sendAdminNewUserNotification(adminEmail, name, email, enrollment);
             console.log('Admin notification result:', JSON.stringify(emailResult));
             console.log(`Admin notification sent to ${adminEmail}`);
