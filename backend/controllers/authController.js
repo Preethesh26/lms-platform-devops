@@ -27,9 +27,21 @@ exports.register = async (req, res) => {
         // Auto-generate enrollment number if not provided (for self-registration)
         if (!enrollment) {
             const year = new Date().getFullYear();
-            const userCount = await User.countDocuments({ role: 'user' });
-            const counter = (userCount + 1).toString().padStart(5, '0');
-            enrollment = `ENR-${year}-${counter}`;
+            // Find the latest user with an enrollment number for this year
+            const latestUser = await User.findOne({
+                enrollment: { $regex: `^ENR-${year}-` }
+            }).sort({ enrollment: -1 });
+
+            let counter = 1;
+            if (latestUser && latestUser.enrollment) {
+                const parts = latestUser.enrollment.split('-');
+                if (parts.length === 3) {
+                    counter = parseInt(parts[2], 10) + 1;
+                }
+            }
+
+            const counterStr = counter.toString().padStart(5, '0');
+            enrollment = `ENR-${year}-${counterStr}`;
         }
 
         // Force role to 'user' if not explicitly set (for public registrations)
