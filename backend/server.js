@@ -1,5 +1,6 @@
 require('dotenv').config();
 console.log("BREVO_API_KEY loaded:", process.env.BREVO_API_KEY ? "Yes" : "No");
+console.log("ADMIN_NOTIFICATION_EMAIL loaded:", process.env.ADMIN_NOTIFICATION_EMAIL);
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');

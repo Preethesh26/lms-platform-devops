@@ -57,7 +57,9 @@ exports.register = async (req, res) => {
         // Send notification to admin (non-blocking)
         try {
             const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'admin@example.com';
-            await sendAdminNewUserNotification(adminEmail, name, email, enrollment);
+            console.log(`Attempting to send admin notification to: ${adminEmail}`);
+            const emailResult = await sendAdminNewUserNotification(adminEmail, name, email, enrollment);
+            console.log('Admin notification result:', JSON.stringify(emailResult));
             console.log(`Admin notification sent to ${adminEmail}`);
         } catch (emailError) {
             console.error('Failed to send admin notification:', emailError);
