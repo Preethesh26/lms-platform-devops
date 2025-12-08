@@ -112,4 +112,20 @@ export const quizzesAPI = {
     getAttempts: (id: string) => api.get(`/quizzes/${id}/attempts`)
 };
 
+// Tests API (Standalone Test System)
+export const testsAPI = {
+    // Admin endpoints
+    create: (data: any) => api.post('/tests', data),
+    getAll: () => api.get('/tests'),
+    getOne: (id: string) => api.get(`/tests/${id}`),
+    update: (id: string, data: any) => api.put(`/tests/${id}`, data),
+    delete: (id: string) => api.delete(`/tests/${id}`),
+    togglePublish: (id: string) => api.put(`/tests/${id}/publish`),
+    getStats: (id: string) => api.get(`/tests/${id}/stats`),
+    // User endpoints
+    getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
+    submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
+    getResult: (id: string) => api.get(`/tests/${id}/result`)
+};
+
 export default api;

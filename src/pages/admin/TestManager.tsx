@@ -1,0 +1,156 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, FileText, Users, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { testsAPI } from '@/lib/api';
+
+export default function TestManager() {
+    const [tests, setTests] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchTests();
+    }, []);
+
+    const fetchTests = async () => {
+        try {
+            const res = await testsAPI.getAll();
+            setTests(res.data.data);
+        } catch (error) {
+            console.error('Error fetching tests:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTogglePublish = async (id: string) => {
+        try {
+            await testsAPI.togglePublish(id);
+            fetchTests();
+        } catch (error) {
+            console.error('Error toggling publish:', error);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this test?')) return;
+
+        try {
+            await testsAPI.delete(id);
+            fetchTests();
+        } catch (error) {
+            console.error('Error deleting test:', error);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="animate-spin h-8 w-8" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Test Management</h2>
+                    <p className="text-muted-foreground">Create and manage standalone tests</p>
+                </div>
+                <Link to="/admin/tests/create">
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Test
+                    </Button>
+                </Link>
+            </div>
+
+            {tests.length === 0 ? (
+                <div className="flex flex-col items-center justify-center border border-dashed rounded-lg p-12 text-center text-muted-foreground">
+                    <FileText className="h-10 w-10 mb-4 opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">No Tests Created</h3>
+                    <p className="mb-4">Get started by creating your first test.</p>
+                    <Link to="/admin/tests/create">
+                        <Button variant="outline">Create Test</Button>
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {tests.map((test: any) => (
+                        <Card key={test._id} className="hover:shadow-md transition-shadow">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    {test.isPublished ? (
+                                        <span className="text-green-600">● Published</span>
+                                    ) : (
+                                        <span className="text-gray-400">● Draft</span>
+                                    )}
+                                </CardTitle>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold mb-2">{test.title}</div>
+                                <div className="text-xs text-muted-foreground space-y-1 mb-4">
+                                    <div className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        {test.timeLimit > 0 ? `${test.timeLimit} mins` : 'No time limit'}
+                                    </div>
+                                    <div>{test.questions.length} Questions</div>
+                                    <div>Passing: {test.passingScore}%</div>
+                                    {test.hasDeadline && (
+                                        <div className="text-orange-600">
+                                            Deadline: {new Date(test.deadline).toLocaleDateString()}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {test.stats && (
+                                    <div className="grid grid-cols-3 gap-2 mb-4 text-xs">
+                                        <div className="text-center p-2 bg-blue-50 dark:bg-blue-950 rounded">
+                                            <div className="font-bold text-blue-600">{test.stats.totalInvited}</div>
+                                            <div className="text-muted-foreground">Invited</div>
+                                        </div>
+                                        <div className="text-center p-2 bg-green-50 dark:bg-green-950 rounded">
+                                            <div className="font-bold text-green-600">{test.stats.completed}</div>
+                                            <div className="text-muted-foreground">Completed</div>
+                                        </div>
+                                        <div className="text-center p-2 bg-orange-50 dark:bg-orange-950 rounded">
+                                            <div className="font-bold text-orange-600">{test.stats.pending}</div>
+                                            <div className="text-muted-foreground">Pending</div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2">
+                                    <Link to={`/admin/tests/${test._id}/invitations`} className="flex-1">
+                                        <Button variant="outline" size="sm" className="w-full">
+                                            <Users className="h-3 w-3 mr-1" />
+                                            Invitations
+                                        </Button>
+                                    </Link>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleTogglePublish(test._id)}
+                                    >
+                                        {test.isPublished ? 'Unpublish' : 'Publish'}
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleDelete(test._id)}
+                                        className="text-red-600"
+                                    >
+                                        Delete
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
