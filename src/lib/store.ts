@@ -246,8 +246,17 @@ export function useStore() {
         currentUser,
         error,
         addCourse,
+        addCourse,
         updateCourse,
         deleteCourse,
+        createQuiz,
+        submitQuiz,
+        fetchQuizzes: async () => {
+            const res = await quizzesAPI.getQuizzes();
+            setQuizzes(res.data.data);
+        },
+        quizzes,
+        deleteUser,
         addUser,
         updateUser,
         deleteUser,

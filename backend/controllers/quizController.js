@@ -5,12 +5,25 @@ const Course = require('../models/Course');
 // @desc    Create a new quiz
 // @route   POST /api/quizzes
 // @access  Private (Admin)
+// @desc    Create a new quiz
+// @route   POST /api/quizzes
+// @access  Private (Admin)
 exports.createQuiz = async (req, res) => {
     try {
         const quiz = await Quiz.create(req.body);
 
-        // If courseId is provided, we might want to automatically add it to the course lessons
-        // For now, we'll assume the client handles the course update or we do it here if lesson structure is complex
+        // Automatically add quiz as a lesson to the course
+        const course = await Course.findById(req.body.course);
+        if (course) {
+            course.lessons.push({
+                title: quiz.title,
+                videoUrl: 'QUIZ_PLACEHOLDER', // Placeholder, not used but schema might require string
+                duration: `${quiz.timeLimit > 0 ? quiz.timeLimit + ' min' : 'Untimed'} Quiz`,
+                type: 'quiz',
+                quizId: quiz._id
+            });
+            await course.save();
+        }
 
         res.status(201).json({
             success: true,
@@ -161,7 +174,25 @@ exports.getQuizAttempts = async (req, res) => {
             user: req.user.id,
             quiz: req.params.id
         }).sort({ completedAt: -1 });
+        // @desc    Get all quizzes (Admin)
+        // @route   GET /api/quizzes
+        // @access  Private (Admin)
+        exports.getAllQuizzes = async (req, res) => {
+            try {
+                const quizzes = await Quiz.find().populate('course', 'title');
 
+                res.status(200).json({
+                    success: true,
+                    data: quizzes
+                });
+            } catch (error) {
+                console.error(error);
+                res.status(400).json({
+                    success: false,
+                    error: error.message
+                });
+            }
+        };
         res.status(200).json({
             success: true,
             data: attempts

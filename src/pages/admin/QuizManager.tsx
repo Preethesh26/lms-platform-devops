@@ -1,44 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { useStore } from '../../lib/store';
-import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, Clock, Activity, Edit, Trash } from 'lucide-react';
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Plus, BookOpen, Clock, Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Simplified view for now, effectively "Your Quizzes"
-const QuizManager = () => {
-    const navigate = useNavigate();
-    // In a real app we'd fetch quizzes list from store/API
-    // For now we assume we can list them or link to them from Courses
-    // But let's verify if store has quizzes exposed. It has `quizzes` state but it needs to be populated.
+export default function QuizManager() {
+    const { quizzes, fetchQuizzes, isInitialized } = useStore();
 
-    // Actually, quizzes are tied to courses. It's better to show quizzes nested in courses or a flat list.
-    // Let's create a placeholder for now as we focus on creation flow first.
+    useEffect(() => {
+        if (isInitialized) {
+            fetchQuizzes();
+        }
+    }, [isInitialized]);
+
+    if (!isInitialized) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    Quiz Manager
-                </h1>
-                <button
-                    onClick={() => navigate('/admin/quizzes/create')}
-                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all flex items-center gap-2"
-                >
-                    <Plus className="w-4 h-4" /> Create Quiz
-                </button>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Quiz Management</h2>
+                    <p className="text-muted-foreground">Create and manage your quizzes here</p>
+                </div>
+                <Link to="/admin/quizzes/create">
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Quiz
+                    </Button>
+                </Link>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
-                <p className="text-gray-400 mb-4">View and manage quizzes here.</p>
-                {/* To fully implement list, we'd need a getAllQuizzes endpoint or iterate courses */}
-                <button
-                    onClick={() => navigate('/admin/quizzes/create')}
-                    className="text-purple-400 hover:text-purple-300 underline"
-                >
-                    Create your first quiz
-                </button>
-            </div>
+            {quizzes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center border border-dashed rounded-lg p-12 text-center text-muted-foreground">
+                    <BookOpen className="h-10 w-10 mb-4 opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">No Quizzes Created</h3>
+                    <p className="mb-4">Get started by creating your first quiz.</p>
+                    <Link to="/admin/quizzes/create">
+                        <Button variant="outline">Create Quiz</Button>
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {quizzes.map((quiz: any) => (
+                        <Card key={quiz._id} className="hover:shadow-md transition-shadow">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    {quiz.course?.title || 'Unknown Course'}
+                                </CardTitle>
+                                <BookOpen className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold mb-2">{quiz.title}</div>
+                                <div className="text-xs text-muted-foreground flex flex-col gap-1">
+                                    <span className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        {quiz.timeLimit > 0 ? `${quiz.timeLimit} mins` : 'No time limit'}
+                                    </span>
+                                    <span>{quiz.questions.length} Questions</span>
+                                    <span>Min Score: {quiz.passingScore}%</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
-};
-
-export default QuizManager;
+}
