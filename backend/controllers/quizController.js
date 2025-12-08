@@ -174,28 +174,30 @@ exports.getQuizAttempts = async (req, res) => {
             user: req.user.id,
             quiz: req.params.id
         }).sort({ completedAt: -1 });
-        // @desc    Get all quizzes (Admin)
-        // @route   GET /api/quizzes
-        // @access  Private (Admin)
-        exports.getAllQuizzes = async (req, res) => {
-            try {
-                const quizzes = await Quiz.find().populate('course', 'title');
 
-                res.status(200).json({
-                    success: true,
-                    data: quizzes
-                });
-            } catch (error) {
-                console.error(error);
-                res.status(400).json({
-                    success: false,
-                    error: error.message
-                });
-            }
-        };
         res.status(200).json({
             success: true,
             data: attempts
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+// @desc    Get all quizzes (Admin)
+// @route   GET /api/quizzes
+// @access  Private (Admin)
+exports.getAllQuizzes = async (req, res) => {
+    try {
+        const quizzes = await Quiz.find().populate('course', 'title');
+
+        res.status(200).json({
+            success: true,
+            data: quizzes
         });
     } catch (error) {
         console.error(error);
