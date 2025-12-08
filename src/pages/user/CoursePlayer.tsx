@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import ReactPlayer from 'react-player';
+import QuizPlayer from "@/components/user/QuizPlayer";
 import { CheckCircle, PlayCircle, Lock } from "lucide-react";
 
 const ReactPlayerAny = ReactPlayer as any;
@@ -387,18 +388,30 @@ export default function CoursePlayerPage() {
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative group">
                         {activeLesson ? (
                             <div className="w-full h-full relative">
-                                <ReactPlayerAny
-                                    ref={playerRef}
-                                    url={activeLesson.videoUrl}
-                                    width="100%"
-                                    height="100%"
-                                    controls={true}
-                                    playing={false}
-                                    onProgress={handleProgress as any}
-                                    onEnded={handleEnded}
-                                    onReady={handleReady}
-                                    progressInterval={5000} // Fire onProgress every 5s
-                                />
+                                {activeLesson.type === 'quiz' && activeLesson.quizId ? (
+                                    <div className="h-full overflow-y-auto">
+                                        <QuizPlayer
+                                            quizId={activeLesson.quizId.toString()}
+                                            onComplete={(score, passed) => {
+                                                console.log('Quiz completed:', score, passed);
+                                                saveProgress(passed, 0); // Save as completed if passed
+                                            }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <ReactPlayerAny
+                                        ref={playerRef}
+                                        url={activeLesson.videoUrl}
+                                        width="100%"
+                                        height="100%"
+                                        controls={true}
+                                        playing={false}
+                                        onProgress={handleProgress as any}
+                                        onEnded={handleEnded}
+                                        onReady={handleReady}
+                                        progressInterval={5000} // Fire onProgress every 5s
+                                    />
+                                )}
                             </div>
                         ) : (
                             <div className="flex items-center justify-center h-full text-muted-foreground bg-muted/20">

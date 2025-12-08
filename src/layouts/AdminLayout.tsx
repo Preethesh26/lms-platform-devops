@@ -1,4 +1,3 @@
-```javascript
 import { useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { ClipboardList } from 'lucide-react';

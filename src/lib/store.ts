@@ -6,6 +6,8 @@ export type Lesson = {
     title: string;
     videoUrl: string;
     duration: string;
+    type?: 'video' | 'quiz';
+    quizId?: string;
 };
 
 export type Course = {
