@@ -190,8 +190,7 @@ const QuizEditor = () => {
                 <div className="flex justify-end pt-6">
                     <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 focus:ring-2 focus:ring-purple-500/20 flex items-center gap-2"
                     >
                         {isSubmitting ? 'Saving...' : <><Save className="w-5 h-5" /> Save Quiz</>}
                     </button>
