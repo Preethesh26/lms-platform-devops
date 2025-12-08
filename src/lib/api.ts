@@ -76,7 +76,10 @@ export const usersAPI = {
     update: (id: string, data: any) => api.put(`/users/${id}`, data),
     delete: (id: string) => api.delete(`/users/${id}`),
     enroll: (userId: string, courseId: string) =>
-        api.post(`/users/${userId}/enroll`, { courseId })
+        api.post(`/users/${userId}/enroll`, { courseId }),
+    bulkUpload: (formData: FormData) => api.post('/users/bulk-upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
 };
 
 // Support API

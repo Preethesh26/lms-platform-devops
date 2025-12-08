@@ -116,3 +116,102 @@ exports.enrollCourse = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Bulk create users from CSV
+// @route   POST /api/users/bulk-upload
+// @access  Private (Admin)
+exports.bulkCreateUsers = async (req, res) => {
+    const fs = require('fs');
+    const csv = require('csv-parser');
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        }
+
+        const users = [];
+        const errors = [];
+        let lineNumber = 1;
+
+        // Parse CSV file
+        await new Promise((resolve, reject) => {
+            fs.createReadStream(req.file.path)
+                .pipe(csv())
+                .on('data', (row) => {
+                    lineNumber++;
+                    if (!row.name || !row.email) {
+                        errors.push({ line: lineNumber, error: 'Missing name or email', data: row });
+                        return;
+                    }
+
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(row.email)) {
+                        errors.push({ line: lineNumber, error: 'Invalid email', data: row });
+                        return;
+                    }
+
+                    users.push({
+                        name: row.name.trim(),
+                        email: row.email.trim().toLowerCase(),
+                        enrollment: row.enrollment?.trim() || null,
+                        role: row.role?.trim() || 'user',
+                        password: row.password?.trim() || Math.random().toString(36).slice(-8)
+                    });
+                })
+                .on('end', resolve)
+                .on('error', reject);
+        });
+
+        fs.unlinkSync(req.file.path);
+
+        if (users.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid users', errors });
+        }
+
+        // Check duplicates
+        const existingEmails = await User.find({ email: { $in: users.map(u => u.email) } }).select('email');
+        const existingSet = new Set(existingEmails.map(u => u.email));
+        const usersToCreate = users.filter(u => !existingSet.has(u.email));
+        const skipped = users.filter(u => existingSet.has(u.email));
+
+        // Auto-generate enrollment numbers
+        for (let user of usersToCreate) {
+            if (!user.enrollment) {
+                const year = new Date().getFullYear();
+                const latest = await User.findOne({ enrollment: { $regex: `^ENR-${year}-` } }).sort({ enrollment: -1 });
+                let counter = 1;
+                if (latest?.enrollment) {
+                    const parts = latest.enrollment.split('-');
+                    if (parts.length === 3) counter = parseInt(parts[2], 10) + 1;
+                }
+                user.enrollment = `ENR-${year}-${counter.toString().padStart(5, '0')}`;
+            }
+        }
+
+        const created = await User.insertMany(usersToCreate, { ordered: false });
+
+        res.status(201).json({
+            success: true,
+            message: `Created ${created.length} users`,
+            created: created.length,
+            skipped: skipped.length,
+            errors: errors.length,
+            details: {
+                createdUsers: created.map(u => ({ name: u.name, email: u.email, enrollment: u.enrollment })),
+                skippedUsers: skipped.map(u => ({ email: u.email, reason: 'Already exists' })),
+                errors
+            }
+        });
+
+    } catch (error) {
+        if (req.file && require('fs').existsSync(req.file.path)) {
+            require('fs').unlinkSync(req.file.path);
+        }
+        console.error('Bulk upload error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+

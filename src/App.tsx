@@ -13,6 +13,7 @@ import QuizManager from './pages/admin/QuizManager';
 import QuizEditor from './pages/admin/QuizEditor';
 import AdminCoursesPage from './pages/admin/Courses';
 import AdminUsersPage from './pages/admin/Users';
+import BulkUserUpload from './pages/admin/BulkUserUpload';
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
 
@@ -41,6 +42,7 @@ function App() {
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
                     <Route path="/admin/courses" element={<AdminCoursesPage />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/users/bulk-upload" element={<BulkUserUpload />} />
                     <Route path="/admin/quizzes" element={<QuizManager />} />
                     <Route path="/admin/quizzes/create" element={<QuizEditor />} />
                 </Route>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,8 +17,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useStore, type User } from "@/lib/store";
 import { toast } from "sonner";
+import { Upload } from "lucide-react";
 
 export default function AdminUsersPage() {
+    const navigate = useNavigate();
     const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -69,7 +72,7 @@ export default function AdminUsersPage() {
         }
     };
 
-    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -139,6 +142,10 @@ export default function AdminUsersPage() {
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={() => refetchUsers()}>
                         Refresh List
+                    </Button>
+                    <Button variant="outline" onClick={() => navigate('/admin/users/bulk-upload')}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Bulk Upload
                     </Button>
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogTrigger asChild>

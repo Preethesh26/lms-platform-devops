@@ -1,0 +1,4 @@
+name,email,enrollment,role,password
+John Doe,john.doe@example.com,ENR-2025-00001,user,password123
+Jane Smith,jane.smith@example.com,,user,
+Admin User,admin@example.com,ADMIN-001,admin,admin123
