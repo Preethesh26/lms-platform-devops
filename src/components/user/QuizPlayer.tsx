@@ -21,7 +21,7 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await quizzesAPI.get(quizId);
+                const res = await quizzesAPI.getQuiz(quizId);
                 setQuiz(res.data.data);
                 if (res.data.data.timeLimit > 0) {
                     setTimeLeft(res.data.data.timeLimit * 60);
@@ -157,14 +157,14 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
                             key={index}
                             onClick={() => handleOptionSelect(index)}
                             className={`w-full text-left p-4 rounded-xl border transition-all ${answers[currentQuestionIndex] === index
-                                    ? 'border-purple-500 bg-purple-500/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]'
-                                    : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20'
+                                ? 'border-purple-500 bg-purple-500/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                                : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20'
                                 }`}
                         >
                             <div className="flex items-center gap-3">
                                 <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 ${answers[currentQuestionIndex] === index
-                                        ? 'border-purple-500 bg-purple-500'
-                                        : 'border-gray-500'
+                                    ? 'border-purple-500 bg-purple-500'
+                                    : 'border-gray-500'
                                     }`}>
                                     {answers[currentQuestionIndex] === index && <div className="w-2 h-2 rounded-full bg-white" />}
                                 </div>

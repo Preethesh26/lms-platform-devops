@@ -221,7 +221,7 @@ export function useStore() {
 
     const createQuiz = async (quizData: any) => {
         try {
-            const res = await quizzesAPI.create(quizData);
+            const res = await quizzesAPI.createQuiz(quizData);
             setQuizzes([...quizzes, res.data.data]);
             return res.data.data;
         } catch (error) {
@@ -246,7 +246,6 @@ export function useStore() {
         currentUser,
         error,
         addCourse,
-        addCourse,
         updateCourse,
         deleteCourse,
         createQuiz,
@@ -256,7 +255,6 @@ export function useStore() {
             setQuizzes(res.data.data);
         },
         quizzes,
-        deleteUser,
         addUser,
         updateUser,
         deleteUser,
@@ -266,8 +264,6 @@ export function useStore() {
         loginUser,
         logoutUser,
         isInitialized,
-        refetchUsers: fetchUsers,
-        createQuiz,
-        submitQuiz
+        refetchUsers: fetchUsers
     };
 }
