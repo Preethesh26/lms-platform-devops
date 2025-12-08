@@ -99,4 +99,13 @@ export const progressAPI = {
     getCourseProgress: (courseId: string) => api.get(`/progress/${courseId}`)
 };
 
+// Quizzes API
+export const quizzesAPI = {
+    create: (data: any) => api.post('/quizzes', data),
+    get: (id: string) => api.get(`/quizzes/${id}`), // Student view
+    getForEdit: (id: string) => api.get(`/quizzes/${id}/edit`), // Admin view
+    submit: (id: string, answers: any[]) => api.post(`/quizzes/${id}/submit`, { answers }),
+    getAttempts: (id: string) => api.get(`/quizzes/${id}/attempts`)
+};
+
 export default api;

@@ -14,6 +14,7 @@ const supportRoutes = require('./routes/support');
 const paymentRoutes = require('./routes/payment');
 const analyticsRoutes = require('./routes/analytics');
 const progressRoutes = require('./routes/progress');
+const quizRoutes = require('./routes/quizzes');
 
 // Connect to database
 connectDB();
@@ -37,6 +38,7 @@ app.use('/api/support', supportRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/quizzes', quizRoutes);
 
 // Error handler
 app.use(errorHandler);

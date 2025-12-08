@@ -12,6 +12,15 @@ const lessonSchema = new mongoose.Schema({
     duration: {
         type: String,
         required: true
+    },
+    type: {
+        type: String,
+        enum: ['video', 'quiz'],
+        default: 'video'
+    },
+    quizId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quiz'
     }
 }, {
     toJSON: { virtuals: true },

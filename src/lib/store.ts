@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { coursesAPI, usersAPI, authAPI, paymentAPI } from "./api";
+import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI } from "./api";
 
 export type Lesson = {
     id: string;
@@ -214,6 +214,30 @@ export function useStore() {
         setCurrentUser(null);
     };
 
+    // ... existing exports
+    const [quizzes, setQuizzes] = useState<any[]>([]); // Store loaded quizzes
+
+    const createQuiz = async (quizData: any) => {
+        try {
+            const res = await quizzesAPI.create(quizData);
+            setQuizzes([...quizzes, res.data.data]);
+            return res.data.data;
+        } catch (error) {
+            console.error('Error creating quiz:', error);
+            throw error;
+        }
+    };
+
+    const submitQuiz = async (quizId: string, answers: any[]) => {
+        try {
+            const res = await quizzesAPI.submit(quizId, answers);
+            return res.data.data;
+        } catch (error) {
+            console.error('Error submitting quiz:', error);
+            throw error;
+        }
+    };
+
     return {
         courses,
         users,
@@ -231,6 +255,8 @@ export function useStore() {
         loginUser,
         logoutUser,
         isInitialized,
-        refetchUsers: fetchUsers
+        refetchUsers: fetchUsers,
+        createQuiz,
+        submitQuiz
     };
 }
