@@ -371,7 +371,7 @@ export default function AdminUsersPage() {
                                 </div>
                             </div>
 
-                            {selectedUser?.enrolledCourses?.length > 0 && (
+                            {selectedUser?.enrolledCourses && selectedUser.enrolledCourses.length > 0 && (
                                 <div className="mt-4 pt-4 border-t">
                                     <Label className="text-xs text-muted-foreground mb-2 block">Course List</Label>
                                     <div className="grid gap-2">

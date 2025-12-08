@@ -89,9 +89,9 @@ Admin User,admin@example.com,ADMIN-001,admin,admin123`;
                             className="hidden"
                             id="file-upload"
                         />
-                        <label htmlFor="file-upload" className="cursor-pointer">
-                            <Button variant="outline" asChild>
-                                <span>Choose CSV File</span>
+                        <label htmlFor="file-upload">
+                            <Button variant="outline" type="button" onClick={() => document.getElementById('file-upload')?.click()}>
+                                Choose CSV File
                             </Button>
                         </label>
                         {file && (
