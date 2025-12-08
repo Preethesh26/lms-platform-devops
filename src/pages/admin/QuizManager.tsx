@@ -10,9 +10,16 @@ export default function QuizManager() {
 
     useEffect(() => {
         if (isInitialized) {
-            fetchQuizzes();
+            console.log('QuizManager: Fetching quizzes...');
+            fetchQuizzes().then(() => {
+                console.log('QuizManager: Quizzes fetched successfully');
+            }).catch(err => {
+                console.error('QuizManager: Error fetching quizzes:', err);
+            });
         }
     }, [isInitialized]);
+
+    console.log('QuizManager render - quizzes:', quizzes, 'isInitialized:', isInitialized);
 
     if (!isInitialized) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 

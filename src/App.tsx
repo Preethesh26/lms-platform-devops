@@ -41,6 +41,8 @@ function App() {
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
                     <Route path="/admin/courses" element={<AdminCoursesPage />} />
                     <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/quizzes" element={<QuizManager />} />
+                    <Route path="/admin/quizzes/create" element={<QuizEditor />} />
                 </Route>
             </Routes>
             {/* <Toaster /> */}
