@@ -1,0 +1,152 @@
+# LMS Platform Development
+
+- [x] Initialize Project
+    - [x] Create Next.js app with Tailwind CSS
+    - [/] Set up project structure (pages, components, lib)
+- [x] Authentication Validation
+    - [x] Validate Admin Credentials (admin@lms.com / admin123)
+    - [x] Validate User Credentials against Store
+    - [x] Show Error Messages for Invalid Login
+- [x] Course Content Management
+    - [x] Update Store Schema for Lessons
+    - [x] Admin: Manage Lessons (Add/Edit/Delete Video URLs)
+    - [x] User: Course Player Page (Video Player + Playlist)
+- [x] User Home Page Enhancement
+    - [x] Add Categories Section
+    - [x] Add Features/Why Choose Us Section
+    - [x] Add Testimonials Section
+    - [x] Polish Visuals (gradients, spacing)
+- [x] Migrate to Vite + React
+    - [x] Install Vite & React Router
+    - [x] Configure Vite (vite.config.ts)
+    - [x] Setup Entry Point (main.tsx) & Router (App.tsx)
+    - [x] Refactor Pages & Components (Remove Next.js dependencies)
+    - [x] Update Scripts & Cleanup
+- [x] User Enrollment
+    - [x] Implement Enroll Functionality (Add user to course)
+    - [x] Update 'Start Learning' button logic
+    - [x] Refactor 'My Learning' Page
+- [x] Backend Setup (MongoDB + Express)
+    - [x] Create Express server structure
+    - [x] Setup MongoDB connection (Atlas)
+    - [x] Create Mongoose models (Course, User, Enrollment)
+    - [x] Implement JWT authentication
+    - [x] Build API endpoints (Auth, Courses, Users)
+    - [x] Add CORS and security middleware
+- [x] Frontend API Integration
+    - [x] Remove Firebase dependencies
+    - [x] Create API service layer
+    - [x] Update store to use REST APIs
+    - [x] Implement JWT token management
+    - [x] Implement Enroll Functionality (Add user to course)
+    - [x] Update 'Start Learning' button logic
+- [x] Data Persistence & Editing Features
+    - [x] Create Local Storage Store (Users & Courses)
+    - [x] Implement Admin Course Management (Create, Edit, List)
+    - [x] Add Video URL field to Course model & UI
+    - [x] Implement Admin User Management (Edit, List)
+    - [x] Connect User Panel to Store
+- [x] User Management Implementation
+    - [x] Install Dialog Component
+    - [x] Create Invite User Form (Enrollment No. & Password)
+    - [x] Update Admin Users Page
+    - [x] Implement separate creation flows for Admin/User
+    [x] Implement Edit User functionality (Email, Role, Password)
+    - [x] Edit User
+    - [x] Delete User
+    - [x] Show Password to Admin After Creation
+    - [x] Make Password Mandatory in Edit Form
+    - [x] Add Enrollment Number to Student Login
+    - [x] Delete Confirmation (Require Email Input)
+    - [x] Profile Update Email Notifications
+    - [x] Admin Edit User Enrollments (Add/Remove Courses)
+    - [x] Self-Registration (Students Can Sign Up)
+    - [x] Admin Dashboard Analytics (Charts/Graphs)
+    - [ ] Course Progress Tracking (Save Video Position)
+    - [ ] Course Progress Tracking (Save Video Position)
+- [x] **Quizzes and Assignments**
+  - [x] **Database Schema**
+      - [x] Create `Quiz` model (title, questions, timeLimit, passingScore)
+      - [x] Create `Question` schema (text, options, correctOption)
+      - [x] Create `QuizResult` model (user, quiz, score, passed, answers)
+  - [x] **Backend API**
+      - [x] Create Quiz (Admin)
+      - [x] Get Quiz (Student - without correct answers)
+      - [x] Submit Quiz (Student - calculate score)
+      - [x] Get Quiz Results (User/Admin)
+  - [x] **Admin UI**
+      - [x] Quiz Management Page (List Quizzes)
+      - [x] Quiz Creator/Editor (Add Questions interactively)
+      - [x] Attach Quiz to Course/Lesson
+  - [x] **Student UI**
+      - [x] Quiz Player (Timer, Question Navigation)
+      - [x] Result Page (Score, Pass/Fail status, Review)
+- [x] Email Features Implementation
+    - [x] Install Resend & Configure Backend
+    - [x] Forgot Password (API & UI)
+    - [x] Contact Admin Form & Email
+    - [x] Welcome Email (After Signup)
+    - [x] Helper Function for Email Templates
+
+- [x] Global Improvements
+    - [x] Fix "Home" button navigation (Logo)
+    - [x] Add "Go Back" button on course player
+    - [x] Update "Buy Now" price display (Strike-through)
+    - [x] Fix "400 Bad Request" on payment
+    - [x] Clean up debug logs Mock Payment System (No API Keys Required)
+    - [x] Implement Redirect to My Learning after Payment
+    - [x] Fix One Payment Unlocks All Issue (Backend & Frontend Verified)
+    - [x] Clean Up Debug Logs from Payment System
+- [x] Payment Integration (Razorpay)
+    - [x] Backend: Payment Model & Controller
+    - [x] Backend: Payment Routes
+    - [x] Frontend: Course Price & Payment UI
+    - [x] Frontend: Razorpay Checkout Integration
+    - [x] Switched to Mock Payment System (No API Keys Required)
+    - [x] Implement Redirect to My Learning after Payment
+    - [x] Fix One Payment Unlocks All Issue (Backend & Frontend Verified)
+    - [x] Clean Up Debug Logs from Payment System
+- [x] Admin Panel Refactor
+    - [x] Remove Dashboard Link from Sidebar
+    - [x] Redirect /admin to /admin/courses
+- [x] UI Polish & Cleanup
+    - [x] Remove 'Admin Mode' button from User Layout
+    - [x] Redesign Admin Login Page (Premium Visuals)
+- [x] Authentication Updates
+    - [x] Update Admin Login (Email & Password)
+    - [x] Create User Login Page (Enrollment No. & Password)
+    - [x] Update User Layout Sign In Link
+- [x] Admin Authentication Implementation
+    - [x] Create Middleware for Route Protection
+    - [x] Add Sign Out functionality
+    - [x] Update Admin Mode link
+- [x] Admin Authentication & UI Fixes
+    - [x] Fix User Panel Alignment
+    - [x] Create Admin Login Page (Enrollment No. & Password)
+    - [x] Implement Mock Auth Logic
+- [x] UI/UX Enhancements
+    - [x] Update Color Palette (Premium/Vibrant)
+    - [x] Enhance Landing Page (Hero Section, Gradients)
+    - [x] Polish Navigation & Sidebar (Glassmorphism)
+    - [x] Add Micro-interactions/Animations
+- [x] Design System & UI Setup
+    - [x] Configure Tailwind theme (colors, fonts)
+    - [x] Create basic UI components (Button, Card, Input, etc.)
+- [x] Admin Panel
+    - [x] Dashboard Overview
+    - [x] Course Management (List, Create, Edit)
+    - [x] User Management
+- [x] User Panel (Student)
+    - [x] Course Catalog
+    - [x] Course Detail View (Merged with Player)
+    - [x] Enrolled Courses / Dashboard (My Learning Page)
+    - [x] Protect Course Player (Auth & Enrollment Check)
+- [x] Navigation & Layout
+    - [x] Create Admin Layout (Sidebar, Header)
+    - [x] Create User Layout (Navbar, Footer)
+    - [x] Implement Sign Out in User Panel
+- [x] Deployment
+    - [x] Create Deployment Guide
+    - [x] Prepare Code for Deployment (Check CORS, Build Scripts)
+    - [x] Fix Build Errors (Tabs Component)
+    - [x] Configure Email Service (Brevo)
