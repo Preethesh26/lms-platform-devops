@@ -207,10 +207,57 @@ const sendAdminNewUserNotification = async (adminEmail, userName, userEmail, enr
     }
 };
 
+// Send test invitation email
+const sendTestInvitationEmail = async (to, testData) => {
+    if (!apiInstance) {
+        console.error('Brevo API not initialized');
+        return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.to = [{ email: to }];
+        sendSmtpEmail.subject = `You're invited to take: ${testData.title}`;
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">Test Invitation</h2>
+                <p>You have been invited to take the following test:</p>
+                
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="margin-top: 0;">${testData.title}</h3>
+                    ${testData.description ? `<p>${testData.description}</p>` : ''}
+                    
+                    <p><strong>Questions:</strong> ${testData.questionCount}</p>
+                    <p><strong>Time Limit:</strong> ${testData.timeLimit > 0 ? `${testData.timeLimit} minutes` : 'Unlimited'}</p>
+                    <p><strong>Passing Score:</strong> ${testData.passingScore}%</p>
+                    ${testData.deadline ? `<p><strong>Deadline:</strong> ${new Date(testData.deadline).toLocaleString()}</p>` : ''}
+                </div>
+                
+                <p><strong>Important:</strong> You can only take this test once.</p>
+                
+                <a href="${testData.link}" style="display: inline-block; background: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 20px 0;">
+                    Start Test
+                </a>
+                
+                <p style="color: #666; font-size: 14px;">Or copy this link: ${testData.link}</p>
+            </div>
+        `;
+
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Email service error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendPasswordResetEmail,
     sendContactAdminEmail,
     sendWelcomeEmail,
     sendProfileUpdateEmail,
-    sendAdminNewUserNotification
+    sendAdminNewUserNotification,
+    sendTestInvitationEmail
 };

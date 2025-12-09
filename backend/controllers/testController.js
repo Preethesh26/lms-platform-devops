@@ -1,9 +1,7 @@
 const Test = require('../models/Test');
 const TestAttempt = require('../models/TestAttempt');
 const User = require('../models/User');
-const { Resend } = require('resend');
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const { sendTestInvitationEmail } = require('../services/emailService');
 
 // @desc    Create a new test
 // @route   POST /api/tests
@@ -450,42 +448,28 @@ exports.sendInvitations = async (req, res) => {
         // Send emails
         for (const invitedUser of usersToEmail) {
             try {
-                await resend.emails.send({
-                    from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-                    to: invitedUser.email,
-                    subject: `You're invited to take: ${test.title}`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                            <h2 style="color: #333;">Test Invitation</h2>
-                            <p>You have been invited to take the following test:</p>
-                            
-                            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                                <h3 style="margin-top: 0;">${test.title}</h3>
-                                ${test.description ? `<p>${test.description}</p>` : ''}
-                                
-                                <p><strong>Questions:</strong> ${test.questions.length}</p>
-                                <p><strong>Time Limit:</strong> ${test.timeLimit > 0 ? `${test.timeLimit} minutes` : 'Unlimited'}</p>
-                                <p><strong>Passing Score:</strong> ${test.passingScore}%</p>
-                                ${test.hasDeadline && test.deadline ? `<p><strong>Deadline:</strong> ${new Date(test.deadline).toLocaleString()}</p>` : ''}
-                            </div>
-                            
-                            <p><strong>Important:</strong> You can only take this test once.</p>
-                            
-                            <a href="${testLink}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 20px 0;">
-                                Start Test
-                            </a>
-                            
-                            <p style="color: #666; font-size: 14px;">Or copy this link: ${testLink}</p>
-                        </div>
-                    `
-                });
+                const testData = {
+                    title: test.title,
+                    description: test.description,
+                    questionCount: test.questions.length,
+                    timeLimit: test.timeLimit,
+                    passingScore: test.passingScore,
+                    deadline: test.hasDeadline ? test.deadline : null,
+                    link: testLink
+                };
 
-                emailsSent.push(invitedUser.email);
+                const result = await sendTestInvitationEmail(invitedUser.email, testData);
 
-                // Mark as sent
-                const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
-                if (userIndex !== -1) {
-                    test.invitedUsers[userIndex].emailSent = true;
+                if (result.success) {
+                    emailsSent.push(invitedUser.email);
+
+                    // Mark as sent
+                    const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
+                    if (userIndex !== -1) {
+                        test.invitedUsers[userIndex].emailSent = true;
+                    }
+                } else {
+                    emailsFailed.push(invitedUser.email);
                 }
             } catch (error) {
                 console.error(`Failed to send email to ${invitedUser.email}:`, error);
