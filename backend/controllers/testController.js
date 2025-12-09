@@ -1,6 +1,9 @@
 const Test = require('../models/Test');
 const TestAttempt = require('../models/TestAttempt');
 const User = require('../models/User');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // @desc    Create a new test
 // @route   POST /api/tests
@@ -398,6 +401,108 @@ exports.getTestStats = async (req, res) => {
                 passed,
                 failed,
                 attempts
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+// @desc    Send invitation emails
+// @route   POST /api/tests/:id/send-invitations
+// @access  Private (Admin)
+exports.sendInvitations = async (req, res) => {
+    try {
+        const test = await Test.findById(req.params.id);
+
+        if (!test) {
+            return res.status(404).json({
+                success: false,
+                error: 'Test not found'
+            });
+        }
+
+        if (!test.isPublished) {
+            return res.status(400).json({
+                success: false,
+                error: 'Test must be published before sending invitations'
+            });
+        }
+
+        // Get users who haven't received emails yet
+        const usersToEmail = test.invitedUsers.filter(u => !u.emailSent);
+
+        if (usersToEmail.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'All invited users have already received emails'
+            });
+        }
+
+        const testLink = `${process.env.FRONTEND_URL}/test/${test.accessSlug}`;
+        const emailsSent = [];
+        const emailsFailed = [];
+
+        // Send emails
+        for (const invitedUser of usersToEmail) {
+            try {
+                await resend.emails.send({
+                    from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+                    to: invitedUser.email,
+                    subject: `You're invited to take: ${test.title}`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2 style="color: #333;">Test Invitation</h2>
+                            <p>You have been invited to take the following test:</p>
+                            
+                            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                <h3 style="margin-top: 0;">${test.title}</h3>
+                                ${test.description ? `<p>${test.description}</p>` : ''}
+                                
+                                <p><strong>Questions:</strong> ${test.questions.length}</p>
+                                <p><strong>Time Limit:</strong> ${test.timeLimit > 0 ? `${test.timeLimit} minutes` : 'Unlimited'}</p>
+                                <p><strong>Passing Score:</strong> ${test.passingScore}%</p>
+                                ${test.hasDeadline && test.deadline ? `<p><strong>Deadline:</strong> ${new Date(test.deadline).toLocaleString()}</p>` : ''}
+                            </div>
+                            
+                            <p><strong>Important:</strong> You can only take this test once.</p>
+                            
+                            <a href="${testLink}" style="display: inline-block; background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 20px 0;">
+                                Start Test
+                            </a>
+                            
+                            <p style="color: #666; font-size: 14px;">Or copy this link: ${testLink}</p>
+                        </div>
+                    `
+                });
+
+                emailsSent.push(invitedUser.email);
+
+                // Mark as sent
+                const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
+                if (userIndex !== -1) {
+                    test.invitedUsers[userIndex].emailSent = true;
+                }
+            } catch (error) {
+                console.error(`Failed to send email to ${invitedUser.email}:`, error);
+                emailsFailed.push(invitedUser.email);
+            }
+        }
+
+        // Save updated test
+        await test.save();
+
+        res.status(200).json({
+            success: true,
+            data: {
+                sent: emailsSent.length,
+                failed: emailsFailed.length,
+                emailsSent,
+                emailsFailed
             }
         });
     } catch (error) {

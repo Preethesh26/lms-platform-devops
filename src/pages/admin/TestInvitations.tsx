@@ -14,6 +14,7 @@ export default function TestInvitations() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         fetchTest();
@@ -67,6 +68,27 @@ export default function TestInvitations() {
         }
     };
 
+    const handleSendInvitations = async () => {
+        if (!test) return;
+
+        if (!test.isPublished) {
+            alert('Please publish the test before sending invitations');
+            return;
+        }
+
+        setSending(true);
+        try {
+            const res = await testsAPI.sendInvitations(id!);
+            const data = res.data.data;
+            alert(`Invitations sent!\n\nSent: ${data.sent}\nFailed: ${data.failed}`);
+            fetchTest();
+        } catch (error: any) {
+            alert(error.response?.data?.error || 'Failed to send invitations');
+        } finally {
+            setSending(false);
+        }
+    };
+
     const copyLink = () => {
         const link = `${window.location.origin}/test/${test.accessSlug}`;
         navigator.clipboard.writeText(link);
@@ -79,6 +101,7 @@ export default function TestInvitations() {
     }
 
     const testLink = `${window.location.origin}/test/${test.accessSlug}`;
+    const unsent Emails = test.invitedUsers.filter((u: any) => !u.emailSent).length;
 
     return (
         <div className="space-y-6">
@@ -141,8 +164,14 @@ export default function TestInvitations() {
 
             {/* Add Email */}
             <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Add User</CardTitle>
+                    {unsentEmails > 0 && (
+                        <Button onClick={handleSendInvitations} disabled={sending}>
+                            <Mail className="h-4 w-4 mr-2" />
+                            {sending ? 'Sending...' : `Send Invitations (${unsentEmails})`}
+                        </Button>
+                    )}
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-2">

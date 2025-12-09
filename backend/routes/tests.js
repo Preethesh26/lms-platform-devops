@@ -9,7 +9,8 @@ const {
     getTestBySlug,
     submitTest,
     getTestResult,
-    getTestStats
+    getTestStats,
+    sendInvitations
 } = require('../controllers/testController');
 
 const { protect, authorize } = require('../middleware/auth');
@@ -34,6 +35,7 @@ router.route('/:id')
 
 router.put('/:id/publish', authorize('admin'), togglePublish);
 router.get('/:id/stats', authorize('admin'), getTestStats);
+router.post('/:id/send-invitations', authorize('admin'), sendInvitations);
 
 // User routes
 router.post('/:id/submit', submitTest);

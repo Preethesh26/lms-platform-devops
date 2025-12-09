@@ -122,6 +122,7 @@ export const testsAPI = {
     delete: (id: string) => api.delete(`/tests/${id}`),
     togglePublish: (id: string) => api.put(`/tests/${id}/publish`),
     getStats: (id: string) => api.get(`/tests/${id}/stats`),
+    sendInvitations: (id: string) => api.post(`/tests/${id}/send-invitations`),
     // User endpoints
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
     submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
