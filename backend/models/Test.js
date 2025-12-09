@@ -49,8 +49,7 @@ const testSchema = new mongoose.Schema({
     },
     accessSlug: {
         type: String,
-        unique: true,
-        required: true
+        unique: true
     },
     // Deadline settings
     hasDeadline: {
