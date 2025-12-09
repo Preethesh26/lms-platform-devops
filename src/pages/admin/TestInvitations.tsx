@@ -101,7 +101,7 @@ export default function TestInvitations() {
     }
 
     const testLink = `${window.location.origin}/test/${test.accessSlug}`;
-    const unsent Emails = test.invitedUsers.filter((u: any) => !u.emailSent).length;
+    const unsentEmails = test.invitedUsers.filter((u: any) => !u.emailSent).length;
 
     return (
         <div className="space-y-6">
