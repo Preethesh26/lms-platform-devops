@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ export default function UserLogin() {
     const [forgotMessage, setForgotMessage] = useState("");
     const [forgotLoading, setForgotLoading] = useState(false);
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { loginUser } = useStore();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -38,7 +39,14 @@ export default function UserLogin() {
             }
 
             loginUser(user, token);
-            navigate("/");
+
+            // Check for redirect parameter
+            const redirectTo = searchParams.get('redirect');
+            if (redirectTo) {
+                navigate(redirectTo);
+            } else {
+                navigate("/");
+            }
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid credentials.");
