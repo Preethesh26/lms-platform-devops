@@ -58,6 +58,12 @@ export default function AdminLayout() {
                             Tests
                         </Button>
                     </Link>
+                    <Link to="/admin/settings">
+                        <Button variant="ghost" className="w-full justify-start">
+                            <ClipboardList className="mr-2 h-4 w-4" />
+                            Settings
+                        </Button>
+                    </Link>
                     <div className="mt-auto pt-4 border-t">
                         <Link to="/">
                             <Button variant="outline" className="w-full justify-start">

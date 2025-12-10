@@ -44,6 +44,64 @@ export default function TestManager() {
         }
     };
 
+    const handleExportResults = async (testId: string, testTitle: string) => {
+        try {
+            const res = await testsAPI.getAttempts(testId);
+            const attempts = res.data.data;
+
+            if (attempts.length === 0) {
+                alert('No attempts found to export');
+                return;
+            }
+
+            // CSV Header
+            const headers = ['User Name', 'Email', 'Enrollment', 'Score', 'Max Score', 'Percentage', 'Status', 'Completed At'];
+
+            // CSV Rows
+            const rows = attempts.map((attempt: any) => {
+                const user = attempt.user || {};
+                const name = user.name || (attempt.userEmail ? 'Guest' : 'Unknown');
+                const email = user.email || attempt.userEmail || 'N/A';
+                const enrollment = user.enrollment || 'N/A';
+                const percentage = Math.round((attempt.score / attempt.maxScore) * 100);
+                const status = percentage >= 70 ? 'Passed' : 'Failed'; // Assuming 70% passing, ideally fetch from test
+                const date = new Date(attempt.completedAt).toLocaleString();
+
+                // Handle CSV escaping
+                const escape = (text: string) => `"${String(text).replace(/"/g, '""')}"`;
+
+                return [
+                    escape(name),
+                    escape(email),
+                    escape(enrollment),
+                    attempt.score,
+                    attempt.maxScore,
+                    `${percentage}%`,
+                    status,
+                    escape(date)
+                ].join(',');
+            });
+
+            // Combine
+            const csvContent = [headers.join(','), ...rows].join('\n');
+
+            // Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${testTitle.replace(/[^a-z0-9]/gi, '_')}_results.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        } catch (error) {
+            console.error('Error exporting results:', error);
+            alert('Failed to export results');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex h-screen items-center justify-center">
@@ -130,6 +188,14 @@ export default function TestManager() {
                                             Invitations
                                         </Button>
                                     </Link>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleExportResults(test._id, test.title)}
+                                        title="Export Results CSV"
+                                    >
+                                        <FileText className="h-3 w-3" />
+                                    </Button>
                                     <Button
                                         variant="outline"
                                         size="sm"

@@ -45,6 +45,66 @@ export default function TestEditor() {
         setQuestions(newQuestions);
     };
 
+    const handleCSVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const lines = text.split('\n').filter(line => line.trim());
+
+            // Skip header if present (check for "question" in first line)
+            const startIndex = lines[0].toLowerCase().includes('question') ? 1 : 0;
+            const newQuestions = [];
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i];
+                // Handle CSV parsing (simple comma split, careful with commas in text)
+                // This is a simple implementation. For robust parsing, use a library.
+                // Format: Question, Option1, Option2, Option3, Option4, CorrectIndex (1-4), Explanation
+                const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Split by comma not in quotes
+
+                if (parts.length >= 6) {
+                    const clean = (s: string) => s ? s.trim().replace(/^"|"$/g, '').replace(/""/g, '"') : '';
+
+                    const questionText = clean(parts[0]);
+                    const options = [
+                        clean(parts[1]),
+                        clean(parts[2]),
+                        clean(parts[3]),
+                        clean(parts[4])
+                    ];
+                    // CSV uses 1-based index usually for humans, convert to 0-based
+                    const correctOptionIndex = parseInt(clean(parts[5])) - 1;
+                    const explanation = parts[6] ? clean(parts[6]) : '';
+
+                    if (questionText && options.every(o => o) && !isNaN(correctOptionIndex)) {
+                        newQuestions.push({
+                            questionText,
+                            options,
+                            correctOptionIndex: Math.max(0, Math.min(3, correctOptionIndex)),
+                            explanation
+                        });
+                    }
+                }
+            }
+
+            if (newQuestions.length > 0) {
+                // improved: append to existing or replace? Let's append but ask user? 
+                // For simplicity, just append to current questions
+                setQuestions([...questions, ...newQuestions]);
+                alert(`Successfully added ${newQuestions.length} questions`);
+            } else {
+                alert('No valid questions found in CSV');
+            }
+        } catch (error) {
+            console.error('Error uploading CSV:', error);
+            alert('Failed to process CSV file');
+        } finally {
+            e.target.value = '';
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -233,7 +293,30 @@ export default function TestEditor() {
 
                 {/* Questions */}
                 <div className="space-y-6">
-                    <h2 className="text-xl font-semibold">Questions</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold">Questions</h2>
+                        <div className="flex gap-2">
+                            <a
+                                href="/test_questions_template.csv"
+                                download
+                                className="text-sm text-primary hover:underline flex items-center mr-4"
+                            >
+                                Download Template
+                            </a>
+                            <Label htmlFor="question-csv" className="cursor-pointer">
+                                <div className="inline-flex h-9 items-center justify-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm hover:bg-secondary/80">
+                                    Import CSV
+                                </div>
+                            </Label>
+                            <Input
+                                id="question-csv"
+                                type="file"
+                                accept=".csv"
+                                className="hidden"
+                                onChange={handleCSVUpload}
+                            />
+                        </div>
+                    </div>
                     {questions.map((question, qIndex) => (
                         <div key={qIndex} className="bg-card border rounded-xl p-6 relative">
                             <button

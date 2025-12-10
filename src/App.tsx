@@ -54,6 +54,7 @@ function App() {
                     <Route path="/admin/quizzes" element={<QuizManager />} />
                     <Route path="/admin/quizzes/create" element={<QuizEditor />} />
                     <Route path="/admin/tests" element={<TestManager />} />
+                    <Route path="/admin/tests/create" element={<TestEditor />} />
                     <Route path="/admin/tests/:id/edit" element={<TestEditor />} />
                     <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
                     <Route path="/admin/settings" element={<Settings />} />

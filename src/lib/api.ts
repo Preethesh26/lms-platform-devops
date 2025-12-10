@@ -124,8 +124,9 @@ export const testsAPI = {
     getStats: (id: string) => api.get(`/tests/${id}/stats`),
     sendInvitations: (id: string) => api.post(`/tests/${id}/send-invitations`),
     // User endpoints
-    authenticate: (slug: string, email: string, password: string) =>
-        api.post(`/tests/${slug}/authenticate`, { email, password }),
+    getAttempts: (id: string) => api.get(`/tests/${id}/attempts`),
+    authenticate: (slug: string, email: string, accessPassword?: string) =>
+        api.post(`/tests/${slug}/authenticate`, { email, accessPassword }),
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
     submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
     getResult: (id: string) => api.get(`/tests/${id}/result`)
