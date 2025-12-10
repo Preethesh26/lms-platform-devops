@@ -22,8 +22,8 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.post('/:slug/authenticate', authenticateForTest);
 
-// Public route (requires authentication but not admin)
-router.get('/access/:slug', protect, getTestBySlug);
+// Public route (no authentication required to view test info)
+router.get('/access/:slug', getTestBySlug);
 
 // Protected routes (require authentication)
 router.use(protect);

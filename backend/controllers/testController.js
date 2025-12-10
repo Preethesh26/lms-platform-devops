@@ -197,12 +197,13 @@ exports.togglePublish = async (req, res) => {
     }
 };
 
-// @desc    Get test by slug (for users)
+// @desc    Get test by slug (public access info)
 // @route   GET /api/tests/access/:slug
-// @access  Private
+// @access  Public
 exports.getTestBySlug = async (req, res) => {
     try {
-        const test = await Test.findOne({ accessSlug: req.params.slug });
+        const test = await Test.findOne({ accessSlug: req.params.slug })
+            .select('title description timeLimit passingScore hasDeadline deadline requiresAccountLogin accessSlug isPublished');
 
         if (!test) {
             return res.status(404).json({
@@ -218,51 +219,9 @@ exports.getTestBySlug = async (req, res) => {
             });
         }
 
-        // Check if user is invited
-        const isInvited = test.invitedUsers.some(
-            invited => invited.email === req.user.email
-        );
-
-        if (!isInvited) {
-            return res.status(403).json({
-                success: false,
-                error: 'You are not invited to this test'
-            });
-        }
-
-        // Check if user already attempted
-        const existingAttempt = await TestAttempt.findOne({
-            user: req.user.id,
-            test: test._id
-        });
-
-        if (existingAttempt) {
-            return res.status(200).json({
-                success: true,
-                alreadyAttempted: true,
-                attempt: existingAttempt
-            });
-        }
-
-        // Check deadline
-        if (test.hasDeadline && test.deadline && new Date() > test.deadline) {
-            return res.status(403).json({
-                success: false,
-                error: 'Test deadline has passed'
-            });
-        }
-
-        // Return test without correct answers
-        const testForUser = test.toObject();
-        testForUser.questions = testForUser.questions.map(q => {
-            const { correctOptionIndex, explanation, ...rest } = q;
-            return rest;
-        });
-
         res.status(200).json({
             success: true,
-            alreadyAttempted: false,
-            data: testForUser
+            data: test
         });
     } catch (error) {
         console.error(error);
@@ -271,6 +230,30 @@ exports.getTestBySlug = async (req, res) => {
             error: error.message
         });
     }
+};
+error: 'Test deadline has passed'
+            });
+        }
+
+// Return test without correct answers
+const testForUser = test.toObject();
+testForUser.questions = testForUser.questions.map(q => {
+    const { correctOptionIndex, explanation, ...rest } = q;
+    return rest;
+});
+
+res.status(200).json({
+    success: true,
+    alreadyAttempted: false,
+    data: testForUser
+});
+    } catch (error) {
+    console.error(error);
+    res.status(400).json({
+        success: false,
+        error: error.message
+    });
+}
 };
 
 // @desc    Submit test attempt

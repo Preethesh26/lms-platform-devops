@@ -40,6 +40,12 @@ export default function TestAccess() {
                 setAttempt(res.data.attempt);
             } else {
                 setTest(res.data.data);
+
+                // If test requires account login and user is not logged in, redirect
+                if (res.data.data.requiresAccountLogin && !currentUser) {
+                    navigate(`/login?redirect=/test/${slug}`);
+                    return;
+                }
             }
         } catch (error: any) {
             // If it requires account login and user not logged in
