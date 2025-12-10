@@ -60,11 +60,11 @@ export default function UserHomePage() {
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
                         <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">Explore Courses</Button>
-                        <Button size="lg" variant="outline" className="border-violet-400 text-white hover:bg-violet-500/20 hover:text-white backdrop-blur-sm h-10 px-6 text-sm">View Roadmap</Button>
+                        <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">View Roadmap</Button>
 
                         {showTakeTest && (
                             <TakeTestDialog>
-                                <Button size="lg" variant="outline" className="border-yellow-400 text-yellow-100 hover:bg-yellow-500/20 hover:text-white backdrop-blur-sm h-10 px-6 text-sm">
+                                <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">
                                     <Keyboard className="mr-2 h-4 w-4" />
                                     Take Test
                                 </Button>
