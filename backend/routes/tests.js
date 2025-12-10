@@ -44,7 +44,9 @@ router.get('/:id/attempts', authorize('admin'), getTestAttempts); // Added route
 router.post('/:id/send-invitations', authorize('admin'), sendInvitations);
 
 // User routes
-router.post('/:id/submit', submitTest);
-router.get('/:id/result', getTestResult);
+// Use protectOrTestToken so both logged-in users and guest test takers can submit
+const { protectOrTestToken } = require('../middleware/auth');
+router.post('/:id/submit', protectOrTestToken, submitTest);
+router.get('/:id/result', protectOrTestToken, getTestResult);
 
 module.exports = router;

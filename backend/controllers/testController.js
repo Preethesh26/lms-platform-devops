@@ -248,10 +248,21 @@ exports.submitTest = async (req, res) => {
         }
 
         // Check if user already attempted
-        const existingAttempt = await TestAttempt.findOne({
-            user: req.user.id,
-            test: test._id
-        });
+        let userQuery = {};
+
+        if (req.user) {
+            userQuery = { user: req.user.id, test: test._id };
+        } else if (req.testToken) {
+            // Verify the token belongs to this test
+            if (req.testToken.testId !== req.params.id) {
+                return res.status(403).json({ success: false, error: 'Token valid for different test' });
+            }
+            userQuery = { userEmail: req.testToken.email, test: test._id };
+        } else {
+            return res.status(401).json({ success: false, error: 'Unauthorized' });
+        }
+
+        const existingAttempt = await TestAttempt.findOne(userQuery);
 
         if (existingAttempt) {
             return res.status(400).json({
@@ -281,15 +292,23 @@ exports.submitTest = async (req, res) => {
         const percentage = (score / test.questions.length) * 100;
         const passed = percentage >= test.passingScore;
 
-        const attempt = await TestAttempt.create({
-            user: req.user.id,
+        const attemptData = {
             test: test._id,
             score,
             maxScore: test.questions.length,
             percentage,
             passed,
             answers: processedAnswers
-        });
+        };
+
+        if (req.user) {
+            attemptData.user = req.user.id;
+            attemptData.userEmail = req.user.email;
+        } else if (req.testToken) {
+            attemptData.userEmail = req.testToken.email;
+        }
+
+        const attempt = await TestAttempt.create(attemptData);
 
         res.status(200).json({
             success: true,
@@ -315,10 +334,17 @@ exports.submitTest = async (req, res) => {
 // @access  Private
 exports.getTestResult = async (req, res) => {
     try {
-        const attempt = await TestAttempt.findOne({
-            user: req.user.id,
-            test: req.params.id
-        }).populate('test', 'title passingScore');
+        let query = { test: req.params.id };
+
+        if (req.user) {
+            query.user = req.user.id;
+        } else if (req.testToken) {
+            query.userEmail = req.testToken.email;
+        } else {
+            return res.status(401).json({ success: false, error: 'Unauthorized' });
+        }
+
+        const attempt = await TestAttempt.findOne(query).populate('test', 'title passingScore');
 
         if (!attempt) {
             return res.status(404).json({
