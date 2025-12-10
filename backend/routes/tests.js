@@ -47,4 +47,3 @@ router.post('/:id/submit', submitTest);
 router.get('/:id/result', getTestResult);
 
 module.exports = router;
-```
