@@ -10,6 +10,7 @@ const {
     submitTest,
     getTestResult,
     getTestStats,
+    getTestAttempts,
     sendInvitations,
     authenticateForTest
 } = require('../controllers/testController');
