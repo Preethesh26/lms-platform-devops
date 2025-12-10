@@ -126,7 +126,7 @@ export const testsAPI = {
     // User endpoints
     getAttempts: (id: string) => api.get(`/tests/${id}/attempts`),
     authenticate: (slug: string, email: string, accessPassword?: string) =>
-        api.post(`/tests/${slug}/authenticate`, { email, accessPassword }),
+        api.post(`/tests/${slug}/authenticate`, { email, password: accessPassword }),
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
     submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
     getResult: (id: string) => api.get(`/tests/${id}/result`)
