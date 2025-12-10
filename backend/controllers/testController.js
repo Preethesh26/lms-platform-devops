@@ -2,6 +2,18 @@ const Test = require('../models/Test');
 const TestAttempt = require('../models/TestAttempt');
 const User = require('../models/User');
 const { sendTestInvitationEmail } = require('../services/emailService');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// Generate random 8-character password (letters + numbers)
+const generateTestPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar looking chars
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+};
 
 // @desc    Create a new test
 // @route   POST /api/tests
@@ -448,6 +460,22 @@ exports.sendInvitations = async (req, res) => {
         // Send emails
         for (const invitedUser of usersToEmail) {
             try {
+                // Generate password if test doesn't require account login
+                let plainPassword = null;
+                if (!test.requiresAccountLogin) {
+                    // Check if user already has a password
+                    if (!invitedUser.accessPassword) {
+                        plainPassword = generateTestPassword();
+                        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
+                        // Update user's password in the test
+                        const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
+                        if (userIndex !== -1) {
+                            test.invitedUsers[userIndex].accessPassword = hashedPassword;
+                        }
+                    }
+                }
+
                 const testData = {
                     title: test.title,
                     description: test.description,
@@ -455,7 +483,10 @@ exports.sendInvitations = async (req, res) => {
                     timeLimit: test.timeLimit,
                     passingScore: test.passingScore,
                     deadline: test.hasDeadline ? test.deadline : null,
-                    link: testLink
+                    link: testLink,
+                    requiresAccountLogin: test.requiresAccountLogin,
+                    password: plainPassword,  // Include generated password
+                    email: invitedUser.email
                 };
 
                 const result = await sendTestInvitationEmail(invitedUser.email, testData);
@@ -488,6 +519,118 @@ exports.sendInvitations = async (req, res) => {
                 emailsSent,
                 emailsFailed
             }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+// @desc    Authenticate for test access (email + password)
+// @route   POST /api/tests/:slug/authenticate
+// @access  Public
+exports.authenticateForTest = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const test = await Test.findOne({ accessSlug: req.params.slug });
+
+        if (!test) {
+            return res.status(404).json({
+                success: false,
+                error: 'Test not found'
+            });
+        }
+
+        if (!test.isPublished) {
+            return res.status(403).json({
+                success: false,
+                error: 'Test is not published'
+            });
+        }
+
+        // Find invited user
+        const invitedUser = test.invitedUsers.find(u => u.email === email.toLowerCase());
+
+        if (!invitedUser) {
+            return res.status(403).json({
+                success: false,
+                error: 'You are not invited to this test'
+            });
+        }
+
+        // Check if test requires account login
+        if (test.requiresAccountLogin) {
+            return res.status(400).json({
+                success: false,
+                error: 'This test requires LMS account login',
+                requiresAccountLogin: true
+            });
+        }
+
+        // Verify password
+        if (!invitedUser.accessPassword) {
+            return res.status(400).json({
+                success: false,
+                error: 'Access password not set. Please contact administrator.'
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, invitedUser.accessPassword);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid password'
+            });
+        }
+
+        // Check if already attempted
+        const existingAttempt = await TestAttempt.findOne({
+            test: test._id,
+            'userEmail': email.toLowerCase()
+        });
+
+        if (existingAttempt) {
+            return res.status(200).json({
+                success: true,
+                alreadyAttempted: true,
+                attempt: existingAttempt
+            });
+        }
+
+        // Check deadline
+        if (test.hasDeadline && test.deadline && new Date() > test.deadline) {
+            return res.status(403).json({
+                success: false,
+                error: 'Test deadline has passed'
+            });
+        }
+
+        // Generate test-specific token
+        const token = jwt.sign(
+            {
+                email: email.toLowerCase(),
+                testId: test._id,
+                slug: test.accessSlug
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: `${test.timeLimit > 0 ? test.timeLimit + 60 : 180}m` }
+        );
+
+        // Return test without correct answers
+        const testForUser = test.toObject();
+        testForUser.questions = testForUser.questions.map(q => {
+            const { correctOptionIndex, explanation, ...rest } = q;
+            return rest;
+        });
+
+        res.status(200).json({
+            success: true,
+            token,
+            data: testForUser
         });
     } catch (error) {
         console.error(error);

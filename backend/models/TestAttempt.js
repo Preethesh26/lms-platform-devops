@@ -3,8 +3,13 @@ const mongoose = require('mongoose');
 const testAttemptSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
+        // Not required - can be null for email-only test takers
+    },
+    userEmail: {
+        type: String,
+        lowercase: true
+        // Email of the test taker (for non-registered users)
     },
     test: {
         type: mongoose.Schema.Types.ObjectId,
@@ -60,7 +65,9 @@ const testAttemptSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Ensure one attempt per user per test
-testAttemptSchema.index({ user: 1, test: 1 }, { unique: true });
+// Ensure one attempt per email per test (for email-based auth)
+testAttemptSchema.index({ userEmail: 1, test: 1 }, { unique: true, sparse: true });
+// Also ensure one attempt per user per test (for account-based auth)
+testAttemptSchema.index({ user: 1, test: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('TestAttempt', testAttemptSchema);

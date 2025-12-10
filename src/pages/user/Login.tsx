@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useStore } from "@/lib/store";
-import { authAPI } from "@/lib/api";
+import { authAPI, settingsAPI } from "@/lib/api";
+import { TakeTestDialog } from "@/components/user/TakeTestDialog";
+import { Keyboard } from "lucide-react";
 
 export default function UserLogin() {
     const [email, setEmail] = useState("");
@@ -18,9 +20,22 @@ export default function UserLogin() {
     const [forgotEmail, setForgotEmail] = useState("");
     const [forgotMessage, setForgotMessage] = useState("");
     const [forgotLoading, setForgotLoading] = useState(false);
+    const [showTakeTest, setShowTakeTest] = useState(false);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { loginUser } = useStore();
+
+    useEffect(() => {
+        const checkSettings = async () => {
+            try {
+                const res = await settingsAPI.getAll();
+                setShowTakeTest(res.data.data.showTakeTestButton);
+            } catch (error) {
+                console.error('Failed to fetch settings');
+            }
+        };
+        checkSettings();
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,7 +88,17 @@ export default function UserLogin() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-            <Card className="w-full max-w-md">
+            <Card className="w-full max-w-md relative">
+                {showTakeTest && (
+                    <div className="absolute top-4 right-4">
+                        <TakeTestDialog>
+                            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                                <Keyboard className="h-4 w-4 mr-1" />
+                                Take Test
+                            </Button>
+                        </TakeTestDialog>
+                    </div>
+                )}
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Student Login</CardTitle>
                     <CardDescription className="text-center">

@@ -18,6 +18,7 @@ export default function TestEditor() {
     const [sendResultsEmail, setSendResultsEmail] = useState(false);
     const [scheduleResultsEmail, setScheduleResultsEmail] = useState(false);
     const [resultsEmailDate, setResultsEmailDate] = useState('');
+    const [requiresAccountLogin, setRequiresAccountLogin] = useState(false);
     const [questions, setQuestions] = useState([
         { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }
     ]);
@@ -59,6 +60,7 @@ export default function TestEditor() {
                 sendResultsEmail,
                 scheduleResultsEmail,
                 resultsEmailDate: scheduleResultsEmail ? resultsEmailDate : undefined,
+                requiresAccountLogin,
                 questions
             });
             navigate('/admin/tests');
@@ -184,6 +186,49 @@ export default function TestEditor() {
                             )}
                         </>
                     )}
+                </div>
+
+                {/* Authentication Method */}
+                <div className="bg-card border rounded-xl p-6 space-y-4">
+                    <h2 className="text-xl font-semibold">Authentication Method</h2>
+                    <div className="space-y-3">
+                        <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                            <input
+                                type="radio"
+                                id="uniquePassword"
+                                name="authMethod"
+                                checked={!requiresAccountLogin}
+                                onChange={() => setRequiresAccountLogin(false)}
+                                className="mt-1"
+                            />
+                            <div className="flex-1">
+                                <label htmlFor="uniquePassword" className="font-medium cursor-pointer block">
+                                    Unique Passwords (Recommended)
+                                </label>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Each invited user receives a unique password via email. No LMS account required. Perfect for external candidates.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                            <input
+                                type="radio"
+                                id="accountLogin"
+                                name="authMethod"
+                                checked={requiresAccountLogin}
+                                onChange={() => setRequiresAccountLogin(true)}
+                                className="mt-1"
+                            />
+                            <div className="flex-1">
+                                <label htmlFor="accountLogin" className="font-medium cursor-pointer block">
+                                    LMS Account Login
+                                </label>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    Users must log in with their LMS account. Only for registered students.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Questions */}

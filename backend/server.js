@@ -40,7 +40,9 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/quizzes', quizRoutes);
 app.use('/api/tests', testRoutes);
+app.use('/api/settings', require('./routes/settings'));
 
 // Error handler
 app.use(errorHandler);

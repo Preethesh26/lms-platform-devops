@@ -15,6 +15,7 @@ export default function TestInvitations() {
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
     const [sending, setSending] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         fetchTest();
@@ -86,6 +87,65 @@ export default function TestInvitations() {
             alert(error.response?.data?.error || 'Failed to send invitations');
         } finally {
             setSending(false);
+        }
+    };
+
+    const handleCSVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !test) return;
+
+        setUploading(true);
+        try {
+            const text = await file.text();
+            const lines = text.split('\n').filter(line => line.trim());
+
+            // Skip header if present
+            const startIndex = lines[0].toLowerCase().includes('email') ? 1 : 0;
+            const emails: string[] = [];
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                // Handle both comma and semicolon separators
+                const email = line.split(/[,;]/)[0].trim().toLowerCase();
+
+                // Basic email validation
+                if (email && email.includes('@') && email.includes('.')) {
+                    emails.push(email);
+                }
+            }
+
+            if (emails.length === 0) {
+                alert('No valid emails found in CSV file');
+                return;
+            }
+
+            // Add new emails (avoid duplicates)
+            const existingEmails = test.invitedUsers.map((u: any) => u.email);
+            const newEmails = emails.filter(email => !existingEmails.includes(email));
+
+            if (newEmails.length === 0) {
+                alert('All emails in CSV are already invited');
+                return;
+            }
+
+            const updatedInvited = [
+                ...test.invitedUsers,
+                ...newEmails.map(email => ({ email }))
+            ];
+
+            await testsAPI.update(id!, { invitedUsers: updatedInvited });
+            alert(`Successfully added ${newEmails.length} new email(s)`);
+            fetchTest();
+            fetchStats();
+        } catch (error) {
+            console.error('Error uploading CSV:', error);
+            alert('Failed to process CSV file');
+        } finally {
+            setUploading(false);
+            // Reset file input
+            e.target.value = '';
         }
     };
 
@@ -166,12 +226,29 @@ export default function TestInvitations() {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Add User</CardTitle>
-                    {unsentEmails > 0 && (
-                        <Button onClick={handleSendInvitations} disabled={sending}>
-                            <Mail className="h-4 w-4 mr-2" />
-                            {sending ? 'Sending...' : `Send Invitations (${unsentEmails})`}
-                        </Button>
-                    )}
+                    <div className="flex gap-2">
+                        <label htmlFor="csv-upload">
+                            <Button variant="outline" disabled={uploading} asChild>
+                                <span className="cursor-pointer">
+                                    <Upload className="h-4 w-4 mr-2" />
+                                    {uploading ? 'Uploading...' : 'Upload CSV'}
+                                </span>
+                            </Button>
+                        </label>
+                        <input
+                            id="csv-upload"
+                            type="file"
+                            accept=".csv"
+                            onChange={handleCSVUpload}
+                            className="hidden"
+                        />
+                        {unsentEmails > 0 && (
+                            <Button onClick={handleSendInvitations} disabled={sending}>
+                                <Mail className="h-4 w-4 mr-2" />
+                                {sending ? 'Sending...' : `Send Invitations (${unsentEmails})`}
+                            </Button>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="flex gap-2">

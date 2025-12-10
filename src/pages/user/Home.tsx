@@ -2,10 +2,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStore, type Course } from "@/lib/store";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { settingsAPI } from "@/lib/api";
+import { TakeTestDialog } from "@/components/user/TakeTestDialog";
+import { Keyboard } from "lucide-react";
 
 export default function UserHomePage() {
     const { courses, isInitialized, currentUser, enrollUser } = useStore();
     const navigate = useNavigate();
+    const [showTakeTest, setShowTakeTest] = useState(false);
+
+    useEffect(() => {
+        checkSettings();
+    }, []);
+
+    const checkSettings = async () => {
+        try {
+            const res = await settingsAPI.getAll();
+            setShowTakeTest(res.data.data.showTakeTestButton);
+        } catch (error) {
+            console.error('Failed to fetch settings');
+        }
+    };
 
     const handleEnroll = (courseId: string) => {
         if (!currentUser) {
@@ -27,6 +45,12 @@ export default function UserHomePage() {
                     <div className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-violet-100 backdrop-blur-sm border border-white/20 mb-2">
                         <span className="flex h-2 w-2 rounded-full bg-green-400 mr-2"></span>
                         Over 5,000+ Students Enrolled
+                        {showTakeTest && (
+                            <span className="ml-4 border-l border-white/20 pl-4 flex items-center gap-2">
+                                <span className="flex h-2 w-2 rounded-full bg-yellow-400"></span>
+                                Live Tests Available
+                            </span>
+                        )}
                     </div>
                     <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl animate-fade-in-up leading-tight">
                         Unlock Your Potential with <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-violet-300">Premium Learning</span>
@@ -37,6 +61,15 @@ export default function UserHomePage() {
                     <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
                         <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">Explore Courses</Button>
                         <Button size="lg" variant="outline" className="border-violet-400 text-white hover:bg-violet-500/20 hover:text-white backdrop-blur-sm h-10 px-6 text-sm">View Roadmap</Button>
+
+                        {showTakeTest && (
+                            <TakeTestDialog>
+                                <Button size="lg" variant="outline" className="border-yellow-400 text-yellow-100 hover:bg-yellow-500/20 hover:text-white backdrop-blur-sm h-10 px-6 text-sm">
+                                    <Keyboard className="mr-2 h-4 w-4" />
+                                    Take Test
+                                </Button>
+                            </TakeTestDialog>
+                        )}
                     </div>
 
                     {/* Stats */}

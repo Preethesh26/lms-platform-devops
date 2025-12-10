@@ -18,7 +18,8 @@ import AdminUsersPage from './pages/admin/Users';
 import BulkUserUpload from './pages/admin/BulkUserUpload';
 import TestManager from './pages/admin/TestManager';
 import TestEditor from './pages/admin/TestEditor';
-import TestInvitations from './pages/admin/TestInvitations';
+import TestInvitations from "./pages/admin/TestInvitations";
+import Settings from "./pages/admin/Settings";
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
 
@@ -53,8 +54,9 @@ function App() {
                     <Route path="/admin/quizzes" element={<QuizManager />} />
                     <Route path="/admin/quizzes/create" element={<QuizEditor />} />
                     <Route path="/admin/tests" element={<TestManager />} />
-                    <Route path="/admin/tests/create" element={<TestEditor />} />
+                    <Route path="/admin/tests/:id/edit" element={<TestEditor />} />
                     <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
+                    <Route path="/admin/settings" element={<Settings />} />
                 </Route>
             </Routes>
             {/* <Toaster /> */}

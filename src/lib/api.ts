@@ -124,9 +124,17 @@ export const testsAPI = {
     getStats: (id: string) => api.get(`/tests/${id}/stats`),
     sendInvitations: (id: string) => api.post(`/tests/${id}/send-invitations`),
     // User endpoints
+    authenticate: (slug: string, email: string, password: string) =>
+        api.post(`/tests/${slug}/authenticate`, { email, password }),
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
     submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
     getResult: (id: string) => api.get(`/tests/${id}/result`)
+};
+
+// Settings API
+export const settingsAPI = {
+    getAll: () => api.get('/settings'),
+    update: (data: any) => api.put('/settings', data)
 };
 
 export default api;

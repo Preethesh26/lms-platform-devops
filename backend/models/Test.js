@@ -71,12 +71,20 @@ const testSchema = new mongoose.Schema({
     resultsEmailDate: {
         type: Date
     },
+    // Authentication method
+    requiresAccountLogin: {
+        type: Boolean,
+        default: false  // false = use unique passwords, true = require LMS account
+    },
     // Invited users
     invitedUsers: [{
         email: {
             type: String,
             required: true,
             lowercase: true
+        },
+        accessPassword: {
+            type: String  // Hashed password for test access (when requiresAccountLogin = false)
         },
         invitedAt: {
             type: Date,

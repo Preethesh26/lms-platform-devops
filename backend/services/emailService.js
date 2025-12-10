@@ -235,6 +235,21 @@ const sendTestInvitationEmail = async (to, testData) => {
                     ${testData.deadline ? `<p><strong>Deadline:</strong> ${new Date(testData.deadline).toLocaleString()}</p>` : ''}
                 </div>
                 
+                ${!testData.requiresAccountLogin && testData.password ? `
+                <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="margin-top: 0; color: #856404;">🔑 Your Access Credentials</h3>
+                    <p style="margin: 10px 0;"><strong>Email:</strong> ${testData.email}</p>
+                    <p style="margin: 10px 0;"><strong>Password:</strong> <span style="font-size: 20px; font-family: monospace; background: white; padding: 5px 10px; border-radius: 4px; color: #0070f3;">${testData.password}</span></p>
+                    <p style="color: #856404; font-size: 14px; margin-top: 15px;">⚠️ Keep this password secure. You'll need it to access the test.</p>
+                </div>
+                ` : ''}
+                
+                ${testData.requiresAccountLogin ? `
+                <div style="background: #e7f3ff; border: 2px solid #0070f3; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0; color: #004085;"><strong>📝 Note:</strong> This test requires you to log in with your LMS account credentials.</p>
+                </div>
+                ` : ''}
+                
                 <p><strong>Important:</strong> You can only take this test once.</p>
                 
                 <a href="${testData.link}" style="display: inline-block; background: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 20px 0;">

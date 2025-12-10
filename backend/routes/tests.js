@@ -10,12 +10,16 @@ const {
     submitTest,
     getTestResult,
     getTestStats,
-    sendInvitations
+    sendInvitations,
+    authenticateForTest
 } = require('../controllers/testController');
 
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Public routes (no authentication required)
+router.post('/:slug/authenticate', authenticateForTest);
 
 // Public route (requires authentication but not admin)
 router.get('/access/:slug', protect, getTestBySlug);

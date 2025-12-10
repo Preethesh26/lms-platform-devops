@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, FileText, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Clock, FileText, AlertCircle, CheckCircle, Loader2, Lock } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
 
@@ -16,17 +18,23 @@ export default function TestAccess() {
     const [alreadyAttempted, setAlreadyAttempted] = useState(false);
     const [attempt, setAttempt] = useState<any>(null);
 
-    useEffect(() => {
-        if (!currentUser) {
-            navigate(`/login?redirect=/test/${slug}`);
-            return;
-        }
-        fetchTest();
-    }, [currentUser, slug]);
+    // For password-based auth
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [authenticating, setAuthenticating] = useState(false);
+    const [authError, setAuthError] = useState('');
+    const [testToken, setTestToken] = useState('');
 
-    const fetchTest = async () => {
+    useEffect(() => {
+        // Try to authenticate with password first (no user account needed)
+        fetchTestInfo();
+    }, [slug]);
+
+    const fetchTestInfo = async () => {
         try {
+            // First, try to get basic test info without authentication
             const res = await testsAPI.getBySlug(slug!);
+
             if (res.data.alreadyAttempted) {
                 setAlreadyAttempted(true);
                 setAttempt(res.data.attempt);
@@ -34,13 +42,45 @@ export default function TestAccess() {
                 setTest(res.data.data);
             }
         } catch (error: any) {
+            // If it requires account login and user not logged in
+            if (error.response?.data?.requiresAccountLogin && !currentUser) {
+                navigate(`/login?redirect=/test/${slug}`);
+                return;
+            }
             setError(error.response?.data?.error || 'Failed to load test');
         } finally {
             setLoading(false);
         }
     };
 
+    const handlePasswordAuth = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setAuthError('');
+        setAuthenticating(true);
+
+        try {
+            const res = await testsAPI.authenticate(slug!, email, password);
+
+            if (res.data.alreadyAttempted) {
+                setAlreadyAttempted(true);
+                setAttempt(res.data.attempt);
+            } else {
+                setTestToken(res.data.token);
+                setTest(res.data.data);
+            }
+        } catch (error: any) {
+            setAuthError(error.response?.data?.error || 'Authentication failed');
+        } finally {
+            setAuthenticating(false);
+        }
+    };
+
     const handleStartTest = () => {
+        if (testToken) {
+            // Store token and test data for test player
+            localStorage.setItem(`test_token_${slug}`, testToken);
+            localStorage.setItem(`test_data_${slug}`, JSON.stringify(test));
+        }
         navigate(`/test/${slug}/take`);
     };
 
@@ -114,8 +154,71 @@ export default function TestAccess() {
         );
     }
 
+    // Show login form for password-based tests
+    if (test && !test.requiresAccountLogin && !testToken) {
+        return (
+            <div className="flex h-screen items-center justify-center p-4">
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="text-2xl">{test.title}</CardTitle>
+                        <p className="text-muted-foreground">Enter your credentials to access the test</p>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handlePasswordAuth} className="space-y-4">
+                            {authError && (
+                                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
+                                    {authError}
+                                </div>
+                            )}
+
+                            <div>
+                                <Label>Email</Label>
+                                <Input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="your@email.com"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <Label>Password</Label>
+                                <Input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter password from email"
+                                    required
+                                />
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Check your email for the password
+                                </p>
+                            </div>
+
+                            <Button type="submit" className="w-full" disabled={authenticating}>
+                                {authenticating ? (
+                                    <>
+                                        <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                                        Authenticating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="h-4 w-4 mr-2" />
+                                        Access Test
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     if (!test) return null;
 
+    // Show test details (for account-based auth or after password auth)
     return (
         <div className="flex h-screen items-center justify-center p-4">
             <Card className="w-full max-w-2xl">

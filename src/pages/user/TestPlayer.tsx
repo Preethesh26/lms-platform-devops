@@ -36,6 +36,22 @@ export default function TestPlayer() {
 
     const fetchTest = async () => {
         try {
+            // Check if there's a test-specific token (for password-based auth)
+            const testToken = localStorage.getItem(`test_token_${slug}`);
+            const testDataStr = localStorage.getItem(`test_data_${slug}`);
+
+            if (testToken && testDataStr) {
+                // For password-based tests, load from localStorage
+                const testData = JSON.parse(testDataStr);
+                setTest(testData);
+                if (testData.timeLimit > 0) {
+                    setTimeLeft(testData.timeLimit * 60);
+                }
+                setLoading(false);
+                return;
+            }
+
+            // For account-based tests, use normal authentication
             const res = await testsAPI.getBySlug(slug!);
             if (res.data.alreadyAttempted) {
                 navigate(`/test/${slug}`);
@@ -68,6 +84,11 @@ export default function TestPlayer() {
 
         try {
             await testsAPI.submit(test._id, formattedAnswers);
+
+            // Clean up localStorage
+            localStorage.removeItem(`test_token_${slug}`);
+            localStorage.removeItem(`test_data_${slug}`);
+
             navigate(`/test/${slug}`);
         } catch (error) {
             console.error('Error submitting test:', error);
@@ -128,14 +149,14 @@ export default function TestPlayer() {
                                 key={index}
                                 onClick={() => handleAnswerSelect(index)}
                                 className={`w-full p-4 text-left border-2 rounded-lg transition-all ${answers[currentQuestion] === index
-                                        ? 'border-primary bg-primary/10'
-                                        : 'border-border hover:border-primary/50'
+                                    ? 'border-primary bg-primary/10'
+                                    : 'border-border hover:border-primary/50'
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[currentQuestion] === index
-                                            ? 'border-primary bg-primary'
-                                            : 'border-border'
+                                        ? 'border-primary bg-primary'
+                                        : 'border-border'
                                         }`}>
                                         {answers[currentQuestion] === index && (
                                             <div className="w-2 h-2 rounded-full bg-white" />
@@ -186,10 +207,10 @@ export default function TestPlayer() {
                                 key={index}
                                 onClick={() => setCurrentQuestion(index)}
                                 className={`aspect-square rounded flex items-center justify-center text-sm font-medium transition-all ${currentQuestion === index
-                                        ? 'bg-primary text-primary-foreground'
-                                        : answers[index] !== undefined
-                                            ? 'bg-green-100 dark:bg-green-950 text-green-600'
-                                            : 'bg-muted hover:bg-muted/80'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : answers[index] !== undefined
+                                        ? 'bg-green-100 dark:bg-green-950 text-green-600'
+                                        : 'bg-muted hover:bg-muted/80'
                                     }`}
                             >
                                 {index + 1}
