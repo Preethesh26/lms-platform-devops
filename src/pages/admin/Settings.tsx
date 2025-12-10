@@ -75,7 +75,7 @@ export default function Settings() {
                         <Switch
                             id="showTakeTestButton"
                             checked={settings.showTakeTestButton}
-                            onCheckedChange={(checked) => setSettings({ ...settings, showTakeTestButton: checked })}
+                            onCheckedChange={(checked: boolean) => setSettings({ ...settings, showTakeTestButton: checked })}
                         />
                     </div>
                 </CardContent>
