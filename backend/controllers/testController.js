@@ -417,238 +417,249 @@ exports.getTestStats = async (req, res) => {
         console.error(error);
         res.status(400).json({
             success: false,
-            .populate('user', 'name email enrollment')
-                .sort('-score');
+            error: error.message
+        });
+    }
+};
 
-            res.status(200).json({
-                success: true,
-                count: attempts.length,
-                data: attempts
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({
+// @desc    Get all attempts for a specific test
+// @route   GET /api/tests/:id/attempts
+// @access  Private (Admin)
+exports.getTestAttempts = async (req, res) => {
+    try {
+        const attempts = await TestAttempt.find({ test: req.params.id })
+            .populate('user', 'name email enrollment')
+            .sort('-score');
+
+        res.status(200).json({
+            success: true,
+            count: attempts.length,
+            data: attempts
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        });
+    }
+};
+
+// @desc    Send invitation emails
+// @route   POST /api/tests/:id/send-invitations
+// @access  Private (Admin)
+exports.sendInvitations = async (req, res) => {
+    try {
+        const test = await Test.findById(req.params.id);
+
+        if (!test) {
+            return res.status(404).json({
                 success: false,
-                error: 'Server Error'
+                error: 'Test not found'
             });
         }
-    };
 
-    // @desc    Send invitation emails
-    // @route   POST /api/tests/:id/send-invitations
-    // @access  Private (Admin)
-    exports.sendInvitations = async (req, res) => {
-        try {
-            const test = await Test.findById(req.params.id);
+        if (!test.isPublished) {
+            return res.status(400).json({
+                success: false,
+                error: 'Test must be published before sending invitations'
+            });
+        }
 
-            if (!test) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Test not found'
-                });
-            }
+        // Get users who haven't received emails yet
+        const usersToEmail = test.invitedUsers.filter(u => !u.emailSent);
 
-            if (!test.isPublished) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Test must be published before sending invitations'
-                });
-            }
+        if (usersToEmail.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'All invited users have already received emails'
+            });
+        }
 
-            // Get users who haven't received emails yet
-            const usersToEmail = test.invitedUsers.filter(u => !u.emailSent);
+        const testLink = `${process.env.FRONTEND_URL}/test/${test.accessSlug}`;
+        const emailsSent = [];
+        const emailsFailed = [];
 
-            if (usersToEmail.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'All invited users have already received emails'
-                });
-            }
+        // Send emails
+        for (const invitedUser of usersToEmail) {
+            try {
+                // Generate password if test doesn't require account login
+                let plainPassword = null;
+                if (!test.requiresAccountLogin) {
+                    // Check if user already has a password
+                    if (!invitedUser.accessPassword) {
+                        plainPassword = generateTestPassword();
+                        const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-            const testLink = `${process.env.FRONTEND_URL}/test/${test.accessSlug}`;
-            const emailsSent = [];
-            const emailsFailed = [];
-
-            // Send emails
-            for (const invitedUser of usersToEmail) {
-                try {
-                    // Generate password if test doesn't require account login
-                    let plainPassword = null;
-                    if (!test.requiresAccountLogin) {
-                        // Check if user already has a password
-                        if (!invitedUser.accessPassword) {
-                            plainPassword = generateTestPassword();
-                            const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-                            // Update user's password in the test
-                            const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
-                            if (userIndex !== -1) {
-                                test.invitedUsers[userIndex].accessPassword = hashedPassword;
-                            }
-                        }
-                    }
-
-                    const testData = {
-                        title: test.title,
-                        description: test.description,
-                        questionCount: test.questions.length,
-                        timeLimit: test.timeLimit,
-                        passingScore: test.passingScore,
-                        deadline: test.hasDeadline ? test.deadline : null,
-                        link: testLink,
-                        requiresAccountLogin: test.requiresAccountLogin,
-                        password: plainPassword,  // Include generated password
-                        email: invitedUser.email
-                    };
-
-                    const result = await sendTestInvitationEmail(invitedUser.email, testData);
-
-                    if (result.success) {
-                        emailsSent.push(invitedUser.email);
-
-                        // Mark as sent
+                        // Update user's password in the test
                         const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
                         if (userIndex !== -1) {
-                            test.invitedUsers[userIndex].emailSent = true;
+                            test.invitedUsers[userIndex].accessPassword = hashedPassword;
                         }
-                    } else {
-                        emailsFailed.push(invitedUser.email);
                     }
-                } catch (error) {
-                    console.error(`Failed to send email to ${invitedUser.email}:`, error);
+                }
+
+                const testData = {
+                    title: test.title,
+                    description: test.description,
+                    questionCount: test.questions.length,
+                    timeLimit: test.timeLimit,
+                    passingScore: test.passingScore,
+                    deadline: test.hasDeadline ? test.deadline : null,
+                    link: testLink,
+                    requiresAccountLogin: test.requiresAccountLogin,
+                    password: plainPassword,  // Include generated password
+                    email: invitedUser.email
+                };
+
+                const result = await sendTestInvitationEmail(invitedUser.email, testData);
+
+                if (result.success) {
+                    emailsSent.push(invitedUser.email);
+
+                    // Mark as sent
+                    const userIndex = test.invitedUsers.findIndex(u => u.email === invitedUser.email);
+                    if (userIndex !== -1) {
+                        test.invitedUsers[userIndex].emailSent = true;
+                    }
+                } else {
                     emailsFailed.push(invitedUser.email);
                 }
+            } catch (error) {
+                console.error(`Failed to send email to ${invitedUser.email}:`, error);
+                emailsFailed.push(invitedUser.email);
             }
+        }
 
-            // Save updated test
-            await test.save();
+        // Save updated test
+        await test.save();
 
-            res.status(200).json({
-                success: true,
-                data: {
-                    sent: emailsSent.length,
-                    failed: emailsFailed.length,
-                    emailsSent,
-                    emailsFailed
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(400).json({
+        res.status(200).json({
+            success: true,
+            data: {
+                sent: emailsSent.length,
+                failed: emailsFailed.length,
+                emailsSent,
+                emailsFailed
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+// @desc    Authenticate for test access (email + password)
+// @route   POST /api/tests/:slug/authenticate
+// @access  Public
+exports.authenticateForTest = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const test = await Test.findOne({ accessSlug: req.params.slug });
+
+        if (!test) {
+            return res.status(404).json({
                 success: false,
-                error: error.message
+                error: 'Test not found'
             });
         }
-    };
 
-    // @desc    Authenticate for test access (email + password)
-    // @route   POST /api/tests/:slug/authenticate
-    // @access  Public
-    exports.authenticateForTest = async (req, res) => {
-        try {
-            const { email, password } = req.body;
-            const test = await Test.findOne({ accessSlug: req.params.slug });
-
-            if (!test) {
-                return res.status(404).json({
-                    success: false,
-                    error: 'Test not found'
-                });
-            }
-
-            if (!test.isPublished) {
-                return res.status(403).json({
-                    success: false,
-                    error: 'Test is not published'
-                });
-            }
-
-            // Find invited user
-            const invitedUser = test.invitedUsers.find(u => u.email === email.toLowerCase());
-
-            if (!invitedUser) {
-                return res.status(403).json({
-                    success: false,
-                    error: 'You are not invited to this test'
-                });
-            }
-
-            // Check if test requires account login
-            if (test.requiresAccountLogin) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'This test requires LMS account login',
-                    requiresAccountLogin: true
-                });
-            }
-
-            // Verify password
-            if (!invitedUser.accessPassword) {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Access password not set. Please contact administrator.'
-                });
-            }
-
-            const isMatch = await bcrypt.compare(password, invitedUser.accessPassword);
-
-            if (!isMatch) {
-                return res.status(401).json({
-                    success: false,
-                    error: 'Invalid password'
-                });
-            }
-
-            // Check if already attempted
-            const existingAttempt = await TestAttempt.findOne({
-                test: test._id,
-                'userEmail': email.toLowerCase()
-            });
-
-            if (existingAttempt) {
-                return res.status(200).json({
-                    success: true,
-                    alreadyAttempted: true,
-                    attempt: existingAttempt
-                });
-            }
-
-            // Check deadline
-            if (test.hasDeadline && test.deadline && new Date() > test.deadline) {
-                return res.status(403).json({
-                    success: false,
-                    error: 'Test deadline has passed'
-                });
-            }
-
-            // Generate test-specific token
-            const token = jwt.sign(
-                {
-                    email: email.toLowerCase(),
-                    testId: test._id,
-                    slug: test.accessSlug
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: `${test.timeLimit > 0 ? test.timeLimit + 60 : 180}m` }
-            );
-
-            // Return test without correct answers
-            const testForUser = test.toObject();
-            testForUser.questions = testForUser.questions.map(q => {
-                const { correctOptionIndex, explanation, ...rest } = q;
-                return rest;
-            });
-
-            res.status(200).json({
-                success: true,
-                token,
-                data: testForUser
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(400).json({
+        if (!test.isPublished) {
+            return res.status(403).json({
                 success: false,
-                error: error.message
+                error: 'Test is not published'
             });
         }
-    };
+
+        // Find invited user
+        const invitedUser = test.invitedUsers.find(u => u.email === email.toLowerCase());
+
+        if (!invitedUser) {
+            return res.status(403).json({
+                success: false,
+                error: 'You are not invited to this test'
+            });
+        }
+
+        // Check if test requires account login
+        if (test.requiresAccountLogin) {
+            return res.status(400).json({
+                success: false,
+                error: 'This test requires LMS account login',
+                requiresAccountLogin: true
+            });
+        }
+
+        // Verify password
+        if (!invitedUser.accessPassword) {
+            return res.status(400).json({
+                success: false,
+                error: 'Access password not set. Please contact administrator.'
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, invitedUser.accessPassword);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid password'
+            });
+        }
+
+        // Check if already attempted
+        const existingAttempt = await TestAttempt.findOne({
+            test: test._id,
+            'userEmail': email.toLowerCase()
+        });
+
+        if (existingAttempt) {
+            return res.status(200).json({
+                success: true,
+                alreadyAttempted: true,
+                attempt: existingAttempt
+            });
+        }
+
+        // Check deadline
+        if (test.hasDeadline && test.deadline && new Date() > test.deadline) {
+            return res.status(403).json({
+                success: false,
+                error: 'Test deadline has passed'
+            });
+        }
+
+        // Generate test-specific token
+        const token = jwt.sign(
+            {
+                email: email.toLowerCase(),
+                testId: test._id,
+                slug: test.accessSlug
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: `${test.timeLimit > 0 ? test.timeLimit + 60 : 180}m` }
+        );
+
+        // Return test without correct answers
+        const testForUser = test.toObject();
+        testForUser.questions = testForUser.questions.map(q => {
+            const { correctOptionIndex, explanation, ...rest } = q;
+            return rest;
+        });
+
+        res.status(200).json({
+            success: true,
+            token,
+            data: testForUser
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
