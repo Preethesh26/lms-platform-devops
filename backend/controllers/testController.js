@@ -231,30 +231,7 @@ exports.getTestBySlug = async (req, res) => {
         });
     }
 };
-error: 'Test deadline has passed'
-            });
-        }
 
-// Return test without correct answers
-const testForUser = test.toObject();
-testForUser.questions = testForUser.questions.map(q => {
-    const { correctOptionIndex, explanation, ...rest } = q;
-    return rest;
-});
-
-res.status(200).json({
-    success: true,
-    alreadyAttempted: false,
-    data: testForUser
-});
-    } catch (error) {
-    console.error(error);
-    res.status(400).json({
-        success: false,
-        error: error.message
-    });
-}
-};
 
 // @desc    Submit test attempt
 // @route   POST /api/tests/:id/submit
