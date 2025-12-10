@@ -83,10 +83,12 @@ export default function TestPlayer() {
         }));
 
         try {
-            await testsAPI.submit(test._id, formattedAnswers);
+            // Get test token if it exists
+            const testToken = localStorage.getItem(`test_token_${slug}`);
+            await testsAPI.submit(test._id, formattedAnswers, testToken || undefined);
 
-            // Clean up localStorage
-            localStorage.removeItem(`test_token_${slug}`);
+            // Clean up localStorage (don't remove token yet, needed for result view)
+            // localStorage.removeItem(`test_token_${slug}`); // Keep token to view result
             localStorage.removeItem(`test_data_${slug}`);
 
             navigate(`/test/${slug}`);

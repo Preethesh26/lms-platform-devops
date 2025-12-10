@@ -32,21 +32,42 @@ export default function TestAccess() {
 
     const fetchTestInfo = async () => {
         try {
-            // First, try to get basic test info without authentication
-            const res = await testsAPI.getBySlug(slug!);
-
-            if (res.data.alreadyAttempted) {
-                setAlreadyAttempted(true);
-                setAttempt(res.data.attempt);
-            } else {
-                setTest(res.data.data);
-
-                // If test requires account login and user is not logged in, redirect
-                if (res.data.data.requiresAccountLogin && !currentUser) {
-                    navigate(`/login?redirect=/test/${slug}`);
-                    return;
+            // Check for existing token and attempt
+            const savedToken = localStorage.getItem(`test_token_${slug}`);
+            if (savedToken) {
+                setTestToken(savedToken);
+                try {
+                    const resultRes = await testsAPI.getResult(slug!, savedToken); // slug is testId? No getbySlug returns data.
+                    // Wait, getResult expects ID, not Slug. 
+                    // But we don't have ID easily unless we call public info first.
+                } catch (e) {
+                    // ignore
                 }
             }
+
+            // First, try to get basic test info without authentication
+            const res = await testsAPI.getBySlug(slug!);
+            setTest(res.data.data);
+
+            // If we have a token, try to fetch the result properly using the ID from the fetched test
+            if (savedToken && res.data.data._id) {
+                try {
+                    const resultRes = await testsAPI.getResult(res.data.data._id, savedToken);
+                    if (resultRes.data.success) {
+                        setAlreadyAttempted(true);
+                        setAttempt(resultRes.data.data);
+                    }
+                } catch (err) {
+                    // Token might be expired or invalid, just ignore
+                }
+            }
+
+            // If test requires account login and user is not logged in, redirect
+            if (res.data.data.requiresAccountLogin && !currentUser) {
+                navigate(`/login?redirect=/test/${slug}`);
+                return;
+            }
+
         } catch (error: any) {
             // If it requires account login and user not logged in
             if (error.response?.data?.requiresAccountLogin && !currentUser) {

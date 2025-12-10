@@ -128,8 +128,10 @@ export const testsAPI = {
     authenticate: (slug: string, email: string, accessPassword?: string) =>
         api.post(`/tests/${slug}/authenticate`, { email, password: accessPassword }),
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
-    submit: (id: string, answers: any[]) => api.post(`/tests/${id}/submit`, { answers }),
-    getResult: (id: string) => api.get(`/tests/${id}/result`)
+    submit: (id: string, answers: any[], token?: string) =>
+        api.post(`/tests/${id}/submit`, { answers }, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+    getResult: (id: string, token?: string) =>
+        api.get(`/tests/${id}/result`, token ? { headers: { Authorization: `Bearer ${token}` } } : {})
 };
 
 // Settings API
