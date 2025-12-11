@@ -22,6 +22,7 @@ import TestInvitations from "./pages/admin/TestInvitations";
 import Settings from "./pages/admin/Settings";
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
+import NotFound from './pages/NotFound';
 
 // Layouts
 import UserLayout from './layouts/UserLayout';
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
                     <Route path="/admin/settings" element={<Settings />} />
                 </Route>
+                <Route path="*" element={<NotFound />} />
             </Routes>
             {/* <Toaster /> */}
         </Router>
