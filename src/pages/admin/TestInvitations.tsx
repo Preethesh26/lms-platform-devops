@@ -278,7 +278,9 @@ export default function TestInvitations() {
                     ) : (
                         <div className="space-y-2">
                             {test.invitedUsers.map((user: any, idx: number) => {
-                                const attempt = stats?.attempts?.find((a: any) => a.user.email === user.email);
+                                const attempt = stats?.attempts?.find((a: any) => 
+                                    (a.user?.email === user.email) || (a.userEmail === user.email)
+                                );
                                 return (
                                     <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
                                         <div className="flex items-center gap-3">
