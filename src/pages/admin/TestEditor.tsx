@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Trash, Save, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { testsAPI } from '@/lib/api';
 
 export default function TestEditor() {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const isEditMode = !!id;
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState(0);
@@ -23,6 +25,39 @@ export default function TestEditor() {
         { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }
     ]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isEditMode && id) {
+            loadTestData();
+        }
+    }, [id, isEditMode]);
+
+    const loadTestData = async () => {
+        setLoading(true);
+        try {
+            const res = await testsAPI.getOne(id!);
+            const test = res.data.data;
+
+            setTitle(test.title);
+            setDescription(test.description || '');
+            setTimeLimit(test.timeLimit || 0);
+            setPassingScore(test.passingScore || 70);
+            setHasDeadline(test.hasDeadline || false);
+            setDeadline(test.deadline ? new Date(test.deadline).toISOString().slice(0, 16) : '');
+            setSendResultsEmail(test.sendResultsEmail || false);
+            setScheduleResultsEmail(test.scheduleResultsEmail || false);
+            setResultsEmailDate(test.resultsEmailDate ? new Date(test.resultsEmailDate).toISOString().slice(0, 16) : '');
+            setRequiresAccountLogin(test.requiresAccountLogin || false);
+            setQuestions(test.questions || [{ questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }]);
+        } catch (error) {
+            console.error('Error loading test:', error);
+            alert('Failed to load test data');
+            navigate('/admin/tests');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAddQuestion = () => {
         setQuestions([...questions, { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }]);
@@ -110,7 +145,7 @@ export default function TestEditor() {
         setIsSubmitting(true);
 
         try {
-            await testsAPI.create({
+            const testData = {
                 title,
                 description,
                 timeLimit,
@@ -122,11 +157,18 @@ export default function TestEditor() {
                 resultsEmailDate: scheduleResultsEmail ? resultsEmailDate : undefined,
                 requiresAccountLogin,
                 questions
-            });
+            };
+
+            if (isEditMode && id) {
+                await testsAPI.update(id, testData);
+            } else {
+                await testsAPI.create(testData);
+            }
+
             navigate('/admin/tests');
         } catch (error) {
-            console.error('Failed to create test:', error);
-            alert('Failed to create test');
+            console.error(`Failed to ${isEditMode ? 'update' : 'create'} test:`, error);
+            alert(`Failed to ${isEditMode ? 'update' : 'create'} test`);
         } finally {
             setIsSubmitting(false);
         }
@@ -139,8 +181,8 @@ export default function TestEditor() {
             </button>
 
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Create New Test</h1>
-                <p className="text-muted-foreground">Create a standalone test with email invitations</p>
+                <h1 className="text-3xl font-bold tracking-tight">{isEditMode ? 'Edit Test' : 'Create New Test'}</h1>
+                <p className="text-muted-foreground">{isEditMode ? 'Update test details and questions' : 'Create a standalone test with email invitations'}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">

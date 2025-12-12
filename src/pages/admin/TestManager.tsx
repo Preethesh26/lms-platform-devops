@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, FileText, Users, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { Plus, FileText, Users, CheckCircle, Clock, Loader2, Edit } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 
 export default function TestManager() {
@@ -196,6 +196,15 @@ export default function TestManager() {
                                     >
                                         <FileText className="h-3 w-3" />
                                     </Button>
+                                    <Link to={`/admin/tests/${test._id}/edit`}>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            title="Edit Test"
+                                        >
+                                            <Edit className="h-3 w-3" />
+                                        </Button>
+                                    </Link>
                                     <Button
                                         variant="outline"
                                         size="sm"
