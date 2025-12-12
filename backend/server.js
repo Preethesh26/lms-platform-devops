@@ -16,6 +16,7 @@ const analyticsRoutes = require('./routes/analytics');
 const progressRoutes = require('./routes/progress');
 const quizRoutes = require('./routes/quizzes');
 const testRoutes = require('./routes/tests');
+const certificateRoutes = require('./routes/certificate');
 
 // Connect to database
 connectDB();
@@ -42,6 +43,7 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/tests', testRoutes);
+app.use('/api/certificate', certificateRoutes);
 app.use('/api/settings', require('./routes/settings'));
 
 // Error handler
