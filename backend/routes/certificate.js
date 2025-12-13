@@ -1,8 +1,13 @@
 const express = require('express');
-const PDFDocument = require('pdfkit');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
 const { protect } = require('../middleware/auth');
+let PDFDocument;
+try {
+    PDFDocument = require('pdfkit');
+} catch (e) {
+    console.warn("pdfkit not found, certificate generation will fail");
+}
 
 const router = express.Router();
 
