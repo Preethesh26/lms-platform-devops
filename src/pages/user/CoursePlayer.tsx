@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStore, type Course, type Lesson } from "@/lib/store";
-import { progressAPI } from "@/lib/api";
+import { progressAPI, certificateAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import ReactPlayer from 'react-player';
 import QuizPlayer from "@/components/user/QuizPlayer";
-import { CheckCircle, PlayCircle, Lock } from "lucide-react";
+import { CheckCircle, PlayCircle, Lock, Award, Download } from "lucide-react";
 
 const ReactPlayerAny = ReactPlayer as any;
 
@@ -194,6 +194,24 @@ export default function CoursePlayerPage() {
             setPaymentLoading(false);
             setShowPaymentDialog(false);
             // Show error in the UI instead of alert
+        }
+    };
+
+    const handleDownloadCertificate = async () => {
+        if (!course) return;
+        try {
+            const res = await certificateAPI.download(course.id);
+            // Create blob link to download
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Certificate-${course.title.replace(/\s+/g, '-')}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error("Failed to download certificate:", error);
+            alert("Failed to download certificate. Please ensure all lessons are completed.");
         }
     };
 
@@ -462,6 +480,17 @@ export default function CoursePlayerPage() {
                                     style={{ width: `${(Object.values(progress).filter(p => p.completed).length / course.lessons.length) * 100}%` }}
                                 ></div>
                             </div>
+
+                            {/* Certificate Button */}
+                            {(Object.values(progress).filter(p => p.completed).length === course.lessons.length) && course.lessons.length > 0 && (
+                                <Button
+                                    onClick={handleDownloadCertificate}
+                                    className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white gap-2 animate-pulse"
+                                >
+                                    <Award className="w-4 h-4" />
+                                    Download Certificate
+                                </Button>
+                            )}
                         </div>
                         <CardContent className="p-0 flex-1 overflow-y-auto">
                             {course.lessons.length === 0 ? (

@@ -140,4 +140,9 @@ export const settingsAPI = {
     update: (data: any) => api.put('/settings', data)
 };
 
+// Certificate API
+export const certificateAPI = {
+    download: (courseId: string) => api.get(`/certificate/${courseId}`, { responseType: 'blob' })
+};
+
 export default api;
