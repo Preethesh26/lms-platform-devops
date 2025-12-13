@@ -50,7 +50,7 @@ export default function CoursePlayerPage() {
                 setCourse(foundCourse);
 
                 // Check enrollment
-                const enrolled = currentUser.enrolledCourses?.some(id => id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
+                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
