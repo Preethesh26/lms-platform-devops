@@ -33,6 +33,7 @@ export default function CoursePlayerPage() {
     const playerRef = useRef<any>(null); // Type 'any' to avoid LegacyRef mismatch issues
     const progressUpdateTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
     const [isVideoReady, setIsVideoReady] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     // Fetch Course & Enrollment Logic
     useEffect(() => {
@@ -123,6 +124,7 @@ export default function CoursePlayerPage() {
     const handleLessonChange = (lesson: Lesson) => {
         setActiveLesson(lesson);
         setIsVideoReady(false);
+        setIsPlaying(false);
     };
 
     // Player Events
@@ -418,16 +420,25 @@ export default function CoursePlayerPage() {
                                     </div>
                                 ) : (
                                     <ReactPlayerAny
+                                        key={activeLesson.id}
                                         ref={playerRef}
                                         url={activeLesson.videoUrl}
                                         width="100%"
                                         height="100%"
                                         controls={true}
-                                        playing={false}
+                                        playing={isPlaying}
+                                        onPlay={() => setIsPlaying(true)}
+                                        onPause={() => setIsPlaying(false)}
                                         onProgress={handleProgress as any}
                                         onEnded={handleEnded}
                                         onReady={handleReady}
+                                        onError={(e: any) => console.error("Video Error:", e)}
                                         progressInterval={5000} // Fire onProgress every 5s
+                                        config={{
+                                            youtube: {
+                                                playerVars: { showinfo: 1 }
+                                            }
+                                        }}
                                     />
                                 )}
                             </div>
