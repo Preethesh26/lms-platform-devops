@@ -49,7 +49,57 @@ export default function CoursePlayerPage() {
         }
     }, [params.courseId]); // Keeping this cleaner, actual implementation below
 
-    // ... (skipping unchanged hooks)
+    // Fetch full logic
+    useEffect(() => {
+        if (isInitialized && params.courseId) {
+            // Check authentication
+            if (!currentUser) {
+                navigate("/login");
+                return;
+            }
+
+            const foundCourse = courses.find((c) => c.id === params.courseId);
+
+            if (foundCourse) {
+                setCourse(foundCourse);
+
+                // Check enrollment
+                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
+                setIsEnrolled(enrolled);
+
+                if (enrolled && foundCourse.lessons.length > 0) {
+                    // Set default lesson only if none selected
+                    if (!activeLesson) {
+                        setActiveLesson(foundCourse.lessons[0]);
+                    }
+
+                    // Fetch existing progress
+                    fetchProgress(foundCourse.id);
+                }
+            } else {
+                navigate("/my-learning");
+            }
+        }
+    }, [isInitialized, params.courseId, courses, navigate, currentUser]);
+
+    // Fetch Progress from API
+    const fetchProgress = async (courseId: string) => {
+        try {
+            const res = await progressAPI.getCourseProgress(courseId);
+            const progressMap: ProgressState = {};
+
+            res.data.data.forEach((p: any) => {
+                progressMap[p.lessonId] = {
+                    completed: p.completed,
+                    lastPosition: p.lastPosition
+                };
+            });
+
+            setProgress(progressMap);
+        } catch (error) {
+            console.error("Failed to fetch progress:", error);
+        }
+    };
 
     // Save Progress to API
     const saveProgress = useCallback(async (completedOverride?: boolean, position: number = 0) => {
@@ -87,7 +137,20 @@ export default function CoursePlayerPage() {
         }
     }, [course, activeLesson]); // Removed 'progress' from deps as we use ref
 
-    // ... 
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (progressUpdateTimeout.current) clearTimeout(progressUpdateTimeout.current);
+        };
+    }, []);
+
+    // Handle Lesson Change
+    const handleLessonChange = (lesson: Lesson) => {
+        setActiveLesson(lesson);
+        setIsVideoReady(false);
+        setIsPlaying(false);
+        setVideoError(null);
+    };
 
     // Player Events
     const handleProgress = (state: { playedSeconds: number; played: number; loaded: number; loadedSeconds: number }) => {
@@ -399,6 +462,12 @@ export default function CoursePlayerPage() {
                                             console.error("Video Error:", e);
                                             setVideoError("Failed to load video. The URL might be invalid or protected.");
                                         }}
+                                        progressInterval={5000}
+                                        config={{
+                                            youtube: {
+                                                playerVars: { showinfo: 1 }
+                                            }
+                                        }}
                                     />
                                 )}
                                 {videoError && (
@@ -529,6 +598,6 @@ export default function CoursePlayerPage() {
                     </Card>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
