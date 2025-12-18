@@ -35,6 +35,7 @@ export default function CoursePlayerPage() {
     const progressRef = useRef(progress);
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [videoError, setVideoError] = useState<string | null>(null);
 
     // Keep progressRef in sync
     useEffect(() => {
@@ -394,14 +395,27 @@ export default function CoursePlayerPage() {
                                         onProgress={handleProgress as any}
                                         onEnded={handleEnded}
                                         onReady={handleReady}
-                                        onError={(e: any) => console.error("Video Error:", e)}
-                                        progressInterval={5000} // Fire onProgress every 5s
-                                        config={{
-                                            youtube: {
-                                                playerVars: { showinfo: 1 }
-                                            }
+                                        onError={(e: any) => {
+                                            console.error("Video Error:", e);
+                                            setVideoError("Failed to load video. The URL might be invalid or protected.");
                                         }}
                                     />
+                                )}
+                                {videoError && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-white z-10">
+                                        <div className="text-center p-4">
+                                            <p className="text-red-400 font-bold mb-2">Video Error</p>
+                                            <p className="text-sm">{videoError}</p>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="mt-4 text-black border-white/20 hover:bg-white/10 hover:text-white"
+                                                onClick={() => window.open(activeLesson?.videoUrl, '_blank')}
+                                            >
+                                                Open in New Tab
+                                            </Button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         ) : (
@@ -515,6 +529,6 @@ export default function CoursePlayerPage() {
                     </Card>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
