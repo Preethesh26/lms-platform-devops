@@ -101,6 +101,21 @@ export default function CoursePlayerPage() {
         }
     };
 
+    // Helper to get player time safely
+    const getPlayerTime = () => {
+        if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+            return playerRef.current.getCurrentTime();
+        }
+        return 0;
+    };
+
+    const getPlayerDuration = () => {
+        if (playerRef.current && typeof playerRef.current.getDuration === 'function') {
+            return playerRef.current.getDuration();
+        }
+        return 0;
+    };
+
     // Save Progress to API
     const saveProgress = useCallback(async (completedOverride?: boolean, position: number = 0) => {
         if (!course || !activeLesson) return;
@@ -125,7 +140,7 @@ export default function CoursePlayerPage() {
                 lessonId: activeLesson.id,
                 completed: newCompletedStatus,
                 lastPosition: position,
-                totalDuration: playerRef.current?.getDuration() || 0
+                totalDuration: getPlayerDuration()
             });
         } catch (error) {
             console.error("Failed to save progress:", error);
@@ -135,7 +150,7 @@ export default function CoursePlayerPage() {
                 [activeLesson.id]: previousProgress
             }));
         }
-    }, [course, activeLesson]); // Removed 'progress' from deps as we use ref
+    }, [course, activeLesson]);
 
     // Cleanup timeout on unmount
     useEffect(() => {
@@ -165,7 +180,7 @@ export default function CoursePlayerPage() {
     };
 
     const handleEnded = () => {
-        saveProgress(true, playerRef.current?.getCurrentTime() || 0);
+        saveProgress(true, getPlayerTime());
     };
 
     const handleReady = () => {
@@ -175,7 +190,9 @@ export default function CoursePlayerPage() {
             const savedTime = progress[activeLesson.id].lastPosition;
             // Don't seek if we are at the very beginning (0-5s) to avoid seeking loops on restart
             if (savedTime > 5) {
-                playerRef.current?.seekTo(savedTime, 'seconds');
+                if (playerRef.current && typeof playerRef.current.seekTo === 'function') {
+                    playerRef.current.seekTo(savedTime, 'seconds');
+                }
             }
         }
     };
@@ -507,7 +524,7 @@ export default function CoursePlayerPage() {
                             </div>
                             <Button
                                 variant={progress[activeLesson.id]?.completed ? "outline" : "default"}
-                                onClick={() => saveProgress(!progress[activeLesson.id]?.completed, playerRef.current?.getCurrentTime() || 0)}
+                                onClick={() => saveProgress(!progress[activeLesson.id]?.completed, getPlayerTime())}
                             >
                                 {progress[activeLesson.id]?.completed ? (
                                     <>
