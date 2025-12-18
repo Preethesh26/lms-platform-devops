@@ -142,7 +142,7 @@ export const settingsAPI = {
 
 // Certificate API
 export const certificateAPI = {
-    download: (courseId: string) => api.get(`/certificate/${courseId}`, { responseType: 'blob' })
+    download: (courseId: string) => api.get(`/certificate/${courseId}?t=${Date.now()}`, { responseType: 'blob' })
 };
 
 export default api;
