@@ -20,6 +20,7 @@ import TestManager from './pages/admin/TestManager';
 import TestEditor from './pages/admin/TestEditor';
 import TestInvitations from "./pages/admin/TestInvitations";
 import Settings from "./pages/admin/Settings";
+import SupportInbox from "./pages/admin/SupportInbox";
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
 import NotFound from './pages/NotFound';
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/admin/tests/:id/edit" element={<TestEditor />} />
                     <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
                     <Route path="/admin/settings" element={<Settings />} />
+                    <Route path="/admin/support" element={<SupportInbox />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
             </Routes>

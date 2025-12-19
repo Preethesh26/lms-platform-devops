@@ -84,8 +84,10 @@ export const usersAPI = {
 
 // Support API
 export const supportAPI = {
-    contactAdmin: (data: { name: string; email: string; message: string }) =>
-        api.post('/support/contact-admin', data)
+    contactAdmin: (data: { name: string; email: string; message: string; subject?: string }) =>
+        api.post('/support/contact-admin', data),
+    getTickets: () => api.get('/support'),
+    updateTicket: (id: string, data: { status: string }) => api.put(`/support/${id}`, data)
 };
 
 // Payment API
