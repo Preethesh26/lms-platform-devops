@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const SupportTicket = require('../models/SupportTicket');
-const { sendContactAdminEmail } = require('../services/emailService');
+const { sendContactAdminEmail, sendTicketStatusUpdateEmail } = require('../services/emailService');
 
 // @desc    Send message to admin
 // @route   POST /api/support/contact-admin
@@ -73,6 +73,16 @@ exports.updateTicketStatus = async (req, res) => {
 
         if (!ticket) {
             return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+
+        // Send notification to user (non-blocking)
+        if (status === 'In Progress' || status === 'Resolved') {
+            try {
+                await sendTicketStatusUpdateEmail(ticket.email, ticket.name, ticket.subject, status);
+                console.log(`Status update email sent to ${ticket.email} for status: ${status}`);
+            } catch (emailError) {
+                console.error('Failed to send status update email:', emailError);
+            }
         }
 
         res.status(200).json({ success: true, data: ticket });

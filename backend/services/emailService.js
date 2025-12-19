@@ -268,11 +268,63 @@ const sendTestInvitationEmail = async (to, testData) => {
     }
 };
 
+// Send ticket status update email
+const sendTicketStatusUpdateEmail = async (to, userName, ticketSubject, newStatus) => {
+    if (!apiInstance) {
+        console.error('Brevo API not initialized');
+        return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.sender = { name: 'LMS Platform Support', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.to = [{ email: to }];
+        sendSmtpEmail.subject = `Update on your support request: ${ticketSubject}`;
+
+        let statusColor = '#0070f3'; // Default blue
+        if (newStatus === 'Resolved') statusColor = '#28a745'; // Green
+        if (newStatus === 'In Progress') statusColor = '#17a2b8'; // Cyan
+
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #f8f9fa; padding: 20px; border-bottom: 2px solid ${statusColor};">
+                    <h2 style="color: #333; margin: 0;">Support Ticket Update</h2>
+                </div>
+                <div style="padding: 30px;">
+                    <p>Hello ${userName},</p>
+                    <p>There has been an update to your support request:</p>
+                    
+                    <div style="background-color: #f1f3f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                        <p style="margin: 0;"><strong>Subject:</strong> ${ticketSubject}</p>
+                        <p style="margin: 10px 0 0 0;"><strong>New Status:</strong> <span style="background-color: ${statusColor}; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 13px;">${newStatus.toUpperCase()}</span></p>
+                    </div>
+
+                    <p>The administrator is currently looking into your request or has marked it as resolved.</p>
+                    
+                    <p style="margin-top: 30px;">Best regards,<br>LMS Platform Support Team</p>
+                </div>
+                <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #6c757d;">
+                    This is an automated notification. Please do not reply directly to this email.
+                </div>
+            </div>
+        `;
+
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Email service error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendPasswordResetEmail,
     sendContactAdminEmail,
     sendWelcomeEmail,
     sendProfileUpdateEmail,
     sendAdminNewUserNotification,
-    sendTestInvitationEmail
+    sendTestInvitationEmail,
+    sendTicketStatusUpdateEmail
 };
+
