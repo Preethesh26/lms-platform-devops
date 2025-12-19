@@ -8,7 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { cn } from "@/lib/utils";
 import ReactPlayer from 'react-player';
 import QuizPlayer from "@/components/user/QuizPlayer";
-import { CheckCircle, PlayCircle, Lock, Award, Download } from "lucide-react";
+import { AIChatSidebar } from "@/components/user/AIChatSidebar";
+import { aiAPI } from "@/lib/api";
+import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2 } from "lucide-react";
 
 const ReactPlayerAny = ReactPlayer as any;
 
@@ -36,6 +38,13 @@ export default function CoursePlayerPage() {
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [videoError, setVideoError] = useState<string | null>(null);
+    const [showAISidebar, setShowAISidebar] = useState(false);
+    const [summaryLoading, setSummaryLoading] = useState(false);
+    const [lessonSummary, setLessonSummary] = useState<string | null>(null);
+    const [showSummaryDialog, setShowSummaryDialog] = useState(false);
+    const [aiQuizData, setAiQuizData] = useState<any>(null);
+    const [aiQuizLoading, setAiQuizLoading] = useState(false);
+    const [showAiQuizDialog, setShowAiQuizDialog] = useState(false);
 
     // Keep progressRef in sync
     useEffect(() => {
@@ -165,6 +174,44 @@ export default function CoursePlayerPage() {
         setIsVideoReady(false);
         setIsPlaying(false);
         setVideoError(null);
+        setLessonSummary(null); // Clear summary when changing lesson
+    };
+
+    const handleGenerateSummary = async () => {
+        if (!course || !activeLesson || !activeLesson.transcript) return;
+
+        setSummaryLoading(true);
+        try {
+            const res = await aiAPI.summarize({ courseId: course.id, lessonId: activeLesson.id });
+            setLessonSummary(res.data.data);
+            setShowSummaryDialog(true);
+        } catch (error) {
+            console.error("Failed to generate summary:", error);
+        } finally {
+            setSummaryLoading(false);
+        }
+    };
+
+    const handleGeneratePracticeQuiz = async () => {
+        if (!course || !activeLesson) return;
+
+        setAiQuizLoading(true);
+        try {
+            const res = await aiAPI.generateQuiz({
+                topic: activeLesson.title,
+                struggleAreas: "General concepts from this lesson"
+            });
+            setAiQuizData({
+                title: `Practice Quiz: ${activeLesson.title}`,
+                questions: res.data.data,
+                passingScore: 70
+            });
+            setShowAiQuizDialog(true);
+        } catch (error) {
+            console.error("Failed to generate AI quiz:", error);
+        } finally {
+            setAiQuizLoading(false);
+        }
     };
 
     // Player Events
@@ -445,9 +492,9 @@ export default function CoursePlayerPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 ${showAISidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6 transition-all duration-300`}>
                 {/* Video Player Section */}
-                <div className="lg:col-span-2 space-y-4">
+                <div className={`${showAISidebar ? 'lg:col-span-2' : 'lg:col-span-2'} space-y-4`}>
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative group">
                         {activeLesson ? (
                             <div className="w-full h-full relative">
@@ -455,7 +502,7 @@ export default function CoursePlayerPage() {
                                     <div className="h-full overflow-y-auto">
                                         <QuizPlayer
                                             quizId={activeLesson.quizId.toString()}
-                                            onComplete={(score, passed) => {
+                                            onComplete={(score: number, passed: boolean) => {
                                                 console.log('Quiz completed:', score, passed);
                                                 saveProgress(passed, 0); // Save as completed if passed
                                             }}
@@ -536,7 +583,59 @@ export default function CoursePlayerPage() {
                             </Button>
                         </div>
                     )}
+
+                    {/* AI Tools Strip */}
+                    {activeLesson && activeLesson.type !== 'quiz' && (
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                className="flex-1 gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10"
+                                onClick={() => setShowAISidebar(!showAISidebar)}
+                            >
+                                <Bot className="w-4 h-4 text-primary" />
+                                {showAISidebar ? "Close AI Tutor" : "Ask AI Tutor"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex-1 gap-2"
+                                onClick={handleGenerateSummary}
+                                disabled={summaryLoading || !activeLesson.transcript}
+                            >
+                                {summaryLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <FileText className="w-4 h-4" />
+                                )}
+                                {lessonSummary ? "View Summary" : "Smart Summary"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex-1 gap-2"
+                                onClick={handleGeneratePracticeQuiz}
+                                disabled={aiQuizLoading}
+                            >
+                                {aiQuizLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Sparkles className="w-4 h-4" />
+                                )}
+                                {aiQuizData ? "Retake Practice" : "Practice Quiz"}
+                            </Button>
+                        </div>
+                    )}
                 </div>
+
+                {/* AI Sidebar Area */}
+                {showAISidebar && activeLesson && (
+                    <div className="lg:col-span-1 h-[600px] animate-in slide-in-from-right duration-300">
+                        <AIChatSidebar
+                            courseId={course.id}
+                            lessonId={activeLesson.id}
+                            lessonTitle={activeLesson.title}
+                            onClose={() => setShowAISidebar(false)}
+                        />
+                    </div>
+                )}
 
                 {/* Playlist Section */}
                 <div className="lg:col-span-1">
@@ -615,6 +714,56 @@ export default function CoursePlayerPage() {
                     </Card>
                 </div>
             </div>
+
+            {/* AI Summary Dialog */}
+            <Dialog open={showSummaryDialog} onOpenChange={setShowSummaryDialog}>
+                <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-amber-500" />
+                            Lesson Summary: {activeLesson?.title}
+                        </DialogTitle>
+                        <DialogDescription>
+                            AI-generated key points and takeaways from this lesson.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 p-6 bg-muted/30 rounded-xl border prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto whitespace-pre-wrap">
+                        {lessonSummary}
+                    </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button variant="outline" onClick={() => setShowSummaryDialog(false)}>Close</Button>
+                        <Button onClick={() => setShowAISidebar(true)}>Ask Questions</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* AI Practice Quiz Dialog */}
+            <Dialog open={showAiQuizDialog} onOpenChange={setShowAiQuizDialog}>
+                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Bot className="w-5 h-5 text-primary" />
+                            AI Practice Quiz: {activeLesson?.title}
+                        </DialogTitle>
+                        <DialogDescription>
+                            Test your knowledge with these AI-generated questions based on the lesson.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {aiQuizData && (
+                        <div className="mt-4">
+                            <QuizPlayer
+                                quizData={aiQuizData}
+                                onComplete={(score, passed) => {
+                                    console.log('AI Practice Quiz score:', score, passed);
+                                }}
+                            />
+                        </div>
+                    )}
+                    <div className="flex justify-end mt-4">
+                        <Button variant="outline" onClick={() => setShowAiQuizDialog(false)}>Finish Practice</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

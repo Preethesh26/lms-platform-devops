@@ -21,6 +21,14 @@ const lessonSchema = new mongoose.Schema({
     quizId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quiz'
+    },
+    transcript: {
+        type: String,
+        default: ''
+    },
+    content: {
+        type: String, // For text-based lessons or extra reading material
+        default: ''
     }
 }, {
     toJSON: { virtuals: true },

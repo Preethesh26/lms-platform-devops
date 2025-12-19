@@ -147,4 +147,14 @@ export const certificateAPI = {
     download: (courseId: string) => api.get(`/certificate/${courseId}?t=${Date.now()}`, { responseType: 'blob' })
 };
 
+// AI API
+export const aiAPI = {
+    chat: (data: { courseId: string; lessonId: string; question: string }) =>
+        api.post('/ai/chat', data),
+    summarize: (data: { courseId: string; lessonId: string }) =>
+        api.post('/ai/summarize', data),
+    generateQuiz: (data: { topic: string; struggleAreas?: string }) =>
+        api.post('/ai/generate-quiz', data)
+};
+
 export default api;

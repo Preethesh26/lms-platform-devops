@@ -8,6 +8,8 @@ export type Lesson = {
     duration: string;
     type?: 'video' | 'quiz';
     quizId?: string;
+    transcript?: string;
+    content?: string;
 };
 
 export type Course = {

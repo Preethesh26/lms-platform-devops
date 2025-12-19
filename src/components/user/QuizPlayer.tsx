@@ -4,11 +4,12 @@ import { CheckCircle, XCircle, Clock, AlertCircle, PlayCircle, RotateCcw } from 
 import { quizzesAPI } from '../../lib/api';
 
 interface QuizPlayerProps {
-    quizId: string;
-    onComplete: (score: number, passed: boolean) => void;
+    quizId?: string;
+    quizData?: any;
+    onComplete?: (score: number, passed: boolean) => void;
 }
 
-const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
+const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, quizData, onComplete }) => {
     const { submitQuiz } = useStore();
     const [quiz, setQuiz] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -19,6 +20,17 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
     useEffect(() => {
+        if (quizData) {
+            setQuiz(quizData);
+            if (quizData.timeLimit > 0) {
+                setTimeLeft(quizData.timeLimit * 60);
+            }
+            setLoading(false);
+            return;
+        }
+
+        if (!quizId) return;
+
         const fetchQuiz = async () => {
             try {
                 const res = await quizzesAPI.getQuiz(quizId);
@@ -33,7 +45,7 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
             }
         };
         fetchQuiz();
-    }, [quizId]);
+    }, [quizId, quizData]);
 
     useEffect(() => {
         if (timeLeft === null || result) return;
@@ -75,6 +87,30 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
+            if (quizData) {
+                // Local calculation for practice quizzes
+                let score = 0;
+                quiz.questions.forEach((q: any, i: number) => {
+                    if (answers[i] === q.correctOptionIndex) score++;
+                });
+
+                const percentage = (score / quiz.questions.length) * 100;
+                const passed = percentage >= (quiz.passingScore || 70);
+
+                const res = {
+                    score,
+                    maxScore: quiz.questions.length,
+                    percentage,
+                    passed
+                };
+
+                setResult(res);
+                if (onComplete) onComplete(score, passed);
+                return;
+            }
+
+            if (!quizId) return;
+
             // Format answers for API
             const formattedAnswers = Object.keys(answers).map(key => ({
                 questionIndex: parseInt(key),
@@ -83,7 +119,7 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, onComplete }) => {
 
             const res = await submitQuiz(quizId, formattedAnswers);
             setResult(res);
-            onComplete(res.score, res.passed);
+            if (onComplete) onComplete(res.score, res.passed);
         } catch (error) {
             console.error('Error submitting quiz:', error);
             alert('Failed to submit quiz. Please try again.');
