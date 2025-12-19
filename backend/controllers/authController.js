@@ -108,18 +108,21 @@ exports.login = async (req, res) => {
 
         // Validate email & password
         if (!email || !password) {
+            console.log('Login failed: Missing email or password');
             return res.status(400).json({ success: false, message: 'Please provide email and password' });
         }
 
         // Check for user
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
+            console.log(`Login failed: User not found for email ${email}`);
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
         // Check if password matches
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
+            console.log(`Login failed: Password mismatch for user ${email}`);
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
@@ -137,6 +140,7 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
