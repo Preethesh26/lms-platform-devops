@@ -41,10 +41,10 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/quizzes', quizRoutes);
-app.use('/api/quizzes', quizRoutes);
 app.use('/api/tests', testRoutes);
 app.use('/api/certificate', certificateRoutes);
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/ai', require('./routes/ai'));
 
 // Error handler
 app.use(errorHandler);
