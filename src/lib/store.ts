@@ -21,6 +21,7 @@ export type Course = {
     lessons: Lesson[];
     color: string;
     videoUrl?: string;
+    isFeatured?: boolean;
 };
 
 export type User = {

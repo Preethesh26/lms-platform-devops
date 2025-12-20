@@ -39,10 +39,10 @@ export default function AdminDashboardPage() {
     }, [token]);
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
-                <p className="text-muted-foreground">Welcome back! Here's what's happening with your platform today.</p>
+        <div className="space-y-10 animate-in fade-in duration-500">
+            <div className="space-y-2">
+                <h1 className="text-4xl font-extrabold tracking-tight">Intelligence Overview</h1>
+                <p className="text-muted-foreground font-medium text-lg">Platform performance and student growth metrics at a glance.</p>
             </div>
 
             {error && (

@@ -71,53 +71,55 @@ export default function MyLearningPage() {
         : 0;
 
     return (
-        <div className="max-w-7xl mx-auto space-y-12 pb-20">
+        <div className="max-w-7xl mx-auto space-y-12 pb-20 px-4 sm:px-6">
             {/* Premium Hero Section */}
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary to-purple-600 p-8 md:p-12 text-white shadow-2xl shadow-primary">
-                <div className="absolute top-0 right-0 p-8 pointer-events-none">
-                    <Sparkles className="h-48 w-48 rotate-12" />
-                </div>
-                <div className="relative z-10 space-y-6 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-primary text-sm font-medium border border-white">
-                        <Trophy className="h-4 w-4 text-amber-600" />
-                        Level 4 Learner • 1,250 XP
+            <div className="relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-8 md:p-14 text-white shadow-2xl shadow-indigo-500/20">
+                <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-white/10 blur-3xl opacity-50"></div>
+                <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl opacity-50"></div>
+
+                <div className="relative z-10 space-y-8 max-w-2xl">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-bold border border-white/20">
+                        <Trophy className="h-4 w-4 text-yellow-400" />
+                        <span>Master Level 4 • 1,250 XP • 🚀 4 Day Streak</span>
                     </div>
-                    <div className="space-y-2">
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight">
-                            Welcome back, {currentUser.name}! 🚀
+                    <div className="space-y-4">
+                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
+                            Hi, {currentUser.name}!
                         </h1>
-                        <p className="text-white text-lg md:text-xl font-bold">
-                            You've completed {overallProgress}% of your enrolled courses. Keep pushing to reach your target!
+                        <p className="text-indigo-50 text-lg md:text-xl font-medium leading-relaxed opacity-90">
+                            Your potential is limitless. You've conquered <span className="text-yellow-200 font-bold">{overallProgress}%</span> of your courses. Ready for the next challenge?
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-4 pt-4">
+                    <div className="flex flex-wrap gap-4 pt-2">
                         <Link to={enrolledCourses.length > 0 ? `/courses/${enrolledCourses[0].id}` : "/"}>
-                            <Button size="lg" variant="secondary" className="rounded-full px-8 font-extrabold shadow-xl">
-                                Resume Last Lesson
+                            <Button size="lg" className="h-12 px-8 rounded-xl font-bold bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl transition-all hover:-translate-y-1">
+                                Resume Learning
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white hover:text-primary hidden sm:flex font-bold">
-                            View Achievements
+                        <Button size="lg" variant="outline" className="h-12 px-8 rounded-xl border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all font-bold">
+                            View Roadmap
                         </Button>
                     </div>
                 </div>
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
-                    { label: "Active Courses", value: enrolledCourses.length, icon: BookOpen, color: "blue" },
-                    { label: "Hours Learned", value: "24.5", icon: Clock, color: "purple" },
-                    { label: "Points Earned", value: "850", icon: TrendingUp, color: "green" },
-                    { label: "Certificates", value: "2", icon: Trophy, color: "amber" },
+                    { label: "Active Courses", value: enrolledCourses.length, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                    { label: "Hours Learned", value: "24.5", icon: Clock, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-500/10" },
+                    { label: "Completion Rate", value: `${overallProgress}%`, icon: TrendingUp, color: "text-green-500", bg: "bg-green-50 dark:bg-green-500/10" },
+                    { label: "Certificates", value: "2", icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-500/10" },
                 ].map((stat, i) => (
-                    <Card key={i} className="border-none bg-muted hover:bg-muted-foreground/10 transition-colors group">
-                        <CardContent className="p-6 flex flex-col items-center text-center space-y-2">
-                            <div className={`p-3 rounded-2xl bg-${stat.color}-500 text-white group-hover:scale-110 transition-transform`}>
+                    <Card key={i} className="border-none bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 group p-2 rounded-[2rem]">
+                        <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
+                            <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform shadow-sm`}>
                                 <stat.icon className="h-6 w-6" />
                             </div>
-                            <div className="text-2xl font-black">{stat.value}</div>
-                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</div>
+                            <div className="space-y-1">
+                                <div className="text-2xl font-extrabold tracking-tight">{stat.value}</div>
+                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</div>
+                            </div>
                         </CardContent>
                     </Card>
                 ))}

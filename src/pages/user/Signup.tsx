@@ -70,30 +70,37 @@ export default function SignupPage() {
 
     if (showSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-primary p-4">
-                <Card className="w-full max-w-md border-4 border-white shadow-2xl">
-                    <CardHeader className="text-center space-y-4">
-                        <div className="mx-auto w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xl">
-                            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-6">
+                <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+                    <CardHeader className="text-center space-y-4 pt-10 px-8">
+                        <div className="mx-auto w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center shadow-sm">
+                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <CardTitle className="text-3xl font-black">Registration Successful!</CardTitle>
-                        <CardDescription className="font-bold">
-                            Your account has been created successfully.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="bg-muted p-6 rounded-xl border-2 border-primary shadow-inner">
-                            <p className="text-sm text-foreground font-black mb-2 uppercase tracking-widest">Your Enrollment Number:</p>
-                            <p className="text-3xl font-mono font-black text-primary">{enrollmentNumber}</p>
+                        <div className="space-y-2">
+                            <CardTitle className="text-3xl font-extrabold tracking-tight">Welcome Aboard!</CardTitle>
+                            <CardDescription className="text-muted-foreground font-medium">
+                                Your learning journey begins now.
+                            </CardDescription>
                         </div>
-                        <p className="text-sm text-center text-foreground font-bold">
-                            Please save this enrollment number properly.
-                        </p>
-                        <p className="text-sm text-center text-primary font-black animate-pulse">
-                            Redirecting to learning portal...
-                        </p>
+                    </CardHeader>
+                    <CardContent className="space-y-6 px-8 pb-10">
+                        <div className="bg-indigo-50/50 dark:bg-indigo-950/20 p-8 rounded-2xl border border-indigo-100 text-center">
+                            <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-widest mb-3">Your Unique Enrollment Number</p>
+                            <p className="text-4xl font-mono font-extrabold text-primary tracking-wider">{enrollmentNumber}</p>
+                        </div>
+                        <div className="space-y-4">
+                            <p className="text-xs text-center text-muted-foreground font-medium italic">
+                                Please save this number carefully. You'll need it for future logins.
+                            </p>
+                            <div className="flex items-center justify-center gap-2 text-primary">
+                                <span className="w-2 h-2 rounded-full bg-primary animate-bounce"></span>
+                                <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-.3s]"></span>
+                                <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-.5s]"></span>
+                                <span className="text-xs font-bold uppercase tracking-widest ml-1">Entering Portal...</span>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -101,82 +108,99 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-primary p-4">
-            <Card className="w-full max-w-md border-4 border-white shadow-2xl">
-                <CardHeader className="space-y-2">
-                    <CardTitle className="text-3xl font-black text-center">Create Account</CardTitle>
-                    <CardDescription className="text-center font-bold">
-                        Join our learning platform and start your journey
-                    </CardDescription>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-6">
+            {/* Decorative Background Circles */}
+            <div className="fixed -top-24 -left-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
+            <div className="fixed -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
+
+            <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+                <CardHeader className="space-y-4 pt-10 px-8 text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-2 text-primary">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </div>
+                    <div className="space-y-2">
+                        <CardTitle className="text-3xl font-extrabold tracking-tight">Create Account</CardTitle>
+                        <CardDescription className="text-muted-foreground font-medium">
+                            Join thousands of students on their path to mastery.
+                        </CardDescription>
+                    </div>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <CardContent className="px-8 pb-10">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Full Name</Label>
                             <Input
                                 id="name"
                                 name="name"
                                 type="text"
                                 placeholder="John Doe"
+                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium"
                                 required
                                 disabled={loading}
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
+                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Email Address</Label>
                             <Input
                                 id="email"
                                 name="email"
                                 type="email"
-                                placeholder="you@example.com"
+                                placeholder="name@example.com"
+                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium"
                                 required
                                 disabled={loading}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="At least 6 characters"
-                                required
-                                disabled={loading}
-                            />
-                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Password</Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium text-sm"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type="password"
-                                placeholder="Re-enter your password"
-                                required
-                                disabled={loading}
-                            />
+                            <div className="space-y-2">
+                                <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Confirm</Label>
+                                <Input
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium text-sm"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
                         </div>
 
                         {error && (
-                            <div className="bg-red-600 text-white p-3 rounded-md text-sm font-black text-center shadow-lg italic">
+                            <div className="p-4 text-xs text-red-600 bg-red-50 border border-red-100 rounded-2xl font-bold text-center">
                                 {error}
                             </div>
                         )}
 
                         <Button
                             type="submit"
-                            className="w-full font-black text-lg py-6 rounded-xl shadow-xl hover:scale-[1.02] transition-transform"
+                            className="w-full h-14 font-bold rounded-xl shadow-xl shadow-primary/20 bg-primary text-white hover:scale-[1.02] active:scale-95 transition-all mt-4"
                             disabled={loading}
                         >
-                            {loading ? "Creating Account..." : "Sign Up"}
+                            {loading ? "Creating your account..." : "Complete Registration"}
                         </Button>
 
-                        <p className="text-sm text-center text-muted-foreground">
+                        <p className="text-xs text-center text-muted-foreground font-medium">
                             Already have an account?{" "}
-                            <Link to="/login" className="text-primary hover:underline font-medium">
-                                Log In
+                            <Link to="/login" className="text-primary font-bold hover:underline">
+                                Sign In
                             </Link>
                         </p>
                     </form>

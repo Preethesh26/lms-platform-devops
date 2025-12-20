@@ -10,7 +10,7 @@ import ReactPlayer from 'react-player';
 import QuizPlayer from "@/components/user/QuizPlayer";
 import { AIChatSidebar } from "@/components/user/AIChatSidebar";
 import { aiAPI } from "@/lib/api";
-import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2 } from "lucide-react";
+import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2, ArrowLeft } from "lucide-react";
 
 const ReactPlayerAny = ReactPlayer as any;
 
@@ -314,180 +314,128 @@ export default function CoursePlayerPage() {
     // If not enrolled, show Course Details & Payment UI.
     if (!isEnrolled) {
         return (
-            <div className="container mx-auto p-4 max-w-5xl py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <h1 className="text-4xl font-black tracking-tight">{course.title}</h1>
-                            <p className="text-xl text-foreground font-bold">{course.description}</p>
+            <div className="container mx-auto p-4 max-w-6xl py-12 px-6">
+                <Button
+                    variant="ghost"
+                    onClick={() => navigate(-1)}
+                    className="mb-8 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent"
+                >
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <ArrowLeft className="h-4 w-4" />
+                    </div>
+                    Back
+                </Button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-8">
+                        <div className="space-y-4">
+                            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
+                            <p className="text-xl text-muted-foreground font-medium leading-relaxed">{course.description}</p>
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <div className="text-3xl font-bold text-primary">
+                            <div className="text-4xl font-extrabold text-primary">
                                 {course.price > 0 ? `₹${course.price}` : "Free"}
                             </div>
                             {course.price > 0 && (
-                                <span className="text-sm text-muted-foreground line-through">₹{course.price + 1000}</span>
+                                <span className="text-sm text-muted-foreground font-medium line-through opacity-60 italic">Standard: ₹{course.price + 1000}</span>
                             )}
                         </div>
 
-                        <div className="pt-4">
+                        <div className="pt-2">
                             <Button
                                 size="lg"
-                                className="w-full md:w-auto text-lg px-8"
+                                className="h-14 px-10 text-lg font-bold rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                                 onClick={handlePayment}
                                 disabled={paymentLoading}
                             >
-                                {paymentLoading ? "Processing..." : course.price > 0 ? "Buy Now & Enroll" : "Enroll for Free"}
+                                {paymentLoading ? "Setting up Access..." : course.price > 0 ? "Unlock Full Access" : "Enroll for Free"}
                             </Button>
-                            <p className="text-xs text-muted-foreground mt-3 text-center md:text-left">
-                                Secure payment via Razorpay. Instant access after payment.
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4 font-bold flex items-center gap-2 opacity-70">
+                                <Sparkles className="h-3 w-3 text-yellow-500" /> Instant activation upon enrollment
                             </p>
                         </div>
 
-                        <div className="bg-muted/30 p-6 rounded-xl border">
-                            <h3 className="font-semibold mb-3">What you'll learn:</h3>
-                            <ul className="space-y-2">
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Full lifetime access
-                                </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Access on mobile and desktop
-                                </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> Certificate of completion
-                                </li>
-                                <li className="flex items-center gap-2 text-sm">
-                                    <span className="text-green-500">✓</span> {course.lessons.length} comprehensive lessons
-                                </li>
+                        <div className="bg-indigo-50/50 dark:bg-indigo-950/20 p-8 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/50">
+                            <h3 className="font-bold text-lg mb-4">Inside this Masterclass:</h3>
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {[
+                                    { icon: "✨", label: "Lifetime content access" },
+                                    { icon: "📱", label: "Mobile & Desktop friendly" },
+                                    { icon: "🎓", label: "Verified Certificate" },
+                                    { icon: "📚", label: `${course.lessons.length} Expert Lessons` }
+                                ].map((item, idx) => (
+                                    <li key={idx} className="flex items-center gap-3 text-sm font-medium">
+                                        <span className="w-8 h-8 rounded-lg bg-white dark:bg-black/20 flex items-center justify-center shadow-sm">{item.icon}</span>
+                                        {item.label}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
 
-                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black">
-                        <img
-                            src={course.thumbnail || "/placeholder-course.jpg"}
-                            alt={course.title}
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-2xl">
-                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center pl-1">
-                                    <Lock className="w-6 h-6 text-primary" />
+                    <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/10 group">
+                        {course.thumbnail ? (
+                            <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className={`w-full h-full ${course.color || "bg-primary"} opacity-20`} />
+                        )}
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center p-1 border border-white/30 shadow-2xl">
+                                <div className="w-full h-full rounded-full bg-white flex items-center justify-center pl-1 text-primary shadow-inner">
+                                    <Lock className="w-8 h-8" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Course Content Preview */}
-                <div className="mt-16">
-                    <h2 className="text-2xl font-bold mb-6">Course Content</h2>
-                    <Card>
-                        <CardContent className="p-0">
-                            <div className="divide-y">
-                                {course.lessons.map((lesson, index) => (
-                                    <div key={lesson.id} className="p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-bold">
-                                                {index + 1}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold">{lesson.title}</p>
-                                                <p className="text-xs text-muted-foreground font-medium">{lesson.duration}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-xs font-black bg-primary text-white px-3 py-1 rounded-full uppercase tracking-tighter shadow-md">
-                                            Locked 🔒
-                                        </div>
+                {/* Course Content Preview Area */}
+                <div className="mt-20 space-y-8">
+                    <div className="space-y-2">
+                        <h2 className="text-3xl font-extrabold tracking-tight">Curriculum Breakdown</h2>
+                        <p className="text-muted-foreground font-medium">Take a look at what's waiting for you inside this masterclass.</p>
+                    </div>
+                    <div className="grid gap-4">
+                        {course.lessons.map((lesson, index) => (
+                            <div key={lesson.id} className="p-5 flex items-center justify-between bg-muted/40 rounded-2xl border border-border/50 hover:bg-muted/60 transition-colors">
+                                <div className="flex items-center gap-5">
+                                    <div className="w-10 h-10 rounded-xl bg-card flex items-center justify-center text-sm font-extrabold shadow-sm">
+                                        {index + 1}
                                     </div>
-                                ))}
+                                    <div>
+                                        <p className="font-bold text-lg leading-none">{lesson.title}</p>
+                                        <p className="text-xs text-muted-foreground font-semibold mt-1.5 uppercase tracking-wider">{lesson.duration}</p>
+                                    </div>
+                                </div>
+                                <div className="text-[10px] font-bold bg-muted-foreground/10 text-muted-foreground px-3 py-1.5 rounded-full uppercase tracking-widest border border-border/50">
+                                    Locked Selection
+                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        ))}
+                    </div>
                 </div>
-
-                {/* Mock Payment Dialog */}
-                <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-                    <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>
-                                {processingStep === 'idle' && 'Confirm Payment'}
-                                {processingStep === 'processing' && 'Processing Payment...'}
-                                {processingStep === 'success' && 'Payment Successful!'}
-                            </DialogTitle>
-                            <DialogDescription>
-                                {processingStep === 'idle' && `You are about to enroll in ${course.title}`}
-                                {processingStep === 'processing' && 'Please wait while we process your payment'}
-                                {processingStep === 'success' && 'You have been successfully enrolled!'}
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        <div className="py-6">
-                            {processingStep === 'idle' && (
-                                <div className="space-y-4">
-                                    <div className="bg-muted p-4 rounded-lg border">
-                                        <div className="flex justify-between items-center">
-                                            <span className="font-bold text-foreground">Course:</span>
-                                            <span className="text-foreground font-medium">{course.title}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center mt-2">
-                                            <span className="font-bold text-foreground">Amount:</span>
-                                            <span className="text-lg font-black text-primary">
-                                                {course.price > 0 ? `₹${course.price}` : 'Free'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            className="flex-1"
-                                            onClick={() => setShowPaymentDialog(false)}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            className="flex-1"
-                                            onClick={processMockPayment}
-                                        >
-                                            {course.price > 0 ? 'Pay Now' : 'Enroll Free'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {processingStep === 'processing' && (
-                                <div className="flex flex-col items-center justify-center space-y-4">
-                                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                                    <p className="text-sm text-muted-foreground">Processing your payment...</p>
-                                </div>
-                            )}
-
-                            {processingStep === 'success' && (
-                                <div className="flex flex-col items-center justify-center space-y-4">
-                                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                        <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">Redirecting to course...</p>
-                                </div>
-                            )}
-                        </div>
-                    </DialogContent>
-                </Dialog>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-7xl">
-            <div className="mb-6">
-                <Button variant="ghost" className="mb-4 pl-0 hover:pl-2 transition-all" onClick={() => navigate("/my-learning")}>
-                    ← Back to My Learning
-                </Button>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">{course.title}</h1>
-                        <p className="text-muted-foreground mt-2">{course.description}</p>
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
+            <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div>
+                    <Button
+                        variant="ghost"
+                        onClick={() => navigate("/my-learning")}
+                        className="mb-4 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent opacity-60 hover:opacity-100 transition-opacity"
+                    >
+                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <ArrowLeft className="h-4 w-4" />
+                        </div>
+                        Back to My Learning
+                    </Button>
+                    <div className="space-y-2">
+                        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">{course.title}</h1>
+                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-3xl">{course.description}</p>
                     </div>
                 </div>
             </div>

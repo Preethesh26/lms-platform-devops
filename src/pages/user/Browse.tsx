@@ -12,7 +12,8 @@ import {
     LayoutGrid,
     ChevronRight,
     Star,
-    Users
+    Users,
+    ArrowLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,13 +80,23 @@ export default function BrowsePage() {
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Header Section */}
-            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 pt-16 pb-32 px-6 md:px-12 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 pt-8 pb-32 px-6 md:px-12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
                 {/* Decorative Elements */}
                 <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
                 <div className="absolute bottom-1/2 -left-12 h-48 w-48 rounded-full bg-indigo-400/20 blur-2xl"></div>
 
                 <div className="max-w-7xl mx-auto relative z-10">
+                    <Button
+                        variant="ghost"
+                        onClick={() => navigate(-1)}
+                        className="text-white hover:bg-white/10 mb-8 p-0 h-auto font-bold flex items-center gap-2 group"
+                    >
+                        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                            <ArrowLeft className="h-4 w-4" />
+                        </div>
+                        Back
+                    </Button>
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div className="space-y-6">
                             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1 text-sm font-semibold text-white border border-white/20">
@@ -160,11 +171,17 @@ export default function BrowsePage() {
                             return (
                                 <Card key={course.id} className="group overflow-hidden border-border/50 bg-card transition-all hover:shadow-2xl hover:-translate-y-2 flex flex-col rounded-[2rem]">
                                     <div className="relative aspect-video overflow-hidden">
-                                        <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                                        {course.thumbnail ? (
+                                            <img src={course.thumbnail} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                        ) : (
+                                            <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                                        )}
                                         <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/30 group-hover:bg-black/20 transition-colors">
-                                            <div className="h-14 w-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
-                                                <BookOpen className="h-7 w-7" />
-                                            </div>
+                                            {!course.thumbnail && (
+                                                <div className="h-14 w-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
+                                                    <BookOpen className="h-7 w-7" />
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="absolute top-4 right-4">
                                             <Badge className="bg-white/90 backdrop-blur-sm text-primary border-none font-bold shadow-sm">Popular</Badge>

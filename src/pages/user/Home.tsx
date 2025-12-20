@@ -55,42 +55,42 @@ export default function UserHomePage() {
     return (
         <div className="space-y-32 pb-24">
             {/* --- HERO SECTION --- */}
-            <section className="relative px-4 pt-8">
-                <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 px-6 py-20 text-center shadow-2xl shadow-primary/20 sm:px-12 sm:py-32 relative">
+            <section className="relative px-4 pt-4">
+                <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 px-6 py-12 text-center shadow-2xl shadow-primary/20 sm:px-12 sm:py-20 relative">
                     {/* Decorative Background Circles */}
                     <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
                     <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
 
-                    <div className="relative z-10 mx-auto max-w-4xl space-y-10">
-                        <div className="flex justify-center space-y-4">
-                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-sm font-semibold text-white border border-white/20 shadow-lg">
+                    <div className="relative z-10 mx-auto max-w-4xl space-y-6">
+                        <div className="flex justify-center">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-xs font-semibold text-white border border-white/20 shadow-lg">
                                 <span className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
                                 Trusted by 12,000+ Students Worldwide
                             </div>
                         </div>
 
-                        <div className="space-y-6">
-                            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
+                        <div className="space-y-4">
+                            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
                                 Unlock Your Potential with <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Master-Level Training</span>
                             </h1>
-                            <p className="mx-auto max-w-2xl text-lg text-indigo-50 sm:text-xl leading-relaxed">
+                            <p className="mx-auto max-w-xl text-base text-indigo-50 sm:text-lg leading-relaxed opacity-90">
                                 Access industry-leading courses, expert instructors, and a global community.
                                 Master new skills and accelerate your career today.
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2">
                             <Link to="/browse">
-                                <Button size="lg" className="h-14 px-10 text-lg font-bold rounded-2xl bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl transition-all hover:-translate-y-1">
+                                <Button size="lg" className="h-12 px-8 text-base font-bold rounded-xl bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl transition-all hover:-translate-y-1">
                                     Explore Courses
                                 </Button>
                             </Link>
 
                             {showTakeTest && (
                                 <TakeTestDialog>
-                                    <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold rounded-2xl border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm transition-all shadow-lg">
-                                        <Keyboard className="mr-2 h-5 w-5" />
+                                    <Button size="lg" variant="outline" className="h-12 px-8 text-base font-bold rounded-xl border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm transition-all shadow-lg">
+                                        <Keyboard className="mr-2 h-4 w-4" />
                                         Take a Test
                                     </Button>
                                 </TakeTestDialog>
@@ -98,18 +98,18 @@ export default function UserHomePage() {
                         </div>
 
                         {/* Stats Summary */}
-                        <div className="grid grid-cols-3 gap-8 pt-12 border-t border-white/10 mt-12 bg-black/10 backdrop-blur-sm rounded-3xl p-6">
+                        <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10 mt-8 bg-black/10 backdrop-blur-sm rounded-2xl p-4 max-w-2xl mx-auto">
                             <div>
-                                <p className="text-3xl font-bold text-white">100+</p>
-                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Courses</p>
+                                <p className="text-2xl font-bold text-white">100+</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Courses</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-bold text-white">50+</p>
-                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Mentors</p>
+                                <p className="text-2xl font-bold text-white">50+</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Mentors</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-bold text-white">10k+</p>
-                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Learners</p>
+                                <p className="text-2xl font-bold text-white">10k+</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Learners</p>
                             </div>
                         </div>
                     </div>
@@ -161,16 +161,22 @@ export default function UserHomePage() {
                 </div>
 
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {courses.slice(0, 3).map((course: Course) => {
+                    {(courses.some(c => c.isFeatured) ? courses.filter(c => c.isFeatured) : courses.slice(0, 3)).map((course: Course) => {
                         const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
                         return (
                             <Card key={course.id} className="group flex flex-col border-border/50 bg-card transition-all hover:shadow-2xl hover:-translate-y-1.5 overflow-hidden rounded-3xl">
                                 <div className="aspect-video relative overflow-hidden">
-                                    <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-20`}></div>
+                                    {course.thumbnail ? (
+                                        <img src={course.thumbnail} alt={course.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                    ) : (
+                                        <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-20`}></div>
+                                    )}
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-8 group-hover:bg-black/30 transition-colors">
-                                        <div className="h-16 w-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
-                                            <BookOpen className="h-8 w-8" />
-                                        </div>
+                                        {!course.thumbnail && (
+                                            <div className="h-16 w-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
+                                                <BookOpen className="h-8 w-8" />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="absolute top-4 right-4">
                                         <Badge className="bg-white/90 backdrop-blur-sm text-primary border-none font-bold shadow-sm">Featured</Badge>

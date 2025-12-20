@@ -63,18 +63,20 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
     ];
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {items.map((item, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                <Card key={index} className="border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 rounded-[2rem] overflow-hidden bg-white">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
+                        <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                             {item.title}
                         </CardTitle>
-                        <item.icon className={`h-4 w-4 ${item.color}`} />
+                        <div className={`p-2 rounded-xl bg-muted/50 ${item.color.replace('text-', 'bg-').replace('500', '500/10')}`}>
+                            <item.icon className={`h-4 w-4 ${item.color}`} />
+                        </div>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{item.value}</div>
-                        <p className="text-xs text-muted-foreground mt-1">
+                    <CardContent className="px-6 pb-6 pt-2">
+                        <div className="text-3xl font-extrabold tracking-tight">{item.value}</div>
+                        <p className="text-[10px] font-bold text-muted-foreground/60 mt-1.5 uppercase tracking-wider">
                             {item.description}
                         </p>
                     </CardContent>
