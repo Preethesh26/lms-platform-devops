@@ -156,19 +156,19 @@ export default function TestAccess() {
                         </p>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 bg-muted rounded-lg">
-                                <div className="text-2xl font-bold">{attempt.score}/{attempt.maxScore}</div>
-                                <div className="text-sm text-muted-foreground">Score</div>
+                            <div className="p-4 bg-primary text-white rounded-lg shadow-lg">
+                                <div className="text-3xl font-black">{attempt.score}/{attempt.maxScore}</div>
+                                <div className="text-xs font-bold uppercase tracking-widest">Score</div>
                             </div>
-                            <div className="p-4 bg-muted rounded-lg">
-                                <div className="text-2xl font-bold">{attempt.percentage.toFixed(0)}%</div>
-                                <div className="text-sm text-muted-foreground">Percentage</div>
+                            <div className="p-4 bg-indigo-600 text-white rounded-lg shadow-lg">
+                                <div className="text-3xl font-black">{attempt.percentage.toFixed(0)}%</div>
+                                <div className="text-xs font-bold uppercase tracking-widest">Percentage</div>
                             </div>
                         </div>
 
-                        <div className={`p-4 rounded-lg ${attempt.passed ? 'bg-green-50 dark:bg-green-950' : 'bg-red-50 dark:bg-red-950'}`}>
-                            <div className={`text-lg font-semibold ${attempt.passed ? 'text-green-600' : 'text-red-600'}`}>
-                                {attempt.passed ? '✓ Passed' : '✗ Failed'}
+                        <div className={`p-6 rounded-xl border-4 shadow-xl ${attempt.passed ? 'bg-green-600 border-green-800' : 'bg-red-600 border-red-800'}`}>
+                            <div className={`text-2xl font-black text-center text-white`}>
+                                {attempt.passed ? 'PASSED ✓' : 'FAILED ✗'}
                             </div>
                         </div>
 
@@ -193,7 +193,7 @@ export default function TestAccess() {
                     <CardContent>
                         <form onSubmit={handlePasswordAuth} className="space-y-4">
                             {authError && (
-                                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
+                                <div className="p-3 text-sm text-white bg-red-600 border-2 border-red-800 rounded-md font-black text-center italic shadow-lg">
                                     {authError}
                                 </div>
                             )}
@@ -281,15 +281,15 @@ export default function TestAccess() {
                     </div>
 
                     {test.hasDeadline && test.deadline && (
-                        <div className="p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
-                            <div className="font-semibold text-orange-600 mb-1">Deadline</div>
-                            <div>{new Date(test.deadline).toLocaleString()}</div>
+                        <div className="p-4 bg-orange-600 text-white rounded-lg shadow-lg border-2 border-orange-800">
+                            <div className="font-black text-xs uppercase tracking-widest mb-1">Deadline</div>
+                            <div className="font-bold">{new Date(test.deadline).toLocaleString()}</div>
                         </div>
                     )}
 
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
-                        <div className="font-semibold text-yellow-600 mb-2">Important</div>
-                        <ul className="text-sm space-y-1 text-muted-foreground">
+                    <div className="p-4 bg-yellow-400 text-black rounded-lg shadow-lg border-2 border-yellow-600">
+                        <div className="font-black text-xs uppercase tracking-widest mb-2">Important Instructions</div>
+                        <ul className="text-sm space-y-1 font-bold">
                             <li>• You can only take this test once</li>
                             <li>• Make sure you have a stable internet connection</li>
                             <li>• Do not refresh the page during the test</li>

@@ -73,30 +73,30 @@ export default function MyLearningPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-12 pb-20">
             {/* Premium Hero Section */}
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary/90 to-purple-600 p-8 md:p-12 text-white shadow-2xl shadow-primary/20">
-                <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary to-purple-600 p-8 md:p-12 text-white shadow-2xl shadow-primary">
+                <div className="absolute top-0 right-0 p-8 pointer-events-none">
                     <Sparkles className="h-48 w-48 rotate-12" />
                 </div>
                 <div className="relative z-10 space-y-6 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-sm font-medium border border-white/20">
-                        <Trophy className="h-4 w-4 text-amber-300" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-primary text-sm font-medium border border-white">
+                        <Trophy className="h-4 w-4 text-amber-600" />
                         Level 4 Learner • 1,250 XP
                     </div>
                     <div className="space-y-2">
                         <h1 className="text-4xl md:text-5xl font-black tracking-tight">
                             Welcome back, {currentUser.name}! 🚀
                         </h1>
-                        <p className="text-white/80 text-lg md:text-xl">
+                        <p className="text-white text-lg md:text-xl font-bold">
                             You've completed {overallProgress}% of your enrolled courses. Keep pushing to reach your target!
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-4 pt-4">
                         <Link to={enrolledCourses.length > 0 ? `/courses/${enrolledCourses[0].id}` : "/"}>
-                            <Button size="lg" variant="secondary" className="rounded-full px-8 font-bold shadow-lg">
+                            <Button size="lg" variant="secondary" className="rounded-full px-8 font-extrabold shadow-xl">
                                 Resume Last Lesson
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="rounded-full px-8 backdrop-blur-sm border-white/30 text-white hover:bg-white/10 hidden sm:flex">
+                        <Button size="lg" variant="outline" className="rounded-full px-8 border-white text-white hover:bg-white hover:text-primary hidden sm:flex font-bold">
                             View Achievements
                         </Button>
                     </div>
@@ -111,9 +111,9 @@ export default function MyLearningPage() {
                     { label: "Points Earned", value: "850", icon: TrendingUp, color: "green" },
                     { label: "Certificates", value: "2", icon: Trophy, color: "amber" },
                 ].map((stat, i) => (
-                    <Card key={i} className="border-none bg-muted/30 backdrop-blur-sm hover:bg-muted/50 transition-colors group">
+                    <Card key={i} className="border-none bg-muted hover:bg-muted-foreground/10 transition-colors group">
                         <CardContent className="p-6 flex flex-col items-center text-center space-y-2">
-                            <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-500 group-hover:scale-110 transition-transform`}>
+                            <div className={`p-3 rounded-2xl bg-${stat.color}-500 text-white group-hover:scale-110 transition-transform`}>
                                 <stat.icon className="h-6 w-6" />
                             </div>
                             <div className="text-2xl font-black">{stat.value}</div>
@@ -153,7 +153,7 @@ export default function MyLearningPage() {
                             {enrolledCourses.map((course) => (
                                 <Card key={course.id} className="group relative border-none bg-background shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden ring-1 ring-border">
                                     <div className="h-40 overflow-hidden relative">
-                                        <div className="absolute inset-0 bg-black/40 z-10 group-hover:bg-black/20 transition-colors" />
+                                        <div className="absolute inset-0 bg-black/60 z-10 group-hover:bg-black/40 transition-colors" />
                                         <img
                                             src={course.thumbnail || `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop`}
                                             alt={course.title}
@@ -178,7 +178,7 @@ export default function MyLearningPage() {
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
                                                 <div
-                                                    className="bg-primary h-full rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-all duration-500"
+                                                    className="bg-primary h-full rounded-full shadow-lg transition-all duration-500"
                                                     style={{ width: `${calculateCourseProgress(course.id)}%` }}
                                                 ></div>
                                             </div>
@@ -219,9 +219,9 @@ export default function MyLearningPage() {
                         ) : (
                             newCourses.map((course) => (
                                 <Link to="/" key={course.id} className="block group">
-                                    <Card className="border-none bg-muted/20 hover:bg-muted/40 transition-all duration-300 overflow-hidden">
+                                    <Card className="border-none bg-muted hover:bg-muted-foreground/10 transition-all duration-300 overflow-hidden">
                                         <CardContent className="p-4 flex gap-4">
-                                            <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-border/50">
+                                            <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-border">
                                                 <img
                                                     src={course.thumbnail || `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop`}
                                                     alt={course.title}
@@ -232,7 +232,7 @@ export default function MyLearningPage() {
                                                 <h4 className="text-sm font-bold line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                                                     {course.title}
                                                 </h4>
-                                                <div className="flex items-center text-[10px] font-black tracking-widest uppercase text-muted-foreground group-hover:text-primary/70 transition-colors">
+                                                <div className="flex items-center text-[10px] font-black tracking-widest uppercase text-muted-foreground group-hover:text-primary transition-colors">
                                                     Explore Now <ArrowRight className="ml-1 h-2 w-2" />
                                                 </div>
                                             </div>
@@ -249,22 +249,22 @@ export default function MyLearningPage() {
                     </div>
 
                     {/* Achievement Preview */}
-                    <Card className="bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent border-amber-500/20 p-6 space-y-4">
-                        <div className="h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center">
+                    <Card className="bg-gradient-to-br from-amber-500 to-amber-600 border-amber-600 p-6 space-y-4 shadow-xl">
+                        <div className="h-10 w-10 rounded-xl bg-white text-amber-600 flex items-center justify-center shadow-lg">
                             <Trophy className="h-5 w-5" />
                         </div>
                         <div className="space-y-1">
-                            <h3 className="font-black">Daily Streak</h3>
-                            <p className="text-xs text-muted-foreground font-medium">Learn 15 more mins to keep your 4-day streak alive!</p>
+                            <h3 className="font-black text-white">Daily Streak</h3>
+                            <p className="text-xs text-white/90 font-bold">Learn 15 more mins to keep your 4-day streak alive!</p>
                         </div>
                         <div className="flex items-center gap-1">
                             {[1, 2, 3, 4].map(day => (
-                                <div key={day} className="h-6 w-6 rounded-md bg-amber-500 flex items-center justify-center text-[10px] font-bold text-white shadow-sm shadow-amber-500/40">
+                                <div key={day} className="h-6 w-6 rounded-md bg-white flex items-center justify-center text-[10px] font-bold text-amber-600 shadow-md">
                                     {day}
                                 </div>
                             ))}
-                            <div className="h-6 w-6 rounded-md bg-amber-500/20 border-2 border-dashed border-amber-500/30" />
-                            <div className="h-6 w-6 rounded-md bg-muted/20 border-2 border-dashed border-muted-foreground/10" />
+                            <div className="h-6 w-6 rounded-md border-2 border-dashed border-white/50" />
+                            <div className="h-6 w-6 rounded-md border-2 border-dashed border-white/20" />
                         </div>
                     </Card>
                 </div>

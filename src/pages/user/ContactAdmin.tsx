@@ -49,12 +49,12 @@ export default function ContactAdmin() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {successMessage && (
-                            <div className="p-3 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 rounded-md">
+                            <div className="p-3 text-sm text-white bg-green-600 rounded-md font-bold text-center">
                                 {successMessage}
                             </div>
                         )}
                         {error && (
-                            <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
+                            <div className="p-3 text-sm text-white bg-red-600 border-2 border-red-800 rounded-md font-bold text-center italic">
                                 {error}
                             </div>
                         )}
@@ -95,10 +95,10 @@ export default function ContactAdmin() {
                             />
                         </div>
                         <div className="flex gap-2">
-                            <Button type="button" variant="outline" className="flex-1" onClick={() => navigate("/")}>
+                            <Button type="button" variant="outline" className="flex-1 font-bold rounded-lg" onClick={() => navigate("/")}>
                                 Cancel
                             </Button>
-                            <Button type="submit" className="flex-1" disabled={loading}>
+                            <Button type="submit" className="flex-1 font-black rounded-lg shadow-xl" disabled={loading}>
                                 {loading ? "Sending..." : "Send Message"}
                             </Button>
                         </div>

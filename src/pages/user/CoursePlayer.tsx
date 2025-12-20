@@ -318,8 +318,8 @@ export default function CoursePlayerPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <h1 className="text-4xl font-bold tracking-tight">{course.title}</h1>
-                            <p className="text-xl text-muted-foreground">{course.description}</p>
+                            <h1 className="text-4xl font-black tracking-tight">{course.title}</h1>
+                            <p className="text-xl text-foreground font-bold">{course.description}</p>
                         </div>
 
                         <div className="flex items-center gap-4">
@@ -364,14 +364,14 @@ export default function CoursePlayerPage() {
                         </div>
                     </div>
 
-                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black/10">
+                    <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl ring-1 ring-black">
                         <img
                             src={course.thumbnail || "/placeholder-course.jpg"}
                             alt={course.title}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-2xl">
                                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center pl-1">
                                     <Lock className="w-6 h-6 text-primary" />
                                 </div>
@@ -387,17 +387,17 @@ export default function CoursePlayerPage() {
                         <CardContent className="p-0">
                             <div className="divide-y">
                                 {course.lessons.map((lesson, index) => (
-                                    <div key={lesson.id} className="p-4 flex items-center justify-between opacity-60">
+                                    <div key={lesson.id} className="p-4 flex items-center justify-between">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-bold">
                                                 {index + 1}
                                             </div>
                                             <div>
-                                                <p className="font-medium">{lesson.title}</p>
-                                                <p className="text-xs text-muted-foreground">{lesson.duration}</p>
+                                                <p className="font-bold">{lesson.title}</p>
+                                                <p className="text-xs text-muted-foreground font-medium">{lesson.duration}</p>
                                             </div>
                                         </div>
-                                        <div className="text-xs font-medium bg-muted px-2 py-1 rounded">
+                                        <div className="text-xs font-black bg-primary text-white px-3 py-1 rounded-full uppercase tracking-tighter shadow-md">
                                             Locked 🔒
                                         </div>
                                     </div>
@@ -426,14 +426,14 @@ export default function CoursePlayerPage() {
                         <div className="py-6">
                             {processingStep === 'idle' && (
                                 <div className="space-y-4">
-                                    <div className="bg-muted/30 p-4 rounded-lg">
+                                    <div className="bg-muted p-4 rounded-lg border">
                                         <div className="flex justify-between items-center">
-                                            <span className="font-medium">Course:</span>
-                                            <span className="text-muted-foreground">{course.title}</span>
+                                            <span className="font-bold text-foreground">Course:</span>
+                                            <span className="text-foreground font-medium">{course.title}</span>
                                         </div>
                                         <div className="flex justify-between items-center mt-2">
-                                            <span className="font-medium">Amount:</span>
-                                            <span className="text-lg font-bold text-primary">
+                                            <span className="font-bold text-foreground">Amount:</span>
+                                            <span className="text-lg font-black text-primary">
                                                 {course.price > 0 ? `₹${course.price}` : 'Free'}
                                             </span>
                                         </div>
@@ -495,7 +495,7 @@ export default function CoursePlayerPage() {
             <div className={`grid grid-cols-1 ${showAISidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6 transition-all duration-300`}>
                 {/* Video Player Section */}
                 <div className={`${showAISidebar ? 'lg:col-span-2' : 'lg:col-span-2'} space-y-4`}>
-                    <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative group">
+                    <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-border relative group">
                         {activeLesson ? (
                             <div className="w-full h-full relative">
                                 {activeLesson.type === 'quiz' && activeLesson.quizId ? (
@@ -552,30 +552,32 @@ export default function CoursePlayerPage() {
                                 )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-center h-full text-muted-foreground bg-muted/20">
+                            <div className="flex items-center justify-center h-full text-foreground bg-muted">
                                 <div className="text-center">
-                                    <p className="text-lg font-medium">No Lesson Selected</p>
-                                    <p className="text-sm">Select a lesson from the playlist to start watching.</p>
+                                    <p className="text-lg font-black">No Lesson Selected</p>
+                                    <p className="text-sm font-bold">Select a lesson from the playlist to start watching.</p>
                                 </div>
                             </div>
                         )}
                     </div>
                     {activeLesson && (
-                        <div className="p-4 rounded-lg bg-card border shadow-sm flex justify-between items-center">
+                        <div className="p-4 rounded-lg bg-card border-2 shadow-xl flex justify-between items-center">
                             <div>
-                                <h2 className="text-xl font-semibold">{activeLesson.title}</h2>
-                                <p className="text-sm text-muted-foreground mt-1">
+                                <h2 className="text-xl font-black">{activeLesson.title}</h2>
+                                <p className="text-sm text-foreground font-bold mt-1">
                                     Duration: {activeLesson.duration} •
                                     {progress[activeLesson.id]?.completed ? " Completed" : " In Progress"}
                                 </p>
                             </div>
                             <Button
+                                size="lg"
+                                className="font-bold rounded-xl shadow-lg"
                                 variant={progress[activeLesson.id]?.completed ? "outline" : "default"}
                                 onClick={() => saveProgress(!progress[activeLesson.id]?.completed, getPlayerTime())}
                             >
                                 {progress[activeLesson.id]?.completed ? (
                                     <>
-                                        <CheckCircle className="mr-2 h-4 w-4" /> Completed
+                                        <CheckCircle className="mr-2 h-5 w-5 text-green-600" /> Completed
                                     </>
                                 ) : (
                                     "Mark as Complete"
@@ -639,16 +641,16 @@ export default function CoursePlayerPage() {
 
                 {/* Playlist Section */}
                 <div className="lg:col-span-1">
-                    <Card className="h-full max-h-[600px] flex flex-col">
-                        <div className="p-4 border-b bg-muted/30">
-                            <h3 className="font-semibold">Course Content</h3>
-                            <p className="text-xs text-muted-foreground mt-1">
+                    <Card className="h-full max-h-[600px] flex flex-col shadow-xl border-2">
+                        <div className="p-4 border-b bg-muted">
+                            <h3 className="font-black text-lg">Course Content</h3>
+                            <p className="text-xs text-foreground font-bold mt-1">
                                 {Object.values(progress).filter(p => p.completed).length} / {course.lessons.length} Completed
                             </p>
                             {/* Progress Bar */}
-                            <div className="w-full bg-secondary h-2 rounded-full mt-2">
+                            <div className="w-full bg-secondary h-3 rounded-full mt-3 overflow-hidden shadow-inner">
                                 <div
-                                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                                    className="bg-primary h-full rounded-full transition-all duration-300 shadow-md"
                                     style={{ width: `${(Object.values(progress).filter(p => p.completed).length / course.lessons.length) * 100}%` }}
                                 ></div>
                             </div>
@@ -680,29 +682,32 @@ export default function CoursePlayerPage() {
                                                 key={lesson.id}
                                                 onClick={() => handleLessonChange(lesson)}
                                                 className={cn(
-                                                    "w-full text-left p-4 hover:bg-muted/50 transition-colors flex gap-3 group relative",
-                                                    isActive ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-primary" : "border-l-2 border-transparent"
+                                                    "w-full text-left p-4 hover:bg-muted font-bold transition-all flex gap-3 group relative",
+                                                    isActive ? "bg-primary text-white" : ""
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    "flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium shrink-0 transition-colors",
-                                                    isCompleted ? "bg-green-100 text-green-600" : (isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")
+                                                    "flex items-center justify-center w-7 h-7 rounded-full text-xs font-black shrink-0 transition-colors shadow-sm",
+                                                    isCompleted ? "bg-green-600 text-white" : (isActive ? "bg-white text-primary" : "bg-muted-foreground text-white")
                                                 )}>
                                                     {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <p className={cn(
-                                                        "text-sm font-medium truncate",
-                                                        isActive ? "text-primary" : "text-foreground",
-                                                        isCompleted && !isActive && "text-muted-foreground line-through decoration-slate-400/50"
+                                                        "text-sm font-black truncate",
+                                                        isActive ? "text-white" : "text-foreground",
+                                                        isCompleted && !isActive && "text-muted-foreground line-through decoration-slate-400"
                                                     )}>
                                                         {lesson.title}
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground mt-0.5">{lesson.duration}</p>
+                                                    <p className={cn(
+                                                        "text-[10px] font-bold mt-0.5",
+                                                        isActive ? "text-white/90" : "text-muted-foreground"
+                                                    )}>{lesson.duration}</p>
                                                 </div>
                                                 {isActive && (
                                                     <div className="ml-auto self-center">
-                                                        <PlayCircle className="w-4 h-4 text-primary animate-pulse" />
+                                                        <PlayCircle className="w-5 h-5 text-white animate-pulse" />
                                                     </div>
                                                 )}
                                             </button>

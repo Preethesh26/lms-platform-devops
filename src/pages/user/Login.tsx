@@ -94,7 +94,7 @@ export default function UserLogin() {
                 {showTakeTest && (
                     <div className="absolute top-4 right-4">
                         <TakeTestDialog>
-                            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                            <Button variant="outline" size="sm" className="text-primary border-primary font-bold hover:bg-primary hover:text-white">
                                 <Keyboard className="h-4 w-4 mr-1" />
                                 Take Test
                             </Button>
@@ -110,7 +110,7 @@ export default function UserLogin() {
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
                         {error && (
-                            <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
+                            <div className="p-3 text-sm text-white bg-red-600 border-2 border-red-800 rounded-md font-bold text-center italic">
                                 {error}
                             </div>
                         )}
@@ -158,7 +158,7 @@ export default function UserLogin() {
                                 disabled={loading}
                             />
                         </div>
-                        <Button type="submit" className="w-full" disabled={loading}>
+                        <Button type="submit" className="w-full font-black rounded-lg shadow-xl" disabled={loading}>
                             {loading ? "Signing in..." : "Sign In"}
                         </Button>
 
@@ -188,10 +188,10 @@ export default function UserLogin() {
                     </DialogHeader>
                     <form onSubmit={handleForgotPassword}>
                         <div className="space-y-4 py-4">
-                            {forgotMessage && (
-                                <div className={`p-3 text-sm rounded-md ${forgotMessage.includes('sent')
-                                    ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
-                                    : 'text-red-500 bg-red-500/10'
+                            {forgotEmail && (
+                                <div className={`p-3 text-sm rounded-md font-bold text-center ${forgotEmail.includes('@')
+                                    ? 'text-white bg-green-600'
+                                    : 'text-white bg-red-600'
                                     }`}>
                                     {forgotMessage}
                                 </div>

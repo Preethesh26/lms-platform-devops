@@ -59,14 +59,14 @@ export default function WelcomePage() {
                 {/* Header Section */}
                 <div className="md:col-span-2 text-center space-y-4 mb-4">
                     <div className="flex flex-col items-center space-y-4">
-                        <div className="h-20 w-20 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-2xl">
-                            <GraduationCap className="h-10 w-10 text-white" />
+                        <div className="h-20 w-20 rounded-2xl bg-white flex items-center justify-center border-4 border-primary shadow-2xl">
+                            <GraduationCap className="h-10 w-10 text-primary" />
                         </div>
                         <div className="space-y-2">
-                            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white">
+                            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-primary dark:text-white">
                                 Welcome, {currentUser?.name}!
                             </h1>
-                            <p className="text-lg md:text-xl text-white/80 font-medium">
+                            <p className="text-lg md:text-xl text-foreground font-bold italic">
                                 {overallProgress !== null && overallProgress > 0
                                     ? `You've completed ${overallProgress}% of your courses. Ready to continue?`
                                     : "Your learning journey starts here. Where would you like to go today?"}
@@ -77,14 +77,14 @@ export default function WelcomePage() {
 
                 {/* Option 1: Website */}
                 <Card
-                    className="group relative overflow-hidden border-white/20 bg-white/40 dark:bg-black/40 backdrop-blur-md hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer border-2 hover:border-primary"
+                    className="group relative overflow-hidden border-primary bg-white hover:shadow-2xl hover:shadow-primary transition-all duration-300 cursor-pointer border-2"
                     onClick={() => navigate("/")}
                 >
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <BookOpen className="h-32 w-32 -mr-8 -mt-8 rotate-12" />
+                    <div className="absolute top-0 right-0 p-4 group-hover:opacity-100 transition-opacity">
+                        <BookOpen className="h-32 w-32 -mr-8 -mt-8 rotate-12 text-primary/20" />
                     </div>
                     <CardHeader>
-                        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
+                        <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-white mb-2 group-hover:scale-110 transition-transform">
                             <BookOpen className="h-6 w-6" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Browse Website</CardTitle>
@@ -101,14 +101,14 @@ export default function WelcomePage() {
 
                 {/* Option 2: Dashboard */}
                 <Card
-                    className="group relative overflow-hidden border-white/20 bg-white/40 dark:bg-black/40 backdrop-blur-md hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer border-2 hover:border-purple-500"
+                    className="group relative overflow-hidden border-purple-600 bg-white hover:shadow-2xl hover:shadow-purple-600 transition-all duration-300 cursor-pointer border-2"
                     onClick={() => navigate("/my-learning")}
                 >
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <LayoutDashboard className="h-32 w-32 -mr-8 -mt-8 rotate-12" />
+                    <div className="absolute top-0 right-0 p-4 group-hover:opacity-100 transition-opacity">
+                        <LayoutDashboard className="h-32 w-32 -mr-8 -mt-8 rotate-12 text-purple-600/20" />
                     </div>
                     <CardHeader>
-                        <div className="h-12 w-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 mb-2 group-hover:scale-110 transition-transform">
+                        <div className="h-12 w-12 rounded-xl bg-purple-600 flex items-center justify-center text-white mb-2 group-hover:scale-110 transition-transform">
                             <LayoutDashboard className="h-6 w-6" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Student Dashboard</CardTitle>

@@ -40,31 +40,31 @@ export default function UserHomePage() {
         <div className="space-y-24 pb-24">
             {/* Hero Section */}
             <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-12 text-center shadow-2xl sm:px-12 sm:py-20">
-                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20"></div>
+                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20"></div>
                 <div className="relative z-10 mx-auto max-w-4xl space-y-6">
-                    <div className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-violet-100 backdrop-blur-sm border border-white/20 mb-2">
-                        <span className="flex h-2 w-2 rounded-full bg-green-400 mr-2"></span>
+                    <div className="inline-flex items-center rounded-full bg-white px-4 py-1.5 text-sm font-bold text-violet-600 border border-white mb-2 shadow-xl">
+                        <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
                         Over 5,000+ Students Enrolled
                         {showTakeTest && (
-                            <span className="ml-4 border-l border-white/20 pl-4 flex items-center gap-2">
-                                <span className="flex h-2 w-2 rounded-full bg-yellow-400"></span>
+                            <span className="ml-4 border-l border-violet-200 pl-4 flex items-center gap-2">
+                                <span className="flex h-2 w-2 rounded-full bg-yellow-500"></span>
                                 Live Tests Available
                             </span>
                         )}
                     </div>
-                    <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl animate-fade-in-up leading-tight">
-                        Unlock Your Potential with <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-violet-300">Premium Learning</span>
+                    <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl animate-fade-in-up leading-tight">
+                        Unlock Your Potential with <span className="text-white underline decoration-pink-400 decoration-8 underline-offset-8">Premium Learning</span>
                     </h1>
-                    <p className="mx-auto max-w-2xl text-base text-violet-100 sm:text-lg leading-relaxed">
+                    <p className="mx-auto max-w-2xl text-base text-white sm:text-lg leading-relaxed font-bold">
                         Access world-class courses, expert instructors, and a community of learners. Master new skills and advance your career today.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                        <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">Explore Courses</Button>
-                        <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">View Roadmap</Button>
+                        <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">Explore Courses</Button>
+                        <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-violet-600 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">View Roadmap</Button>
 
                         {showTakeTest && (
                             <TakeTestDialog>
-                                <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-xl shadow-violet-900/20 h-10 px-6 text-sm">
+                                <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">
                                     <Keyboard className="mr-2 h-4 w-4" />
                                     Take Test
                                 </Button>
@@ -73,18 +73,18 @@ export default function UserHomePage() {
                     </div>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 mt-8">
+                    <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white mt-8">
                         <div>
-                            <p className="text-3xl font-bold text-white">100+</p>
-                            <p className="text-violet-200 text-sm">Online Courses</p>
+                            <p className="text-3xl font-black text-white">100+</p>
+                            <p className="text-white text-sm font-bold uppercase tracking-widest">Courses</p>
                         </div>
                         <div>
-                            <p className="text-3xl font-bold text-white">50+</p>
-                            <p className="text-violet-200 text-sm">Expert Mentors</p>
+                            <p className="text-3xl font-black text-white">50+</p>
+                            <p className="text-white text-sm font-bold uppercase tracking-widest">Mentors</p>
                         </div>
                         <div>
-                            <p className="text-3xl font-bold text-white">10k+</p>
-                            <p className="text-violet-200 text-sm">Active Learners</p>
+                            <p className="text-3xl font-black text-white">10k+</p>
+                            <p className="text-white text-sm font-bold uppercase tracking-widest">Learners</p>
                         </div>
                     </div>
                 </div>
@@ -107,14 +107,14 @@ export default function UserHomePage() {
                         { name: "Marketing", icon: "📢", count: "20 Courses" },
                         { name: "Business", icon: "💼", count: "16 Courses" },
                     ].map((cat) => (
-                        <Card key={cat.name} className="group hover:border-primary/50 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-card/50 backdrop-blur-sm">
+                        <Card key={cat.name} className="group border-2 hover:border-primary transition-all hover:shadow-2xl hover:-translate-y-1 cursor-pointer bg-card">
                             <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
-                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform shadow-lg">
                                     {cat.icon}
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">{cat.name}</h3>
-                                    <p className="text-sm text-muted-foreground">{cat.count}</p>
+                                    <h3 className="font-black">{cat.name}</h3>
+                                    <p className="text-sm text-foreground font-bold">{cat.count}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -135,11 +135,11 @@ export default function UserHomePage() {
                     {courses.map((course: Course) => {
                         const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
                         return (
-                            <Card key={course.id} className="group overflow-hidden border-muted/40 bg-card/50 backdrop-blur-sm transition-all hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 flex flex-col">
+                            <Card key={course.id} className="group overflow-hidden border-2 border-border bg-card transition-all hover:shadow-2xl hover:border-primary hover:-translate-y-1 flex flex-col">
                                 <div className={`h-2 w-full ${course.color || "bg-primary"}`} />
                                 <CardHeader>
-                                    <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">{course.title}</CardTitle>
-                                    <CardDescription className="line-clamp-2">{course.description}</CardDescription>
+                                    <CardTitle className="font-black text-xl line-clamp-1 group-hover:text-primary transition-colors">{course.title}</CardTitle>
+                                    <CardDescription className="line-clamp-2 font-bold text-foreground">{course.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1">
                                     <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -153,14 +153,14 @@ export default function UserHomePage() {
                                         </div>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex items-center justify-between border-t bg-muted/20 px-6 py-4">
-                                    <span className="text-lg font-bold text-primary">{course.price}</span>
+                                <CardFooter className="flex items-center justify-between border-t bg-muted px-6 py-4">
+                                    <span className="text-lg font-black text-primary">{course.price}</span>
                                     {isEnrolled ? (
                                         <Link to={`/courses/${course.id}`} className="w-full ml-4">
-                                            <Button size="sm" className="w-full rounded-full" variant="secondary">Continue Learning</Button>
+                                            <Button size="sm" className="w-full rounded-full font-bold shadow-md" variant="secondary">Continue Learning</Button>
                                         </Link>
                                     ) : (
-                                        <Button size="sm" className="w-full ml-4 rounded-full" onClick={() => handleEnroll(course.id)}>Enroll Now</Button>
+                                        <Button size="sm" className="w-full ml-4 rounded-full font-bold shadow-md" onClick={() => handleEnroll(course.id)}>Enroll Now</Button>
                                     )}
                                 </CardFooter>
                             </Card>
@@ -170,11 +170,11 @@ export default function UserHomePage() {
             </section>
 
             {/* Features Section */}
-            <section className="rounded-3xl bg-muted/30 p-8 sm:p-16">
+            <section className="rounded-3xl bg-muted p-8 sm:p-16 border-2 border-border shadow-xl">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Why Choose Our Platform?</h2>
-                        <p className="text-muted-foreground text-lg">We provide the best learning experience with top-notch features designed for your success.</p>
+                        <h2 className="text-3xl font-black tracking-tight sm:text-4xl text-foreground">Why Choose Our Platform?</h2>
+                        <p className="text-foreground font-bold text-lg">We provide the best learning experience with top-notch features designed for your success.</p>
                         <ul className="space-y-4">
                             {[
                                 "Expert Instructors from Top Companies",
@@ -195,42 +195,42 @@ export default function UserHomePage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-4 translate-y-8">
-                            <Card className="bg-background/80 backdrop-blur border-none shadow-xl">
+                            <Card className="bg-white border-2 border-blue-500 shadow-xl">
                                 <CardContent className="p-6 text-center">
-                                    <div className="h-12 w-12 rounded-xl bg-blue-500/10 text-blue-500 mx-auto flex items-center justify-center mb-4">
+                                    <div className="h-12 w-12 rounded-xl bg-blue-500 text-white mx-auto flex items-center justify-center mb-4 shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                     </div>
-                                    <h3 className="font-bold">Affordable</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Best prices in the market</p>
+                                    <h3 className="font-black">Affordable</h3>
+                                    <p className="text-xs text-foreground font-bold mt-1">Best prices in the market</p>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-background/80 backdrop-blur border-none shadow-xl">
+                            <Card className="bg-white border-2 border-purple-500 shadow-xl">
                                 <CardContent className="p-6 text-center">
-                                    <div className="h-12 w-12 rounded-xl bg-purple-500/10 text-purple-500 mx-auto flex items-center justify-center mb-4">
+                                    <div className="h-12 w-12 rounded-xl bg-purple-500 text-white mx-auto flex items-center justify-center mb-4 shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                                     </div>
-                                    <h3 className="font-bold">Certified</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Earn recognized certificates</p>
+                                    <h3 className="font-black">Certified</h3>
+                                    <p className="text-xs text-foreground font-bold mt-1">Earn recognized certificates</p>
                                 </CardContent>
                             </Card>
                         </div>
                         <div className="space-y-4">
-                            <Card className="bg-background/80 backdrop-blur border-none shadow-xl">
+                            <Card className="bg-white border-2 border-pink-500 shadow-xl">
                                 <CardContent className="p-6 text-center">
-                                    <div className="h-12 w-12 rounded-xl bg-pink-500/10 text-pink-500 mx-auto flex items-center justify-center mb-4">
+                                    <div className="h-12 w-12 rounded-xl bg-pink-500 text-white mx-auto flex items-center justify-center mb-4 shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
                                     </div>
-                                    <h3 className="font-bold">Flexible</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Learn at your own pace</p>
+                                    <h3 className="font-black">Flexible</h3>
+                                    <p className="text-xs text-foreground font-bold mt-1">Learn at your own pace</p>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-background/80 backdrop-blur border-none shadow-xl">
+                            <Card className="bg-white border-2 border-orange-500 shadow-xl">
                                 <CardContent className="p-6 text-center">
-                                    <div className="h-12 w-12 rounded-xl bg-orange-500/10 text-orange-500 mx-auto flex items-center justify-center mb-4">
+                                    <div className="h-12 w-12 rounded-xl bg-orange-500 text-white mx-auto flex items-center justify-center mb-4 shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                                     </div>
-                                    <h3 className="font-bold">Community</h3>
-                                    <p className="text-xs text-muted-foreground mt-1">Join thousands of learners</p>
+                                    <h3 className="font-black">Community</h3>
+                                    <p className="text-xs text-foreground font-bold mt-1">Join thousands of learners</p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -250,7 +250,7 @@ export default function UserHomePage() {
                         { name: "Michael Chen", role: "UX Designer", text: "The design courses are top-notch. I loved the focus on modern tools like Figma. Highly recommended for anyone wanting to break into design.", avatar: "MC" },
                         { name: "Emily Davis", role: "Data Analyst", text: "I was afraid of coding, but the instructors made it so easy to understand. The community support is also amazing.", avatar: "ED" },
                     ].map((testimonial, i) => (
-                        <Card key={i} className="bg-card/50 backdrop-blur-sm border-muted/40">
+                        <Card key={i} className="bg-card border-2 border-border shadow-xl hover:border-primary transition-all">
                             <CardContent className="p-6 space-y-4">
                                 <div className="flex gap-1 text-yellow-500">
                                     {[1, 2, 3, 4, 5].map((star) => (
@@ -274,12 +274,12 @@ export default function UserHomePage() {
             </section>
 
             {/* CTA Section */}
-            <section className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center shadow-2xl sm:px-12">
-                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+            <section className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center shadow-2xl sm:px-12 border-4 border-indigo-200">
+                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20"></div>
                 <div className="relative z-10 mx-auto max-w-2xl space-y-6">
-                    <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to Start Your Learning Journey?</h2>
-                    <p className="text-primary-foreground/80 text-lg">Join thousands of students and start learning today. No credit card required for free courses.</p>
-                    <Button size="lg" variant="secondary" className="h-12 px-8 text-base">Get Started for Free</Button>
+                    <h2 className="text-3xl font-black tracking-tight text-white sm:text-5xl">Ready to Start Your Learning Journey?</h2>
+                    <p className="text-white text-xl font-bold">Join thousands of students and start learning today. No credit card required for free courses.</p>
+                    <Button size="lg" variant="secondary" className="h-14 px-10 text-lg font-black rounded-xl shadow-2xl hover:scale-105 transition-transform">Get Started for Free</Button>
                 </div>
             </section>
         </div>

@@ -124,21 +124,21 @@ export default function TestPlayer() {
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">{test.title}</h1>
                     {test.timeLimit > 0 && (
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${timeLeft < 60 ? 'bg-red-100 dark:bg-red-950 text-red-600' : 'bg-muted'}`}>
-                            <Clock className="h-5 w-5" />
-                            <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+                        <div className={`flex items-center gap-2 px-6 py-3 rounded-xl shadow-xl border-4 ${timeLeft < 60 ? 'bg-red-600 border-red-800 text-white animate-pulse' : 'bg-background border-primary text-primary'}`}>
+                            <Clock className="h-6 w-6" />
+                            <span className="font-mono font-black text-xl">{formatTime(timeLeft)}</span>
                         </div>
                     )}
                 </div>
 
                 {/* Progress */}
                 <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-sm font-black text-foreground uppercase tracking-wider">
                         <span>Question {currentQuestion + 1} of {test.questions.length}</span>
                         <span>{Object.keys(answers).length} answered</span>
                     </div>
-                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+                    <div className="w-full h-4 bg-muted rounded-full overflow-hidden border-2 border-border shadow-inner">
+                        <div className="h-full bg-primary transition-all shadow-lg" style={{ width: `${progress}%` }} />
                     </div>
                 </div>
 
@@ -150,21 +150,21 @@ export default function TestPlayer() {
                             <button
                                 key={index}
                                 onClick={() => handleAnswerSelect(index)}
-                                className={`w-full p-4 text-left border-2 rounded-lg transition-all ${answers[currentQuestion] === index
-                                    ? 'border-primary bg-primary/10'
-                                    : 'border-border hover:border-primary/50'
+                                className={`w-full p-5 text-left border-4 rounded-xl transition-all font-bold ${answers[currentQuestion] === index
+                                    ? 'border-primary bg-primary text-white shadow-xl scale-[1.02]'
+                                    : 'border-border bg-card hover:bg-muted'
                                     }`}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[currentQuestion] === index
-                                        ? 'border-primary bg-primary'
-                                        : 'border-border'
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-6 h-6 rounded-full border-4 flex items-center justify-center ${answers[currentQuestion] === index
+                                        ? 'border-white bg-white'
+                                        : 'border-primary'
                                         }`}>
                                         {answers[currentQuestion] === index && (
-                                            <div className="w-2 h-2 rounded-full bg-white" />
+                                            <div className="w-2 h-2 rounded-full bg-primary" />
                                         )}
                                     </div>
-                                    <span>{option}</span>
+                                    <span className="text-lg">{option}</span>
                                 </div>
                             </button>
                         ))}
@@ -208,11 +208,11 @@ export default function TestPlayer() {
                             <button
                                 key={index}
                                 onClick={() => setCurrentQuestion(index)}
-                                className={`aspect-square rounded flex items-center justify-center text-sm font-medium transition-all ${currentQuestion === index
-                                    ? 'bg-primary text-primary-foreground'
+                                className={`aspect-square rounded-lg flex items-center justify-center text-sm font-black transition-all border-2 shadow-md ${currentQuestion === index
+                                    ? 'bg-primary text-white border-primary scale-110 z-10'
                                     : answers[index] !== undefined
-                                        ? 'bg-green-100 dark:bg-green-950 text-green-600'
-                                        : 'bg-muted hover:bg-muted/80'
+                                        ? 'bg-green-600 text-white border-green-800'
+                                        : 'bg-muted border-border hover:bg-muted-foreground/20'
                                     }`}
                             >
                                 {index + 1}

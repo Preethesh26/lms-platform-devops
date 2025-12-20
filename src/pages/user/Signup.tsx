@@ -70,29 +70,29 @@ export default function SignupPage() {
 
     if (showSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 p-4">
-                <Card className="w-full max-w-md">
+            <div className="min-h-screen flex items-center justify-center bg-primary p-4">
+                <Card className="w-full max-w-md border-4 border-white shadow-2xl">
                     <CardHeader className="text-center space-y-4">
-                        <div className="mx-auto w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                            <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <div className="mx-auto w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xl">
+                            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <CardTitle className="text-2xl">Registration Successful!</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-3xl font-black">Registration Successful!</CardTitle>
+                        <CardDescription className="font-bold">
                             Your account has been created successfully.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="bg-muted p-4 rounded-lg">
-                            <p className="text-sm text-muted-foreground mb-2">Your Enrollment Number:</p>
-                            <p className="text-xl font-mono font-bold text-primary">{enrollmentNumber}</p>
+                        <div className="bg-muted p-6 rounded-xl border-2 border-primary shadow-inner">
+                            <p className="text-sm text-foreground font-black mb-2 uppercase tracking-widest">Your Enrollment Number:</p>
+                            <p className="text-3xl font-mono font-black text-primary">{enrollmentNumber}</p>
                         </div>
-                        <p className="text-sm text-center text-muted-foreground">
-                            Please save this enrollment number. You'll need it to log in.
+                        <p className="text-sm text-center text-foreground font-bold">
+                            Please save this enrollment number properly.
                         </p>
-                        <p className="text-sm text-center text-muted-foreground">
-                            Redirecting to home page...
+                        <p className="text-sm text-center text-primary font-black animate-pulse">
+                            Redirecting to learning portal...
                         </p>
                     </CardContent>
                 </Card>
@@ -101,11 +101,11 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 p-4">
-            <Card className="w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-primary p-4">
+            <Card className="w-full max-w-md border-4 border-white shadow-2xl">
                 <CardHeader className="space-y-2">
-                    <CardTitle className="text-3xl font-bold text-center">Create Account</CardTitle>
-                    <CardDescription className="text-center">
+                    <CardTitle className="text-3xl font-black text-center">Create Account</CardTitle>
+                    <CardDescription className="text-center font-bold">
                         Join our learning platform and start your journey
                     </CardDescription>
                 </CardHeader>
@@ -160,14 +160,14 @@ export default function SignupPage() {
                         </div>
 
                         {error && (
-                            <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-3 rounded-md text-sm">
+                            <div className="bg-red-600 text-white p-3 rounded-md text-sm font-black text-center shadow-lg italic">
                                 {error}
                             </div>
                         )}
 
                         <Button
                             type="submit"
-                            className="w-full"
+                            className="w-full font-black text-lg py-6 rounded-xl shadow-xl hover:scale-[1.02] transition-transform"
                             disabled={loading}
                         >
                             {loading ? "Creating Account..." : "Sign Up"}
