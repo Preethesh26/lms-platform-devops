@@ -53,89 +53,99 @@ export default function UserHomePage() {
     if (!isInitialized) return null;
 
     return (
-        <div className="space-y-32 pb-24 overflow-x-hidden">
+        <div className="space-y-32 pb-24">
             {/* --- HERO SECTION --- */}
-            <section className="relative pt-12">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[140%] h-[600px] bg-primary rounded-b-[100px] -z-10 shadow-2xl border-b-8 border-indigo-200"></div>
+            <section className="relative px-4 pt-8">
+                <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 px-6 py-20 text-center shadow-2xl shadow-primary/20 sm:px-12 sm:py-32 relative">
+                    {/* Decorative Background Circles */}
+                    <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
+                    <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
 
-                <div className="max-w-6xl mx-auto px-6 text-center space-y-12">
-                    <div className="flex justify-center animate-in fade-in slide-in-from-top-10 duration-700">
-                        <div className="inline-flex items-center gap-3 bg-indigo-900 px-6 py-2 rounded-full border-2 border-white text-white font-black text-sm tracking-tighter">
-                            <span className="flex h-3 w-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_15px_rgba(34,197,94,1)]"></span>
-                            NOW JOINING: 12,000+ GLOBAL LEARNERS
+                    <div className="relative z-10 mx-auto max-w-4xl space-y-10">
+                        <div className="flex justify-center space-y-4">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-sm font-semibold text-white border border-white/20 shadow-lg">
+                                <span className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
+                                Trusted by 12,000+ Students Worldwide
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
+                                Unlock Your Potential with <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Master-Level Training</span>
+                            </h1>
+                            <p className="mx-auto max-w-2xl text-lg text-indigo-50 sm:text-xl leading-relaxed">
+                                Access industry-leading courses, expert instructors, and a global community.
+                                Master new skills and accelerate your career today.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                            <Link to="/browse">
+                                <Button size="lg" className="h-14 px-10 text-lg font-bold rounded-2xl bg-white text-indigo-600 hover:bg-indigo-50 shadow-xl transition-all hover:-translate-y-1">
+                                    Explore Courses
+                                </Button>
+                            </Link>
+
                             {showTakeTest && (
-                                <span className="bg-yellow-400 text-black px-2 py-0.5 rounded ml-2 scale-90">LIVE TESTS</span>
+                                <TakeTestDialog>
+                                    <Button size="lg" variant="outline" className="h-14 px-10 text-lg font-bold rounded-2xl border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 backdrop-blur-sm transition-all shadow-lg">
+                                        <Keyboard className="mr-2 h-5 w-5" />
+                                        Take a Test
+                                    </Button>
+                                </TakeTestDialog>
                             )}
                         </div>
-                    </div>
 
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                        <h1 className="text-5xl md:text-8xl font-black text-white tracking-tight leading-[0.9]">
-                            LEARN WITHOUT <br />
-                            <span className="text-yellow-400 transform -rotate-1 inline-block drop-shadow-[0_4px_0_rgba(0,0,0,0.4)]">LIMITS.</span>
-                        </h1>
-                        <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white font-black opacity-90 leading-tight">
-                            The world's most innovative platform for mastering high-demand skills. Join the top 1% of achievers today.
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
-                        <Link to="/browse">
-                            <Button size="lg" className="h-16 px-12 text-xl font-black rounded-2xl bg-white text-primary hover:bg-yellow-400 hover:text-black hover:scale-105 transition-all shadow-[0_10px_0_rgba(0,0,0,0.2)] border-b-4 border-muted">
-                                EXPLORE COURSES <ArrowRight className="ml-3 h-6 w-6" />
-                            </Button>
-                        </Link>
-                        {showTakeTest && (
-                            <TakeTestDialog>
-                                <Button size="lg" variant="outline" className="h-16 px-12 text-xl font-black rounded-2xl border-4 border-white text-white hover:bg-white hover:text-primary transition-all shadow-2xl">
-                                    <Keyboard className="mr-3 h-6 w-6" /> CHALLENGE YOURSELF
-                                </Button>
-                            </TakeTestDialog>
-                        )}
-                    </div>
-
-                    {/* Trusted Bar */}
-                    <div className="pt-16 grid grid-cols-2 md:grid-cols-5 gap-8 items-center text-indigo-300 font-black italic text-xl">
-                        <div className="hover:text-white transition-all cursor-default">TECHGIANT</div>
-                        <div className="hover:text-white transition-all cursor-default">CLOUDNET</div>
-                        <div className="hover:text-white transition-all cursor-default">DEVCORE</div>
-                        <div className="hover:text-white transition-all cursor-default">DESIGNLY</div>
-                        <div className="hover:text-white transition-all cursor-default">DATAFLOW</div>
+                        {/* Stats Summary */}
+                        <div className="grid grid-cols-3 gap-8 pt-12 border-t border-white/10 mt-12 bg-black/10 backdrop-blur-sm rounded-3xl p-6">
+                            <div>
+                                <p className="text-3xl font-bold text-white">100+</p>
+                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Courses</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold text-white">50+</p>
+                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Mentors</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold text-white">10k+</p>
+                                <p className="text-indigo-100 text-xs font-medium uppercase tracking-widest opacity-80 mt-1">Learners</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* --- CATEGORIES SECTION --- */}
             <section className="max-w-7xl mx-auto px-6 space-y-12">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-l-8 border-primary pl-8">
-                    <div className="space-y-2">
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-none uppercase">Future-Proof <br />Your Career</h2>
-                        <p className="text-lg font-bold text-muted-foreground max-w-md">Choose from our industry-vetted categories designed for the next decade.</p>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-3">
+                        <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground">Future-Proof Your Career</h2>
+                        <p className="text-muted-foreground max-w-2xl text-lg">Explore our most popular categories and start your learning journey with top-tier content.</p>
                     </div>
                     <Link to="/browse">
-                        <Button variant="outline" className="border-4 border-primary text-primary font-black rounded-xl h-12 px-8 hover:bg-primary hover:text-white transition-all shadow-xl">
-                            VIEW ALL CATEGORIES
+                        <Button variant="ghost" className="text-primary hover:text-primary/10 hover:bg-primary/5 font-bold text-lg p-0 h-auto group">
+                            View All Categories <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </Link>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { name: "Web Systems", icon: <Layout />, color: "bg-blue-600", border: "border-blue-800" },
-                        { name: "AI & ML", icon: <Cpu />, color: "bg-purple-600", border: "border-purple-800" },
-                        { name: "Visual Arts", icon: <Palette />, color: "bg-pink-600", border: "border-pink-800" },
-                        { name: "Cyber Ops", icon: <Shield />, color: "bg-red-600", border: "border-red-800" },
+                        { name: "Web Systems", icon: <Layout />, count: "24 Courses", color: "text-blue-600", bg: "bg-blue-50" },
+                        { name: "AI & ML", icon: <Cpu />, count: "18 Courses", color: "text-purple-600", bg: "bg-purple-50" },
+                        { name: "Visual Arts", icon: <Palette />, count: "15 Courses", color: "text-pink-600", bg: "bg-pink-50" },
+                        { name: "Cyber Ops", icon: <Shield />, count: "12 Courses", color: "text-red-600", bg: "bg-red-50" },
                     ].map((cat) => (
-                        <Card key={cat.name} className={`group relative overflow-hidden ${cat.color} ${cat.border} border-b-8 border-r-4 transition-all hover:-translate-y-2 hover:translate-x-1 cursor-pointer shadow-2xl`}>
-                            <CardContent className="p-10 text-white space-y-6">
-                                <div className="h-16 w-16 bg-white flex items-center justify-center rounded-2xl text-primary shadow-xl group-hover:rotate-12 transition-transform">
+                        <Card key={cat.name} className="group border-none bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden p-2">
+                            <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
+                                <div className={`w-16 h-16 rounded-2xl ${cat.bg} ${cat.color} flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm`}>
                                     {cat.icon}
                                 </div>
                                 <div className="space-y-1">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter">{cat.name}</h3>
-                                    <p className="font-bold opacity-80 text-sm">20+ Premium Courses</p>
+                                    <h3 className="font-bold text-xl">{cat.name}</h3>
+                                    <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">{cat.count}</p>
                                 </div>
-                                <ArrowRight className="absolute bottom-6 right-6 h-8 w-8 opacity-40 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
                             </CardContent>
                         </Card>
                     ))}
@@ -143,125 +153,123 @@ export default function UserHomePage() {
             </section>
 
             {/* --- FEATURED COURSES --- */}
-            <section className="bg-muted py-24 border-y-8 border-primary">
-                <div className="max-w-7xl mx-auto px-6 space-y-16">
-                    <div className="text-center space-y-4">
-                        <Badge className="bg-primary text-white font-black px-6 py-1 mx-auto block w-fit rounded-full uppercase tracking-widest border-2 border-white shadow-lg">New Releases</Badge>
-                        <h2 className="text-5xl md:text-6xl font-black tracking-tight uppercase leading-none">The Masterclass <br />Collection</h2>
-                    </div>
+            <section className="space-y-12 py-12">
+                <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
+                    <Badge variant="outline" className="border-primary/30 text-primary font-semibold px-4 py-1 rounded-full uppercase tracking-widest text-[10px] bg-primary/5">New & Notable</Badge>
+                    <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Our Featured Masterclasses</h2>
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">Hand-picked courses from industry experts to help you reach your goals faster.</p>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        {courses.slice(0, 3).map((course: Course) => {
-                            const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
-                            return (
-                                <Card key={course.id} className="group flex flex-col border-4 border-black bg-white rounded-3xl overflow-hidden shadow-[12px_12px_0_rgba(0,0,0,1)] hover:shadow-[16px_16px_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
-                                    <div className="aspect-video relative overflow-hidden border-b-4 border-black">
-                                        <div className={`absolute inset-0 ${course.color || "bg-primary"}`}></div>
-                                        <div className="absolute inset-0 bg-black flex items-center justify-center p-8 bg-black/80">
-                                            <div className="text-center space-y-2">
-                                                <div className="h-14 w-14 bg-white rounded-xl mx-auto flex items-center justify-center text-primary shadow-2xl">
-                                                    <BookOpen className="h-8 w-8" />
-                                                </div>
-                                                <div className="text-white font-black text-xs uppercase tracking-widest bg-black px-3 py-1 rounded">PLATINUM COURSE</div>
-                                            </div>
-                                        </div>
-                                        <div className="absolute top-4 left-4">
-                                            <Badge className="bg-yellow-400 text-black border-2 border-black font-black uppercase tracking-tighter shadow-md">BESTSELLER</Badge>
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {courses.slice(0, 3).map((course: Course) => {
+                        const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
+                        return (
+                            <Card key={course.id} className="group flex flex-col border-border/50 bg-card transition-all hover:shadow-2xl hover:-translate-y-1.5 overflow-hidden rounded-3xl">
+                                <div className="aspect-video relative overflow-hidden">
+                                    <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-20`}></div>
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-8 group-hover:bg-black/30 transition-colors">
+                                        <div className="h-16 w-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
+                                            <BookOpen className="h-8 w-8" />
                                         </div>
                                     </div>
+                                    <div className="absolute top-4 right-4">
+                                        <Badge className="bg-white/90 backdrop-blur-sm text-primary border-none font-bold shadow-sm">Featured</Badge>
+                                    </div>
+                                </div>
 
-                                    <CardHeader className="space-y-4 pt-8">
-                                        <CardTitle className="text-3xl font-black leading-none line-clamp-2 group-hover:text-primary transition-colors">{course.title}</CardTitle>
-                                        <CardDescription className="font-bold text-foreground line-clamp-2 leading-relaxed opacity-80">{course.description}</CardDescription>
-                                    </CardHeader>
+                                <CardHeader className="space-y-3 pt-6">
+                                    <CardTitle className="text-2xl font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">{course.title}</CardTitle>
+                                    <CardDescription className="font-medium text-muted-foreground line-clamp-2 leading-relaxed">{course.description}</CardDescription>
+                                </CardHeader>
 
-                                    <CardContent className="flex-1 space-y-6">
-                                        <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-                                            <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded border border-border">
-                                                <Clock className="h-3 w-3" /> 12H+CONTENT
-                                            </div>
-                                            <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded border border-border">
-                                                <Users className="h-3 w-3" /> 5K STUDENTS
-                                            </div>
+                                <CardContent className="flex-1">
+                                    <div className="flex items-center gap-6 text-xs font-bold text-muted-foreground pt-4 border-t border-border/50 uppercase tracking-wider">
+                                        <div className="flex items-center gap-1.5">
+                                            <Clock className="h-3.5 w-3.5" /> 12h 30m
                                         </div>
-                                    </CardContent>
-
-                                    <CardFooter className="p-8 pt-0 flex flex-col gap-4">
-                                        <div className="flex items-center justify-between w-full border-t-2 border-black pt-6">
-                                            <div className="flex flex-col">
-                                                <span className="text-3xl font-black text-primary">₹{course.price}</span>
-                                                <span className="text-xs font-bold text-muted-foreground">LIFETIME ACCESS</span>
-                                            </div>
-                                            {isEnrolled ? (
-                                                <Link to={`/courses/${course.id}`}>
-                                                    <Button className="h-14 px-8 rounded-2xl font-black bg-green-600 hover:bg-green-700 text-white border-b-4 border-green-800 shadow-xl transition-all hover:scale-105 uppercase tracking-tighter">CONTINUE <ArrowRight className="ml-2 h-5 w-5" /></Button>
-                                                </Link>
-                                            ) : (
-                                                <Button
-                                                    onClick={() => handleEnroll(course.id)}
-                                                    className="h-14 px-8 rounded-2xl font-black bg-primary hover:bg-primary/90 text-white border-b-4 border-indigo-800 shadow-xl transition-all hover:scale-105 uppercase tracking-tighter"
-                                                >
-                                                    ENROLL NOW <ChevronRight className="ml-2 h-5 w-5" />
-                                                </Button>
-                                            )}
+                                        <div className="flex items-center gap-1.5">
+                                            <Users className="h-3.5 w-3.5" /> 5,200+ Students
                                         </div>
-                                    </CardFooter>
-                                </Card>
-                            );
-                        })}
-                    </div>
+                                    </div>
+                                </CardContent>
+
+                                <CardFooter className="p-6 pt-0 flex items-center justify-between mt-auto">
+                                    <div className="flex flex-col">
+                                        <span className="text-2xl font-bold text-primary">₹{course.price}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Lifetime Access</span>
+                                    </div>
+                                    {isEnrolled ? (
+                                        <Link to={`/courses/${course.id}`}>
+                                            <Button size="sm" className="h-11 px-6 rounded-xl font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20 transition-all hover:scale-105">Continue <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                                        </Link>
+                                    ) : (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => handleEnroll(course.id)}
+                                            className="h-11 px-6 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105"
+                                        >
+                                            Enroll Now <ChevronRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </CardFooter>
+                            </Card>
+                        );
+                    })}
                 </div>
             </section>
 
             {/* --- FEATURES GRID --- */}
-            <section className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
-                <div className="space-y-10 order-2 md:order-1">
-                    <div className="space-y-4">
-                        <Badge className="bg-red-600 text-white font-black px-4 py-1 rounded-full border-2 border-red-800 shadow-md">EXCLUSIVE FEATURES</Badge>
-                        <h2 className="text-6xl font-black tracking-tight uppercase leading-[0.9]">Why Professionals <br /><span className="text-primary italic">Choose Us.</span></h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        {[
-                            { title: "EXPERT MENTORS", desc: "Learn from veterans working at Top Fortune 500 companies.", icon: <Star />, color: "bg-orange-500" },
-                            { title: "SMART TRACKING", desc: "Detailed analytics to track your growth across every skill.", icon: <LineChart />, color: "bg-blue-500" },
-                            { title: "CAREER SUPPORT", desc: "Resume building and interview prep included in every course.", icon: <Briefcase />, color: "bg-green-500" },
-                            { title: "CERTIFICATION", desc: "Globally recognized certificates upon course completion.", icon: <Award />, color: "bg-purple-500" },
-                        ].map((f) => (
-                            <div key={f.title} className="space-y-3">
-                                <div className={`h-12 w-12 rounded-xl ${f.color} text-white flex items-center justify-center shadow-lg border-b-4 border-black/20`}>
-                                    {f.icon}
-                                </div>
-                                <h3 className="font-black text-xl uppercase tracking-tighter">{f.title}</h3>
-                                <p className="font-bold text-muted-foreground text-sm uppercase leading-tight tracking-tighter">{f.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <Button size="lg" className="h-14 px-10 rounded-xl font-black text-lg bg-black text-white hover:scale-105 transition-all shadow-[8px_8px_0_rgba(124,58,237,1)]">GET STARTED FOR FREE</Button>
-                </div>
-
-                <div className="relative order-1 md:order-2">
-                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] -z-10"></div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-4 pt-12">
-                            <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] rotate-3">
-                                <span className="text-4xl">🚀</span>
-                                <p className="font-black mt-4 text-sm leading-tight uppercase italic">Fastest Track to Mastery</p>
-                            </div>
-                            <div className="bg-primary text-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] -rotate-3">
-                                <span className="text-4xl text-yellow-400 font-black">98%</span>
-                                <p className="font-black mt-4 text-sm leading-tight uppercase italic">Student Success Rate</p>
-                            </div>
-                        </div>
+            <section className="max-w-7xl mx-auto px-6 py-12 rounded-[3rem] bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 overflow-hidden relative">
+                <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-10">
                         <div className="space-y-4">
-                            <div className="bg-yellow-400 border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] -rotate-3">
-                                <span className="text-4xl">🏆</span>
-                                <p className="font-black mt-4 text-sm leading-tight uppercase italic">Award Winning Content</p>
-                            </div>
-                            <div className="bg-white border-4 border-black rounded-3xl p-8 shadow-[8px_8px_0_rgba(0,0,0,1)] rotate-3">
-                                <span className="text-4xl">🌍</span>
-                                <p className="font-black mt-4 text-sm leading-tight uppercase italic">Global Community access</p>
+                            <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl leading-tight">Elevate Your Learning <br /><span className="text-primary italic font-medium">Experience.</span></h2>
+                            <p className="text-muted-foreground text-lg leading-relaxed max-w-lg font-medium">We've built a platform designed specifically for career acceleration and deep skill acquisition.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {[
+                                { title: "Expert Mentors", desc: "Learn from top-tier industry veterans.", icon: <Star className="h-5 w-5" />, bg: "bg-blue-100 text-blue-600" },
+                                { title: "Smart Tracking", desc: "Detailed insights into your progress.", icon: <LineChart className="h-5 w-5" />, bg: "bg-purple-100 text-purple-600" },
+                                { title: "Career Support", desc: "Resume building and interview prep.", icon: <Briefcase className="h-5 w-5" />, bg: "bg-green-100 text-green-600" },
+                                { title: "Certification", desc: "Earn certificates for every course.", icon: <Award className="h-5 w-5" />, bg: "bg-red-100 text-red-600" },
+                            ].map((f) => (
+                                <div key={f.title} className="space-y-3 group">
+                                    <div className={`h-11 w-11 rounded-xl ${f.bg} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
+                                        {f.icon}
+                                    </div>
+                                    <h3 className="font-bold text-lg">{f.title}</h3>
+                                    <p className="font-medium text-muted-foreground text-sm leading-snug">{f.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <Button size="lg" className="h-14 px-10 rounded-2xl font-bold bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 transition-all">Start Your Journey</Button>
+                    </div>
+
+                    <div className="relative">
+                        <div className="aspect-square bg-gradient-to-tr from-indigo-200 to-purple-200 dark:from-indigo-900 dark:to-purple-900 rounded-[3rem] p-8 shadow-inner overflow-hidden flex items-center justify-center">
+                            <div className="grid grid-cols-2 gap-4 w-full">
+                                <div className="space-y-4 pt-12">
+                                    <div className="bg-white dark:bg-card border border-border/50 rounded-3xl p-6 shadow-xl -rotate-2">
+                                        <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-xl mb-4">🚀</div>
+                                        <p className="font-bold text-sm tracking-tight leading-tight">Fast-track to mastery in any field.</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-card border border-border/50 rounded-3xl p-6 shadow-xl rotate-1 translate-x-2">
+                                        <div className="h-12 w-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-xl mb-4">📈</div>
+                                        <p className="font-bold text-sm tracking-tight leading-tight">+98% Successful Student Outcome.</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="bg-white dark:bg-card border border-border/50 rounded-3xl p-6 shadow-xl rotate-2">
+                                        <div className="h-12 w-12 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-xl mb-4">⭐</div>
+                                        <p className="font-bold text-sm tracking-tight leading-tight">Top-rated content by developers.</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-card border border-border/50 rounded-3xl p-6 shadow-xl -rotate-1 -translate-x-2">
+                                        <div className="h-12 w-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl mb-4">🤝</div>
+                                        <p className="font-bold text-sm tracking-tight leading-tight">Join a global learning community.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -269,38 +277,31 @@ export default function UserHomePage() {
             </section>
 
             {/* --- TESTIMONIALS --- */}
-            <section className="bg-black py-32 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6 space-y-20">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-4xl md:text-6xl font-black text-white uppercase leading-none">Voices of <br /><span className="text-primary italic">Achievement.</span></h2>
-                        <div className="hidden md:flex gap-4">
-                            <div className="flex -space-x-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="h-16 w-16 rounded-full border-4 border-black bg-muted flex items-center justify-center font-black shadow-xl ring-2 ring-primary">U{i}</div>
-                                ))}
-                            </div>
-                            <div className="flex flex-col justify-center">
-                                <span className="text-white font-black text-xl italic leading-none">+12K</span>
-                                <span className="text-indigo-300 text-xs font-bold uppercase tracking-widest">Happy Learners</span>
-                            </div>
-                        </div>
+            <section className="max-w-7xl mx-auto px-6 py-20 bg-muted/30 rounded-[3rem] border border-border/50">
+                <div className="space-y-16">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Voices of Success</h2>
+                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">Hear from our students who transformed their careers through our platform.</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { name: "SARAH J.", role: "SENIOR ENGINEER", text: "Truly the best investment I've made in years. The quality of instructors is second to none.", color: "border-primary" },
-                            { name: "MARK R.", role: "UX LEAD @ TECH", text: "The project-based learning approach actually gives you skills you can use the next day at work.", color: "border-yellow-400" },
-                            { name: "ELISA V.", role: "DATA SCIENTIST", text: "From zero to cloud developer in 6 months. The community support kept me going through tough weeks.", color: "border-pink-500" },
+                            { name: "Sarah Johnson", role: "Senior Developer", text: "Truly the best investment I've made in years. The quality of instructors is second to none.", avatar: "SJ" },
+                            { name: "Mark Peterson", role: "UX Designer", text: "The project-based learning approach actually gives you skills you can use immediately.", avatar: "MP" },
+                            { name: "Elisa Vance", role: "Data Scientist", text: "From zero to pro in months. The community support kept me going through tough weeks.", avatar: "EV" },
                         ].map((t, i) => (
-                            <Card key={i} className={`bg-muted border-l-[12px] ${t.color} border-y-4 border-r-4 border-black rounded-3xl shadow-2xl transition-all hover:scale-105 active:scale-95 cursor-default`}>
-                                <CardContent className="p-10 space-y-6">
-                                    <div className="flex gap-1 text-primary">
+                            <Card key={i} className="bg-card border-none shadow-lg hover:shadow-2xl transition-all cursor-default p-8 rounded-3xl group">
+                                <CardContent className="p-0 space-y-6">
+                                    <div className="flex gap-1 text-yellow-400">
                                         {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-4 w-4 fill-current" />)}
                                     </div>
-                                    <p className="text-xl font-black italic uppercase leading-tight tracking-tighter">"{t.text}"</p>
-                                    <div className="pt-4 border-t-2 border-primary/20">
-                                        <p className="font-black text-primary uppercase text-lg">{t.name}</p>
-                                        <p className="text-xs font-bold tracking-widest text-muted-foreground">{t.role}</p>
+                                    <p className="text-lg font-medium leading-relaxed italic text-foreground tracking-tight">"{t.text}"</p>
+                                    <div className="flex items-center gap-4 pt-4 border-t border-border/50">
+                                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform">{t.avatar}</div>
+                                        <div>
+                                            <p className="font-bold text-foreground leading-tight">{t.name}</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">{t.role}</p>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -310,24 +311,26 @@ export default function UserHomePage() {
             </section>
 
             {/* --- FINAL CTA --- */}
-            <section className="max-w-6xl mx-auto px-6 pb-24">
-                <div className="bg-primary rounded-[60px] p-12 md:p-24 text-center space-y-12 border-[12px] border-indigo-200 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-10 pointer-events-none"></div>
-                    <div className="absolute -bottom-20 -right-20 h-64 w-64 bg-indigo-700/50 rounded-full blur-[80px] group-hover:blur-[100px] transition-all"></div>
+            <section className="max-w-6xl mx-auto px-4 pb-24">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-[3rem] p-12 md:p-24 text-center space-y-10 shadow-2xl shadow-indigo-500/30 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-white/5 blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-400/10 blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-                    <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85] relative z-10">
-                        Become the <br /> <span className="text-yellow-400 italic">Unstoppable</span> <br /> version of you.
-                    </h2>
+                    <div className="space-y-6 relative z-10">
+                        <h2 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                            Ready to Transform <br /> Your Career?
+                        </h2>
+                        <p className="text-indigo-50 text-xl font-medium max-w-2xl mx-auto">
+                            Join thousands of students and start learning today. No commitment, no credit card required to start.
+                        </p>
+                    </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 pt-8">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 pt-4">
                         <Link to="/signup">
-                            <Button size="lg" className="h-20 px-16 text-2xl font-black rounded-3xl bg-white text-primary hover:bg-yellow-400 hover:text-black hover:scale-110 transition-all shadow-[12px_12px_0_rgba(0,0,0,0.2)] border-b-4 border-muted">
-                                JOIN NOW FREE
+                            <Button size="lg" className="h-16 px-12 text-xl font-bold rounded-2xl bg-white text-indigo-600 hover:bg-indigo-50 shadow-2xl transition-all hover:scale-105">
+                                Join for Free
                             </Button>
                         </Link>
-                        <p className="text-white font-black text-xl italic opacity-90 max-w-[200px] text-left leading-none uppercase">
-                            NO CREDIT CARD <br /> REQUIRED TO START.
-                        </p>
                     </div>
                 </div>
             </section>

@@ -11,7 +11,8 @@ import {
     SearchX,
     LayoutGrid,
     ChevronRight,
-    Star
+    Star,
+    Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,32 +77,36 @@ export default function BrowsePage() {
     if (!isInitialized) return null;
 
     return (
-        <div className="min-h-screen bg-background pb-20 fade-in">
+        <div className="min-h-screen bg-background pb-20">
             {/* Header Section */}
-            <div className="bg-primary pt-12 pb-24 px-6 md:px-12 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 pt-16 pb-32 px-6 md:px-12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+                {/* Decorative Elements */}
+                <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+                <div className="absolute bottom-1/2 -left-12 h-48 w-48 rounded-full bg-indigo-400/20 blur-2xl"></div>
+
                 <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-white text-sm font-black uppercase tracking-widest mb-2 bg-black/40 w-fit px-3 py-1 rounded-full">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="space-y-6">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1 text-sm font-semibold text-white border border-white/20">
                                 <BookOpen className="h-4 w-4" />
-                                <span>Browse Catalog</span>
+                                <span>Discover New Skills</span>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                                Find Your Next <span className="underline decoration-yellow-400 decoration-8 underline-offset-8">Skill</span>
+                            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                                Learning That <span className="text-yellow-200">Moves You.</span>
                             </h1>
-                            <p className="text-white font-black text-lg max-w-xl">
-                                Explore hundreds of high-quality courses designed to help you master new technologies and advance your career.
+                            <p className="text-indigo-50 font-medium text-lg max-w-xl leading-relaxed">
+                                Join our global community of learners and transform your career with expert-led courses across every industry.
                             </p>
                         </div>
 
-                        <div className="w-full md:w-96">
+                        <div className="w-full md:w-[450px]">
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
+                                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                    <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 </div>
                                 <Input
-                                    className="pl-12 h-14 bg-white border-4 border-white text-primary font-black rounded-2xl shadow-2xl focus:ring-4 focus:ring-yellow-400 focus:border-yellow-400 placeholder:text-primary/40 text-lg transition-all"
+                                    className="pl-14 h-16 bg-white border-none text-foreground font-medium rounded-3xl shadow-2xl focus:ring-4 focus:ring-primary/20 placeholder:text-muted-foreground/60 text-lg transition-all"
                                     placeholder="Search for courses, skills..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -112,16 +117,16 @@ export default function BrowsePage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 md:px-12 -mt-12 relative z-20">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 -mt-10 relative z-20">
                 {/* Category Filters */}
-                <div className="flex flex-wrap gap-3 p-4 bg-card border-4 border-border rounded-3xl shadow-2xl mb-12">
+                <div className="flex flex-wrap gap-2 p-2 bg-card border border-border/50 rounded-[2rem] shadow-xl mb-12 overflow-hidden items-center justify-center sm:justify-start">
                     {categories.map((cat) => (
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
-                            className={`px-6 py-3 rounded-xl text-sm font-black transition-all border-2 ${selectedCategory === cat
-                                ? "bg-primary text-white border-primary shadow-lg scale-105"
-                                : "bg-muted text-foreground border-transparent hover:bg-muted-foreground/10 hover:border-border"
+                            className={`px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${selectedCategory === cat
+                                ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
+                                : "bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                                 }`}
                         >
                             {cat}
@@ -129,16 +134,16 @@ export default function BrowsePage() {
                     ))}
                 </div>
 
-                {/* Results Count & Sort (Visual only for now) */}
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        <LayoutGrid className="h-6 w-6 text-primary" />
+                {/* Results Count & Sort */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                    <h2 className="text-2xl font-extrabold tracking-tight flex items-center gap-3">
+                        <LayoutGrid className="h-6 w-6 text-primary/70" />
                         Showing {filteredCourses.length} Courses
                     </h2>
-                    <div className="hidden md:flex items-center gap-2 text-sm font-bold text-muted-foreground">
+                    <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-2 rounded-xl">
                         <Filter className="h-4 w-4" />
-                        Sort by:
-                        <select className="bg-transparent border-none text-foreground font-black focus:ring-0 cursor-pointer">
+                        <span>Sort by:</span>
+                        <select className="bg-transparent border-none text-foreground font-bold focus:ring-0 cursor-pointer p-0 pr-6">
                             <option>Most Recent</option>
                             <option>Price: Low to High</option>
                             <option>Price: High to Low</option>
@@ -153,67 +158,62 @@ export default function BrowsePage() {
                         {filteredCourses.map((course: Course) => {
                             const isEnrolled = currentUser?.enrolledCourses.includes(course.id);
                             return (
-                                <Card key={course.id} className="group overflow-hidden border-4 border-border bg-card transition-all hover:shadow-2xl hover:border-primary hover:-translate-y-2 flex flex-col rounded-3xl">
+                                <Card key={course.id} className="group overflow-hidden border-border/50 bg-card transition-all hover:shadow-2xl hover:-translate-y-2 flex flex-col rounded-[2rem]">
                                     <div className="relative aspect-video overflow-hidden">
-                                        <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-20 group-hover:opacity-10 transition-opacity`}></div>
-                                        <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/60 group-hover:bg-black/40 transition-colors">
-                                            <div className="text-center space-y-4">
-                                                <div className={`h-16 w-16 mx-auto rounded-2xl flex items-center justify-center text-white shadow-2xl transition-transform group-hover:scale-110 ${course.color || "bg-primary"}`}>
-                                                    <BookOpen className="h-8 w-8" />
-                                                </div>
-                                                <Badge className="bg-primary text-white font-black px-4 py-1 rounded-full uppercase tracking-tighter">
-                                                    {course.lessons.length} Lessons
-                                                </Badge>
+                                        <div className={`absolute inset-0 ${course.color || "bg-primary"} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center p-8 bg-black/30 group-hover:bg-black/20 transition-colors">
+                                            <div className="h-14 w-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white shadow-2xl border border-white/30">
+                                                <BookOpen className="h-7 w-7" />
                                             </div>
+                                        </div>
+                                        <div className="absolute top-4 right-4">
+                                            <Badge className="bg-white/90 backdrop-blur-sm text-primary border-none font-bold shadow-sm">Popular</Badge>
                                         </div>
                                     </div>
 
-                                    <CardHeader className="space-y-4 pt-6">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs font-black text-primary uppercase tracking-widest border-2 border-primary px-3 py-1 rounded-full">Best Seller</span>
-                                            <div className="flex items-center gap-1 text-yellow-600 font-extrabold text-sm">
-                                                <Star className="h-4 w-4 fill-current" />
-                                                4.9
-                                            </div>
+                                    <CardHeader className="space-y-3 pt-6 px-6">
+                                        <div className="flex items-center gap-1.5 text-yellow-500">
+                                            {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-3 w-3 fill-current" />)}
+                                            <span className="text-[10px] font-bold text-muted-foreground ml-1">(4.9)</span>
                                         </div>
-                                        <CardTitle className="font-black text-2xl line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                                        <CardTitle className="font-extrabold text-xl leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                                             {course.title}
                                         </CardTitle>
-                                        <CardDescription className="line-clamp-2 font-bold text-foreground text-sm">
+                                        <CardDescription className="line-clamp-2 font-medium text-muted-foreground text-sm leading-relaxed">
                                             {course.description}
                                         </CardDescription>
                                     </CardHeader>
 
-                                    <CardContent className="flex-1">
-                                        <div className="flex items-center gap-6 text-sm font-bold text-muted-foreground pt-4 border-t-2 border-dashed border-border">
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="h-4 w-4 text-primary" />
+                                    <CardContent className="px-6 flex-1">
+                                        <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground pt-4 border-t border-border/50 uppercase tracking-wider">
+                                            <div className="flex items-center gap-1.5">
+                                                <Clock className="h-3.5 w-3.5" />
                                                 <span>12h 30m</span>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <GraduationCap className="h-4 w-4 text-primary" />
-                                                <span>Level: All</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <Users className="h-3.5 w-3.5" />
+                                                <span>Global</span>
                                             </div>
                                         </div>
                                     </CardContent>
 
-                                    <CardFooter className="flex items-center justify-between bg-muted p-6 mt-4">
+                                    <CardFooter className="flex items-center justify-between p-6 pt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-muted-foreground line-through decoration-red-500 decoration-2">₹{(course.price * 1.5).toFixed(0)}</span>
-                                            <span className="text-2xl font-black text-primary">₹{course.price}</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground line-through opacity-60">₹{(course.price * 1.5).toFixed(0)}</span>
+                                            <span className="text-2xl font-bold text-primary">₹{course.price}</span>
                                         </div>
 
                                         {isEnrolled ? (
                                             <Button
                                                 onClick={() => navigate(`/courses/${course.id}`)}
-                                                className="rounded-xl px-8 font-black shadow-xl hover:scale-105 transition-transform bg-green-600 hover:bg-green-700 h-12"
+                                                className="rounded-xl px-6 font-bold shadow-lg shadow-green-500/10 transition-all hover:scale-105 bg-green-500 hover:bg-green-600 h-11"
                                             >
                                                 Start <ArrowRight className="ml-2 h-4 w-4" />
                                             </Button>
                                         ) : (
                                             <Button
                                                 onClick={() => handleEnroll(course.id)}
-                                                className="rounded-xl px-8 font-black shadow-xl hover:scale-105 transition-transform h-12"
+                                                className="rounded-xl px-6 font-bold shadow-lg shadow-primary/10 transition-all hover:scale-105 h-11"
                                             >
                                                 Enroll <ChevronRight className="ml-2 h-4 w-4" />
                                             </Button>
@@ -224,25 +224,25 @@ export default function BrowsePage() {
                         })}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-20 bg-muted rounded-3xl border-4 border-dashed border-border text-center space-y-6">
-                        <div className="h-24 w-24 bg-background rounded-full flex items-center justify-center border-4 border-border shadow-2xl animate-bounce">
-                            <SearchX className="h-12 w-12 text-muted-foreground" />
+                    <div className="flex flex-col items-center justify-center py-24 bg-muted/40 rounded-[3rem] border-2 border-dashed border-border/60 text-center space-y-6">
+                        <div className="h-24 w-24 bg-background rounded-full flex items-center justify-center border border-border shadow-xl">
+                            <SearchX className="h-10 w-10 text-muted-foreground opacity-40" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-3xl font-black">No Courses Found</h3>
-                            <p className="text-muted-foreground font-bold max-w-md mx-auto">
-                                We couldn't find any courses matching your search or filters. Try adjusting your keywords.
+                            <h3 className="text-2xl font-extrabold tracking-tight">No Courses Found</h3>
+                            <p className="text-muted-foreground font-medium max-w-md mx-auto">
+                                We couldn't find any courses matching your request. Try broadening your keywords or clearing the filters.
                             </p>
                         </div>
                         <Button
                             variant="outline"
-                            className="rounded-full px-10 font-black border-2"
+                            className="rounded-2xl px-8 font-bold border-2"
                             onClick={() => {
                                 setSearchQuery("");
                                 setSelectedCategory("All");
                             }}
                         >
-                            Reset All Filters
+                            Reset Catalog
                         </Button>
                     </div>
                 )}
