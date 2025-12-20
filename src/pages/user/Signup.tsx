@@ -58,7 +58,7 @@ export default function SignupPage() {
             // Auto-login after 3 seconds
             setTimeout(() => {
                 loginUser(data.user, data.token);
-                navigate("/");
+                navigate("/welcome");
             }, 3000);
 
         } catch (err: any) {

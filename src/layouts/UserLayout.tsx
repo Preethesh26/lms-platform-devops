@@ -15,7 +15,7 @@ export default function UserLayout() {
         <div className="min-h-screen flex flex-col bg-background selection:bg-primary/10 selection:text-primary">
             <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-16 items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
+                    <Link to={currentUser ? "/welcome" : "/"} className="flex items-center gap-2 font-bold text-xl tracking-tight">
                         <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M22 10v6M2 10v6" /><path d="M20 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" /><path d="M15 22a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" /><path d="M5 22a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" /></svg>
                         </div>
@@ -25,9 +25,11 @@ export default function UserLayout() {
                         <Link to="/" className="text-foreground/80 transition-colors hover:text-primary">
                             Browse
                         </Link>
-                        <Link to="/my-learning" className="text-foreground/80 transition-colors hover:text-primary">
-                            My Learning
-                        </Link>
+                        {currentUser && (
+                            <Link to="/my-learning" className="text-foreground/80 transition-colors hover:text-primary">
+                                Dashboard
+                            </Link>
+                        )}
                         <Link to="#" className="text-foreground/80 transition-colors hover:text-primary">
                             Mentors
                         </Link>

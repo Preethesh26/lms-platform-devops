@@ -59,8 +59,10 @@ export default function UserLogin() {
             const redirectTo = searchParams.get('redirect');
             if (redirectTo) {
                 navigate(redirectTo);
+            } else if (user.role === 'admin') {
+                navigate("/admin/dashboard");
             } else {
-                navigate("/");
+                navigate("/welcome");
             }
         } catch (err: any) {
             console.error(err);

@@ -6,6 +6,7 @@ import UserHomePage from './pages/user/Home';
 import UserLoginPage from './pages/user/Login';
 import UserSignupPage from './pages/user/Signup';
 import MyLearningPage from './pages/user/MyLearning';
+import WelcomePage from './pages/user/Welcome';
 import CoursePlayerPage from './pages/user/CoursePlayer';
 import TestAccess from './pages/user/TestAccess';
 import TestPlayer from './pages/user/TestPlayer';
@@ -38,6 +39,7 @@ function App() {
                     <Route path="/" element={<UserHomePage />} />
                     <Route path="/login" element={<UserLoginPage />} />
                     <Route path="/signup" element={<UserSignupPage />} />
+                    <Route path="/welcome" element={<WelcomePage />} />
                     <Route path="/my-learning" element={<MyLearningPage />} />
                     <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
                     <Route path="/contact-admin" element={<ContactAdminPage />} />
