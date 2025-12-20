@@ -100,7 +100,7 @@ export function useStore() {
     const addCourse = async (course: Omit<Course, "id">) => {
         try {
             const res = await coursesAPI.create(course);
-            setCourses([...courses, res.data.data]);
+            setCourses(prev => [...prev, res.data.data]);
         } catch (error) {
             console.error('Error adding course:', error);
             throw error;
@@ -110,7 +110,7 @@ export function useStore() {
     const updateCourse = async (id: string, updates: Partial<Course>) => {
         try {
             const res = await coursesAPI.update(id, updates);
-            setCourses(courses.map((c) => (c.id === id ? res.data.data : c)));
+            setCourses(prev => prev.map((c) => (c.id === id ? res.data.data : c)));
         } catch (error) {
             console.error('Error updating course:', error);
             throw error;
@@ -120,7 +120,7 @@ export function useStore() {
     const deleteCourse = async (id: string) => {
         try {
             await coursesAPI.delete(id);
-            setCourses(courses.filter((c) => c.id !== id));
+            setCourses(prev => prev.filter((c) => c.id !== id));
         } catch (error) {
             console.error('Error deleting course:', error);
             throw error;
@@ -130,7 +130,7 @@ export function useStore() {
     const addUser = async (userData: { name: string; email: string; password: string; enrollment?: string; role?: string }) => {
         try {
             const res = await authAPI.register(userData);
-            setUsers([...users, res.data.user]);
+            setUsers(prev => [...prev, res.data.user || res.data.data]);
         } catch (error) {
             console.error('Error adding user:', error);
             throw error;
@@ -140,7 +140,7 @@ export function useStore() {
     const updateUser = async (id: string, updates: Partial<User>) => {
         try {
             const res = await usersAPI.update(id, updates);
-            setUsers(users.map((u) => (u.id === id ? res.data.data : u)));
+            setUsers(prev => prev.map((u) => (u.id === id ? res.data.data : u)));
         } catch (error) {
             console.error('Error updating user:', error);
             throw error;
@@ -150,7 +150,7 @@ export function useStore() {
     const deleteUser = async (id: string) => {
         try {
             await usersAPI.delete(id);
-            setUsers(users.filter((u) => u.id !== id));
+            setUsers(prev => prev.filter((u) => u.id !== id));
         } catch (error) {
             console.error('Error deleting user:', error);
             throw error;

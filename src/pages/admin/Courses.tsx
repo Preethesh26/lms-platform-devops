@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useStore, type Course } from "@/lib/store";
 import { uploadAPI } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function AdminCoursesPage() {
     const navigate = useNavigate();
@@ -57,35 +58,47 @@ export default function AdminCoursesPage() {
         }
     };
 
-    const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        addCourse({
-            title: formData.get("title") as string,
-            description: formData.get("description") as string,
-            price: Number(formData.get("price")) || 0,
-            videoUrl: formData.get("videoUrl") as string,
-            thumbnail: formData.get("thumbnail") as string,
-            isFeatured: formData.get("isFeatured") === "on",
-            lessons: [],
-            color: "bg-blue-500/10 text-blue-500", // Default color for now
-        });
-        setIsCreateOpen(false);
+        try {
+            await addCourse({
+                title: formData.get("title") as string,
+                description: formData.get("description") as string,
+                price: Number(formData.get("price")) || 0,
+                videoUrl: formData.get("videoUrl") as string,
+                thumbnail: formData.get("thumbnail") as string,
+                isFeatured: formData.get("isFeatured") === "on",
+                lessons: [],
+                color: formData.get("color") as string || "#6366f1",
+            });
+            setIsCreateOpen(false);
+            toast.success("Masterclass created successfully!");
+        } catch (error) {
+            toast.error("Failed to create course. Check console for details.");
+        }
     };
 
-    const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!editingCourse) return;
         const formData = new FormData(e.currentTarget);
-        updateCourse(editingCourse.id, {
-            title: formData.get("title") as string,
-            description: formData.get("description") as string,
-            price: Number(formData.get("price")) || 0,
-            videoUrl: formData.get("videoUrl") as string,
-            thumbnail: formData.get("thumbnail") as string,
-            isFeatured: formData.get("isFeatured") === "on",
-        });
-        setEditingCourse(null);
+
+        try {
+            await updateCourse(editingCourse.id, {
+                title: formData.get("title") as string,
+                description: formData.get("description") as string,
+                price: Number(formData.get("price")) || 0,
+                videoUrl: formData.get("videoUrl") as string,
+                thumbnail: formData.get("thumbnail") as string,
+                isFeatured: formData.get("isFeatured") === "on",
+                color: formData.get("color") as string,
+            });
+            setEditingCourse(null);
+            toast.success("Course details refined!");
+        } catch (error) {
+            toast.error("Failed to update course.");
+        }
     };
 
     const handleAddLesson = (e: React.FormEvent<HTMLFormElement>) => {
@@ -131,7 +144,7 @@ export default function AdminCoursesPage() {
                             <Plus className="mr-2 h-4 w-4" /> Create Masterclass
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[550px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[550px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
                         <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative">
                             <div className="absolute top-0 right-0 p-8 opacity-10">
                                 <Plus className="w-24 h-24" />
@@ -299,7 +312,7 @@ export default function AdminCoursesPage() {
 
             {/* Edit Course Dialog */}
             <Dialog open={!!editingCourse} onOpenChange={(open) => !open && setEditingCourse(null)}>
-                <DialogContent className="sm:max-w-[550px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                <DialogContent key={editingCourse?.id || 'edit'} className="sm:max-w-[550px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <Plus className="w-24 h-24 rotate-45" />
