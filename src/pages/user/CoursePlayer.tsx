@@ -420,8 +420,8 @@ export default function CoursePlayerPage() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
-            <div className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto py-4 md:py-8 px-4 sm:px-6">
+            <div className="mb-6 md:mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div>
                     <Button
                         variant="ghost"
@@ -431,11 +431,11 @@ export default function CoursePlayerPage() {
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                             <ArrowLeft className="h-4 w-4" />
                         </div>
-                        Back to My Learning
+                        <span className="text-sm">Back to My Learning</span>
                     </Button>
                     <div className="space-y-2">
-                        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">{course.title}</h1>
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-3xl">{course.description}</p>
+                        <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
+                        <p className="text-muted-foreground font-medium text-sm md:text-lg leading-relaxed max-w-3xl line-clamp-2 md:line-clamp-none opacity-80">{course.description}</p>
                     </div>
                 </div>
             </div>

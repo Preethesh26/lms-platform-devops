@@ -40,9 +40,9 @@ export default function AdminDashboardPage() {
 
     return (
         <div className="space-y-10 animate-in fade-in duration-500">
-            <div className="space-y-2">
-                <h1 className="text-4xl font-extrabold tracking-tight">Intelligence Overview</h1>
-                <p className="text-muted-foreground font-medium text-lg">Platform performance and student growth metrics at a glance.</p>
+            <div className="space-y-1">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Intelligence Overview</h1>
+                <p className="text-muted-foreground font-medium text-sm md:text-base">Platform performance and student growth metrics at a glance.</p>
             </div>
 
             {error && (

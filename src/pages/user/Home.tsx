@@ -70,11 +70,11 @@ export default function UserHomePage() {
                         </div>
 
                         <div className="space-y-4">
-                            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
-                                Unlock Your Potential with <br />
+                            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.15]">
+                                Unlock Your Potential with <br className="hidden xs:block" />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Master-Level Training</span>
                             </h1>
-                            <p className="mx-auto max-w-xl text-base text-indigo-50 sm:text-lg leading-relaxed opacity-90">
+                            <p className="mx-auto max-w-xl text-sm md:text-base lg:text-lg text-indigo-50 leading-relaxed opacity-90 px-4">
                                 Access industry-leading courses, expert instructors, and a global community.
                                 Master new skills and accelerate your career today.
                             </p>

@@ -86,27 +86,27 @@ export default function BrowsePage() {
                 <div className="absolute -top-12 -right-12 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
                 <div className="absolute bottom-1/2 -left-12 h-48 w-48 rounded-full bg-indigo-400/20 blur-2xl"></div>
 
-                <div className="max-w-7xl mx-auto relative z-10">
+                <div className="max-w-7xl mx-auto relative z-10 px-4 md:px-0">
                     <Button
                         variant="ghost"
                         onClick={() => navigate(-1)}
-                        className="text-white hover:bg-white/10 mb-8 p-0 h-auto font-bold flex items-center gap-2 group"
+                        className="text-white hover:bg-white/10 mb-6 md:mb-8 p-0 h-auto font-bold flex items-center gap-2 group transition-all"
                     >
-                        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                        <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
                             <ArrowLeft className="h-4 w-4" />
                         </div>
-                        Back
+                        <span className="text-sm md:text-base">Back</span>
                     </Button>
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-                        <div className="space-y-6">
-                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1 text-sm font-semibold text-white border border-white/20">
-                                <BookOpen className="h-4 w-4" />
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8">
+                        <div className="space-y-4 md:space-y-6">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-[10px] md:text-sm font-bold text-white border border-white/20 uppercase tracking-widest">
+                                <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 <span>Discover New Skills</span>
                             </div>
-                            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
-                                Learning That <span className="text-yellow-200">Moves You.</span>
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
+                                Learning That <br className="hidden sm:block" /> <span className="text-yellow-200">Moves You.</span>
                             </h1>
-                            <p className="text-indigo-50 font-medium text-lg max-w-xl leading-relaxed">
+                            <p className="text-indigo-50 font-medium text-base md:text-lg max-w-xl leading-relaxed opacity-90">
                                 Join our global community of learners and transform your career with expert-led courses across every industry.
                             </p>
                         </div>
@@ -128,33 +128,35 @@ export default function BrowsePage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 md:px-12 -mt-10 relative z-20">
-                {/* Category Filters */}
-                <div className="flex flex-wrap gap-2 p-2 bg-card border border-border/50 rounded-[2rem] shadow-xl mb-12 overflow-hidden items-center justify-center sm:justify-start">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => setSelectedCategory(cat)}
-                            className={`px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${selectedCategory === cat
-                                ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
-                                : "bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                                }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+            <div className="max-w-7xl mx-auto px-4 md:px-12 -mt-10 relative z-20">
+                {/* Category Filters - Horizontally Scrollable on Mobile */}
+                <div className="flex bg-card border border-border/50 rounded-[2rem] shadow-xl mb-8 md:mb-12 items-center overflow-x-auto no-scrollbar p-2">
+                    <div className="flex gap-2 min-w-max md:min-w-0 md:flex-wrap md:justify-start px-2 py-1">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-5 py-2.5 md:px-7 md:py-3 rounded-2xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${selectedCategory === cat
+                                    ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
+                                    : "bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                                    }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Results Count & Sort */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-                    <h2 className="text-2xl font-extrabold tracking-tight flex items-center gap-3">
-                        <LayoutGrid className="h-6 w-6 text-primary/70" />
-                        Showing {filteredCourses.length} Courses
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-6 px-2">
+                    <h2 className="text-xl md:text-2xl font-extrabold tracking-tight flex items-center gap-3">
+                        <LayoutGrid className="h-5 w-5 md:h-6 md:w-6 text-primary/70" />
+                        <span>Showing {filteredCourses.length} Courses</span>
                     </h2>
-                    <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground bg-muted/50 px-4 py-2 rounded-xl">
-                        <Filter className="h-4 w-4" />
-                        <span>Sort by:</span>
-                        <select className="bg-transparent border-none text-foreground font-bold focus:ring-0 cursor-pointer p-0 pr-6">
+                    <div className="flex items-center gap-3 text-[10px] md:text-sm font-bold text-muted-foreground bg-muted/50 px-4 py-2.5 rounded-xl border border-border/10 w-full sm:w-auto overflow-hidden">
+                        <Filter className="h-4 w-4 shrink-0" />
+                        <span className="shrink-0 uppercase tracking-widest">Sort:</span>
+                        <select className="bg-transparent border-none text-foreground font-extrabold focus:ring-0 cursor-pointer p-0 pr-6 text-xs md:text-sm w-full sm:w-auto">
                             <option>Most Recent</option>
                             <option>Price: Low to High</option>
                             <option>Price: High to Low</option>

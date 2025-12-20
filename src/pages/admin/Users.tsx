@@ -113,12 +113,12 @@ export default function AdminUsersPage() {
                     <p className="text-muted-foreground font-medium">Manage institutional identities and academic access.</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="relative w-full sm:w-80 group">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                    <div className="relative flex-1 sm:w-80 group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input
                             placeholder="Search by name, email, or ID..."
-                            className="pl-10 h-12 rounded-xl bg-white border-none shadow-sm transition-all focus-within:shadow-md"
+                            className="pl-11 h-12 rounded-xl bg-white border-none shadow-sm transition-all focus-within:shadow-md"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
                     <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                         <DialogTrigger asChild>
                             <Button className="h-12 px-6 rounded-xl font-bold w-full sm:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                                <UserPlus className="mr-2 h-4 w-4" /> Issue New Credentials
+                                <UserPlus className="mr-2 h-4 w-4" /> Issue Credentials
                             </Button>
                         </DialogTrigger>
                         <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[500px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
@@ -208,11 +208,11 @@ export default function AdminUsersPage() {
 
             {/* Main Tabs */}
             <Tabs defaultValue="students" className="space-y-6">
-                <TabsList className="bg-white border-none shadow-sm p-1 gap-2 rounded-2xl h-14">
-                    <TabsTrigger value="students" className="rounded-xl px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+                <TabsList className="bg-white border-none shadow-sm p-1.5 gap-2 rounded-2xl h-14 w-full sm:w-auto flex">
+                    <TabsTrigger value="students" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
                         Scholars <Badge variant="secondary" className="ml-2 rounded-lg opacity-80">{students.length}</Badge>
                     </TabsTrigger>
-                    <TabsTrigger value="admins" className="rounded-xl px-8 font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+                    <TabsTrigger value="admins" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
                         Directors <Badge variant="secondary" className="ml-2 rounded-lg opacity-80">{admins.length}</Badge>
                     </TabsTrigger>
                 </TabsList>

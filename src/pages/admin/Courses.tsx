@@ -133,14 +133,14 @@ export default function AdminCoursesPage() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h2 className="text-3xl font-extrabold tracking-tight">Access Course Vault</h2>
+                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Course Vault</h1>
                     <p className="text-muted-foreground font-medium">Manage and refine your educational assets with ease.</p>
                 </div>
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-12 px-6 rounded-xl font-bold bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                        <Button className="h-12 px-6 rounded-xl font-bold w-full lg:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                             <Plus className="mr-2 h-4 w-4" /> Create Masterclass
                         </Button>
                     </DialogTrigger>

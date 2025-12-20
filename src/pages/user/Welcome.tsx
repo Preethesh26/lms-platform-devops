@@ -57,19 +57,19 @@ export default function WelcomePage() {
 
             <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 relative z-10 animate-in fade-in zoom-in duration-500">
                 {/* Header Section */}
-                <div className="md:col-span-2 text-center space-y-4 mb-4">
-                    <div className="flex flex-col items-center space-y-4">
-                        <div className="h-20 w-20 rounded-2xl bg-white flex items-center justify-center border-4 border-primary shadow-2xl">
-                            <GraduationCap className="h-10 w-10 text-primary" />
+                <div className="md:col-span-2 text-center space-y-4 mb-2 md:mb-4">
+                    <div className="flex flex-col items-center space-y-3 md:space-y-4">
+                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-white flex items-center justify-center border-[3px] md:border-4 border-primary shadow-xl">
+                            <GraduationCap className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                         </div>
-                        <div className="space-y-2">
-                            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-primary dark:text-white">
-                                Welcome, {currentUser?.name}!
+                        <div className="space-y-1.5 md:space-y-2">
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary dark:text-white px-2">
+                                Welcome, {currentUser?.name.split(' ')[0]}!
                             </h1>
-                            <p className="text-lg md:text-xl text-foreground font-bold italic">
+                            <p className="text-base md:text-xl text-foreground font-bold italic opacity-80 px-4">
                                 {overallProgress !== null && overallProgress > 0
                                     ? `You've completed ${overallProgress}% of your courses. Ready to continue?`
-                                    : "Your learning journey starts here. Where would you like to go today?"}
+                                    : "Your learning journey starts here. Where to today?"}
                             </p>
                         </div>
                     </div>
