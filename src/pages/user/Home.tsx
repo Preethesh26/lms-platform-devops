@@ -59,7 +59,9 @@ export default function UserHomePage() {
                         Access world-class courses, expert instructors, and a community of learners. Master new skills and advance your career today.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                        <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">Explore Courses</Button>
+                        <Link to="/browse">
+                            <Button size="lg" className="bg-white text-violet-600 hover:bg-violet-50 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">Explore Courses</Button>
+                        </Link>
                         <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-violet-600 shadow-2xl h-12 px-8 text-sm font-black rounded-xl">View Roadmap</Button>
 
                         {showTakeTest && (
@@ -129,7 +131,9 @@ export default function UserHomePage() {
                         <h2 className="text-3xl font-bold tracking-tight">Featured Courses</h2>
                         <p className="text-muted-foreground mt-2">Hand-picked courses for you to start learning.</p>
                     </div>
-                    <Button variant="ghost" className="text-primary hover:text-primary/80">View All Courses →</Button>
+                    <Link to="/browse">
+                        <Button variant="ghost" className="text-primary hover:text-primary/80">View All Courses →</Button>
+                    </Link>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {courses.map((course: Course) => {

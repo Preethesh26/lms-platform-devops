@@ -22,7 +22,7 @@ export default function UserLayout() {
                         LMS Platform
                     </Link>
                     <nav className="hidden md:flex items-center gap-8 text-sm font-bold">
-                        <Link to="/" className="text-foreground transition-all hover:text-primary">
+                        <Link to="/browse" className="text-foreground transition-all hover:text-primary">
                             Browse
                         </Link>
                         {currentUser && (

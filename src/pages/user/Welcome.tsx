@@ -78,7 +78,7 @@ export default function WelcomePage() {
                 {/* Option 1: Website */}
                 <Card
                     className="group relative overflow-hidden border-primary bg-white hover:shadow-2xl hover:shadow-primary transition-all duration-300 cursor-pointer border-2"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/browse")}
                 >
                     <div className="absolute top-0 right-0 p-4 group-hover:opacity-100 transition-opacity">
                         <BookOpen className="h-32 w-32 -mr-8 -mt-8 rotate-12 text-primary/20" />
