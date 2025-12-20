@@ -45,6 +45,10 @@ app.use('/api/tests', testRoutes);
 app.use('/api/certificate', certificateRoutes);
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/ai', require('./routes/ai'));
+app.use('/api/upload', require('./routes/upload'));
+
+// Serve uploads statically
+app.use('/uploads', express.static('uploads'));
 
 // Error handler
 app.use(errorHandler);

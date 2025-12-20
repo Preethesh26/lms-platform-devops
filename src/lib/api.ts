@@ -158,4 +158,11 @@ export const aiAPI = {
         api.post('/ai/generate-quiz', data)
 };
 
+// Upload API
+export const uploadAPI = {
+    upload: (formData: FormData) => api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
+};
+
 export default api;

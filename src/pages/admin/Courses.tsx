@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useStore, type Course } from "@/lib/store";
+import { uploadAPI } from "@/lib/api";
 
 export default function AdminCoursesPage() {
     const navigate = useNavigate();
@@ -23,6 +24,38 @@ export default function AdminCoursesPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [managingCourse, setManagingCourse] = useState<Course | null>(null);
+    const [uploading, setUploading] = useState(false);
+
+    // Refs for thumbnail inputs to programmatically update them after upload
+    const thumbnailInputRef = useRef<HTMLInputElement>(null);
+    const editThumbnailInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        setUploading(true);
+        try {
+            const res = await uploadAPI.upload(formData);
+            if (res.data.success) {
+                const url = res.data.url;
+                if (isEdit && editThumbnailInputRef.current) {
+                    editThumbnailInputRef.current.value = url;
+                } else if (!isEdit && thumbnailInputRef.current) {
+                    thumbnailInputRef.current.value = url;
+                }
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('Upload failed. Please try again.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -130,8 +163,33 @@ export default function AdminCoursesPage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="thumbnail" className="text-xs font-bold uppercase tracking-widest opacity-70">Thumbnail URL</Label>
-                                <Input id="thumbnail" name="thumbnail" placeholder="https://images.unsplash.com/..." className="h-12 rounded-xl" />
+                                <Label htmlFor="thumbnail" className="text-xs font-bold uppercase tracking-widest opacity-70">Thumbnail Management</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="thumbnail"
+                                        name="thumbnail"
+                                        ref={thumbnailInputRef}
+                                        placeholder="https://images.unsplash.com/..."
+                                        className="h-12 rounded-xl flex-1"
+                                    />
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        onChange={(e) => handleUpload(e, false)}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploading}
+                                    >
+                                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground font-medium px-1">Upload an image or paste a cloud link manually.</p>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
@@ -273,8 +331,27 @@ export default function AdminCoursesPage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="edit-thumbnail" className="text-xs font-bold uppercase tracking-widest opacity-70">Thumbnail URL</Label>
-                            <Input id="edit-thumbnail" name="thumbnail" defaultValue={editingCourse?.thumbnail} placeholder="https://images.unsplash.com/..." className="h-12 rounded-xl" />
+                            <Label htmlFor="edit-thumbnail" className="text-xs font-bold uppercase tracking-widest opacity-70">Thumbnail Management</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    id="edit-thumbnail"
+                                    name="thumbnail"
+                                    defaultValue={editingCourse?.thumbnail}
+                                    ref={editThumbnailInputRef}
+                                    placeholder="https://images.unsplash.com/..."
+                                    className="h-12 rounded-xl flex-1"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploading}
+                                >
+                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                </Button>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground font-medium px-1">You can upload a new one or keep the existing link.</p>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
