@@ -584,8 +584,8 @@ export default function CoursePlayerPage() {
                         </div>
                     )}
 
-                    {/* AI Tools Strip */}
-                    {activeLesson && activeLesson.type !== 'quiz' && (
+                    {/* AI Tools Strip (Hidden for now) */}
+                    {/* {activeLesson && activeLesson.type !== 'quiz' && (
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
@@ -622,7 +622,7 @@ export default function CoursePlayerPage() {
                                 {aiQuizData ? "Retake Practice" : "Practice Quiz"}
                             </Button>
                         </div>
-                    )}
+                    )} */}
                 </div>
 
                 {/* AI Sidebar Area */}
