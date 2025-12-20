@@ -89,16 +89,18 @@ export default function UserLogin() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-6">
-            {/* Decorative Background Circles */}
-            <div className="fixed -top-24 -left-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
-            <div className="fixed -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
+        <div className="flex items-center justify-center min-h-screen bg-[#f8fafc] p-6 relative overflow-hidden">
+            {/* Soft background accents */}
+            <div className="absolute top-0 left-0 w-full h-full opacity-40">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-50 blur-[120px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-violet-50 blur-[120px]"></div>
+            </div>
 
-            <Card className="w-full max-w-md relative bg-white/95 backdrop-blur-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <Card className="w-full max-w-md relative bg-white border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden">
                 {showTakeTest && (
                     <div className="absolute top-6 right-6">
                         <TakeTestDialog>
-                            <Button variant="outline" size="sm" className="h-9 rounded-full px-4 text-[10px] font-bold uppercase tracking-widest border-primary/20 hover:bg-primary/5 text-primary">
+                            <Button variant="outline" size="sm" className="h-9 rounded-full px-4 text-[10px] font-bold uppercase tracking-widest border-slate-200 hover:bg-slate-50 text-slate-600">
                                 <Keyboard className="h-3.5 w-3.5 mr-2" />
                                 Take Test
                             </Button>
@@ -106,8 +108,8 @@ export default function UserLogin() {
                     </div>
                 )}
                 <CardHeader className="space-y-4 pt-10 px-8 text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-2 text-primary">
-                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 text-slate-600">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </div>
@@ -131,7 +133,7 @@ export default function UserLogin() {
                                 id="enrollment"
                                 type="text"
                                 placeholder="E2024-001"
-                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
+                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
                                 value={enrollment}
                                 onChange={(e) => setEnrollment(e.target.value)}
                                 required
@@ -144,7 +146,7 @@ export default function UserLogin() {
                                 id="email"
                                 type="email"
                                 placeholder="name@example.com"
-                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
+                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -166,7 +168,7 @@ export default function UserLogin() {
                                 id="password"
                                 type="password"
                                 placeholder="••••••••"
-                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
+                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required

@@ -70,8 +70,8 @@ export default function SignupPage() {
 
     if (showSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-6">
-                <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-6 relative overflow-hidden">
+                <Card className="w-full max-w-md relative bg-white border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden">
                     <CardHeader className="text-center space-y-4 pt-10 px-8">
                         <div className="mx-auto w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center shadow-sm">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,15 +108,17 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600 p-6">
-            {/* Decorative Background Circles */}
-            <div className="fixed -top-24 -left-24 h-96 w-96 rounded-full bg-white/10 blur-3xl"></div>
-            <div className="fixed -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
+        <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-6 relative overflow-hidden">
+            {/* Soft background accents */}
+            <div className="absolute top-0 left-0 w-full h-full opacity-40">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-50 blur-[120px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-violet-50 blur-[120px]"></div>
+            </div>
 
-            <Card className="w-full max-w-md bg-white/95 backdrop-blur-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <Card className="w-full max-w-md relative bg-white border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] rounded-[2.5rem] overflow-hidden">
                 <CardHeader className="space-y-4 pt-10 px-8 text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-2 text-primary">
-                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 text-slate-600">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </div>
@@ -136,7 +138,7 @@ export default function SignupPage() {
                                 name="name"
                                 type="text"
                                 placeholder="John Doe"
-                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium"
+                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium"
                                 required
                                 disabled={loading}
                             />
@@ -149,7 +151,7 @@ export default function SignupPage() {
                                 name="email"
                                 type="email"
                                 placeholder="name@example.com"
-                                className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium"
+                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium"
                                 required
                                 disabled={loading}
                             />
@@ -163,7 +165,7 @@ export default function SignupPage() {
                                     name="password"
                                     type="password"
                                     placeholder="••••••••"
-                                    className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium text-sm"
+                                    className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium text-sm"
                                     required
                                     disabled={loading}
                                 />
@@ -176,7 +178,7 @@ export default function SignupPage() {
                                     name="confirmPassword"
                                     type="password"
                                     placeholder="••••••••"
-                                    className="h-12 rounded-xl border-border/50 bg-muted/30 focus-visible:ring-primary px-4 font-medium text-sm"
+                                    className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium text-sm"
                                     required
                                     disabled={loading}
                                 />
