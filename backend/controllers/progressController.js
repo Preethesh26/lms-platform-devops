@@ -58,3 +58,21 @@ exports.getCourseProgress = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+// @desc    Get progress for all courses a user is enrolled in
+// @route   GET /api/progress/all
+// @access  Private
+exports.getAllUserProgress = async (req, res) => {
+    try {
+        const progress = await Progress.find({
+            user: req.user.id
+        });
+
+        res.status(200).json({
+            success: true,
+            data: progress
+        });
+    } catch (error) {
+        console.error('Error fetching all progress:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};

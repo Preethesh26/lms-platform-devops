@@ -101,7 +101,8 @@ export const paymentAPI = {
 export const progressAPI = {
     update: (data: { courseId: string; lessonId: string; completed?: boolean; lastPosition?: number; totalDuration?: number }) =>
         api.post('/progress/update', data),
-    getCourseProgress: (courseId: string) => api.get(`/progress/${courseId}`)
+    getCourseProgress: (courseId: string) => api.get(`/progress/${courseId}`),
+    getAllProgress: () => api.get('/progress/all')
 };
 
 // Quizzes API

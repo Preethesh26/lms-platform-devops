@@ -2,11 +2,47 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStore } from "@/lib/store";
-import { LayoutDashboard, Globe, ArrowRight, Sparkles } from "lucide-react";
+import { progressAPI } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { Sparkles, GraduationCap, LayoutDashboard, ArrowRight, BookOpen } from "lucide-react";
 
 export default function WelcomePage() {
     const navigate = useNavigate();
-    const { currentUser } = useStore();
+    const { currentUser, courses } = useStore();
+    const [overallProgress, setOverallProgress] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            if (currentUser && currentUser.enrolledCourses.length > 0) {
+                try {
+                    const res = await progressAPI.getAllProgress();
+                    const allProgress = res.data.data;
+
+                    const enrolledCourses = courses.filter(c => currentUser.enrolledCourses.includes(c.id));
+                    if (enrolledCourses.length === 0) {
+                        setOverallProgress(0);
+                        return;
+                    }
+
+                    const totals = enrolledCourses.reduce((acc, course) => {
+                        const completed = allProgress.filter((p: any) => p.course === course.id && p.completed).length;
+                        const percentage = course.lessons.length > 0 ? (completed / course.lessons.length) * 100 : 0;
+                        return acc + percentage;
+                    }, 0);
+
+                    setOverallProgress(Math.round(totals / enrolledCourses.length));
+                } catch (error) {
+                    console.error("Error fetching welcome progress:", error);
+                }
+            } else {
+                setOverallProgress(0);
+            }
+        };
+
+        if (currentUser) {
+            fetchProgress();
+        }
+    }, [currentUser, courses]);
 
     if (!currentUser) {
         navigate("/login");
@@ -22,16 +58,21 @@ export default function WelcomePage() {
             <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 relative z-10 animate-in fade-in zoom-in duration-500">
                 {/* Header Section */}
                 <div className="md:col-span-2 text-center space-y-4 mb-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
-                        <Sparkles className="h-4 w-4" />
-                        Welcome back, {currentUser.name}!
+                    <div className="flex flex-col items-center space-y-4">
+                        <div className="h-20 w-20 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-2xl">
+                            <GraduationCap className="h-10 w-10 text-white" />
+                        </div>
+                        <div className="space-y-2">
+                            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white">
+                                Welcome, {currentUser?.name}!
+                            </h1>
+                            <p className="text-lg md:text-xl text-white/80 font-medium">
+                                {overallProgress !== null && overallProgress > 0
+                                    ? `You've completed ${overallProgress}% of your courses. Ready to continue?`
+                                    : "Your learning journey starts here. Where would you like to go today?"}
+                            </p>
+                        </div>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-500">
-                        Where would you like to go?
-                    </h1>
-                    <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Choose your destination to continue your learning journey today.
-                    </p>
                 </div>
 
                 {/* Option 1: Website */}
@@ -40,11 +81,11 @@ export default function WelcomePage() {
                     onClick={() => navigate("/")}
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Globe className="h-32 w-32 -mr-8 -mt-8 rotate-12" />
+                        <BookOpen className="h-32 w-32 -mr-8 -mt-8 rotate-12" />
                     </div>
                     <CardHeader>
                         <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
-                            <Globe className="h-6 w-6" />
+                            <BookOpen className="h-6 w-6" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Browse Website</CardTitle>
                         <CardDescription className="text-base">

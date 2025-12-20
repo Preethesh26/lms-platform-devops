@@ -12,11 +12,32 @@ import {
     ArrowRight,
     Search
 } from "lucide-react";
+import { progressAPI } from "@/lib/api";
+import { useEffect, useState } from "react";
 
 export default function MyLearningPage() {
     const { courses, isInitialized, currentUser } = useStore();
+    const [allProgress, setAllProgress] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    if (!isInitialized) return null;
+    useEffect(() => {
+        if (currentUser) {
+            fetchProgress();
+        }
+    }, [currentUser]);
+
+    const fetchProgress = async () => {
+        try {
+            const res = await progressAPI.getAllProgress();
+            setAllProgress(res.data.data);
+        } catch (error) {
+            console.error("Failed to fetch all progress:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isInitialized || (currentUser && loading)) return null;
 
     if (!currentUser) {
         return (
@@ -36,6 +57,19 @@ export default function MyLearningPage() {
     const enrolledCourses = courses.filter(course => currentUser.enrolledCourses.includes(course.id));
     const newCourses = courses.filter(course => !currentUser.enrolledCourses.includes(course.id)).slice(0, 3);
 
+    // Calculate progress for each course
+    const calculateCourseProgress = (courseId: string) => {
+        const course = courses.find(c => c.id === courseId);
+        if (!course || course.lessons.length === 0) return 0;
+
+        const completedLessons = allProgress.filter(p => p.course === courseId && p.completed).length;
+        return Math.min(Math.round((completedLessons / course.lessons.length) * 100), 100);
+    };
+
+    const overallProgress = enrolledCourses.length > 0
+        ? Math.round(enrolledCourses.reduce((acc, c) => acc + calculateCourseProgress(c.id), 0) / enrolledCourses.length)
+        : 0;
+
     return (
         <div className="max-w-7xl mx-auto space-y-12 pb-20">
             {/* Premium Hero Section */}
@@ -53,7 +87,7 @@ export default function MyLearningPage() {
                             Welcome back, {currentUser.name}! 🚀
                         </h1>
                         <p className="text-white/80 text-lg md:text-xl">
-                            You've completed 45% of your weekly goal. Keep pushing to reach your target!
+                            You've completed {overallProgress}% of your enrolled courses. Keep pushing to reach your target!
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-4 pt-4">
@@ -140,10 +174,13 @@ export default function MyLearningPage() {
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                                 <span>Progress</span>
-                                                <span className="text-primary">45%</span>
+                                                <span className="text-primary">{calculateCourseProgress(course.id)}%</span>
                                             </div>
                                             <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
-                                                <div className="bg-primary h-full w-[45%] rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]"></div>
+                                                <div
+                                                    className="bg-primary h-full rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-all duration-500"
+                                                    style={{ width: `${calculateCourseProgress(course.id)}%` }}
+                                                ></div>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground">
