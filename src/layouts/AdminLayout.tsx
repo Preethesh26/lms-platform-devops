@@ -45,12 +45,8 @@ export default function AdminLayout() {
             `}>
                 <div className="flex h-20 items-center px-8 border-b md:border-none">
                     <Link to="/admin" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                        <span className="font-extrabold text-xl tracking-tight">LMS Admin</span>
+                        <img src="/favicon.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 transition-transform group-hover:scale-105 object-contain bg-white" />
+                        <span className="font-extrabold text-xl tracking-tight">PrimeSphere Admin</span>
                     </Link>
                     <Button
                         variant="ghost"

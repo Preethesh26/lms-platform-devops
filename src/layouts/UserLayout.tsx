@@ -33,10 +33,8 @@ export default function UserLayout() {
                             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </Button>
                         <Link to={currentUser ? "/welcome" : "/"} className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
-                            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-md transition-transform hover:rotate-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 md:h-5 md:w-5"><path d="M22 10v6M2 10v6" /><path d="M20 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" /><path d="M15 22a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" /><path d="M5 22a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" /></svg>
-                            </div>
-                            <span className="hidden xs:inline">LMS Platform</span>
+                            <img src="/favicon.png" alt="Logo" className="h-8 w-8 rounded-lg shadow-md transition-transform hover:rotate-3 object-contain bg-primary/10" />
+                            <span className="hidden xs:inline">PrimeSphere</span>
                         </Link>
                     </div>
 
@@ -137,7 +135,7 @@ export default function UserLayout() {
             <footer className="border-t border-border bg-muted py-12">
                 <div className="container mx-auto px-4 flex items-center justify-center">
                     <p className="text-center text-sm font-bold leading-loose text-foreground">
-                        © LMS Platform. Built with Vite & React.
+                        © PrimeSphere. Built with Vite & React.
                     </p>
                 </div>
             </footer>

@@ -109,10 +109,8 @@ export default function UserLogin() {
                     </div>
                 )}
                 <CardHeader className="space-y-4 pt-10 px-8 text-center">
-                    <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 text-slate-600">
-                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                    <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                        <img src="/favicon.png" alt="Logo" className="w-ful h-full object-contain p-2" />
                     </div>
                     <div className="space-y-2">
                         <CardTitle className="text-3xl font-extrabold tracking-tight">Student Login</CardTitle>
