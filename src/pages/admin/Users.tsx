@@ -98,6 +98,9 @@ export default function AdminUsersPage() {
             setLoading(false);
         }
     };
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [deleteConfirmation, setDeleteConfirmation] = useState("");
+
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!selectedUser) return;
@@ -122,16 +125,23 @@ export default function AdminUsersPage() {
         }
     };
 
-    const handleDelete = async (user: User) => {
-        const confirmation = window.prompt(`To delete ${user.name}, please type their email address (${user.email}) to confirm:`);
-        if (confirmation !== user.email) {
-            if (confirmation !== null) toast.error("Email does not match. Deletion cancelled.");
+    const handleDeleteClick = (user: User) => {
+        setUserToDelete(user);
+        setDeleteConfirmation("");
+    };
+
+    const confirmDelete = async () => {
+        if (!userToDelete) return;
+
+        if (deleteConfirmation !== userToDelete.email) {
+            toast.error("Email does not match. Please type the exact email to confirm.");
             return;
         }
 
         try {
-            await deleteUser(user.id);
+            await deleteUser(userToDelete.id);
             toast.success("User deleted.");
+            setUserToDelete(null);
         } catch (err: any) {
             toast.error("Failed to delete user.");
         }
@@ -266,7 +276,7 @@ export default function AdminUsersPage() {
                                 setSelectedUser(user);
                                 setSelectedRole(user.role);
                                 setSelectedEnrollments(user.enrolledCourses || []);
-                            }} onDelete={() => handleDelete(user)} />
+                            }} onDelete={() => handleDeleteClick(user)} />
                         ))}
                     </div>
                 </TabsContent>
@@ -277,7 +287,7 @@ export default function AdminUsersPage() {
                             <UserCard key={user.id} user={user} onEdit={() => {
                                 setSelectedUser(user);
                                 setSelectedRole(user.role);
-                            }} onDelete={() => handleDelete(user)} />
+                            }} onDelete={() => handleDeleteClick(user)} />
                         ))}
                     </div>
                 </TabsContent>
@@ -340,6 +350,43 @@ export default function AdminUsersPage() {
                             </Button>
                         </DialogFooter>
                     </form>
+                </DialogContent>
+            </Dialog>
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+                <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                    <div className="bg-red-500 p-8 text-white relative">
+                        <Trash2 className="absolute top-0 right-0 p-8 opacity-20 w-32 h-32" />
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-bold">Delete User</DialogTitle>
+                            <DialogDescription className="text-red-100 font-medium opacity-90">
+                                This action cannot be undone.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="p-8 space-y-6">
+                        <div className="space-y-4">
+                            <p className="text-sm font-medium text-muted-foreground">
+                                To delete <span className="font-bold text-foreground">{userToDelete?.name}</span>, please type their email address (<span className="font-bold text-foreground font-mono bg-slate-100 px-1 rounded">{userToDelete?.email}</span>) below to confirm:
+                            </p>
+                            <Input
+                                value={deleteConfirmation}
+                                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                placeholder={userToDelete?.email}
+                                className="h-12 rounded-xl text-center font-bold"
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <Button variant="outline" onClick={() => setUserToDelete(null)} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
+                            <Button
+                                onClick={confirmDelete}
+                                disabled={deleteConfirmation !== userToDelete?.email}
+                                className="flex-1 h-12 rounded-xl font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20"
+                            >
+                                Delete User
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

@@ -101,6 +101,48 @@ export default function AdminCoursesPage() {
         }
     };
 
+    const [detectingDuration, setDetectingDuration] = useState(false);
+    const durationInputRef = useRef<HTMLInputElement>(null);
+
+    const getDurationFromUrl = (url: string): Promise<string> => {
+        return new Promise((resolve) => {
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.src = url;
+
+            video.onloadedmetadata = () => {
+                const totalSeconds = Math.floor(video.duration);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                resolve(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+                video.remove();
+            };
+
+            video.onerror = () => {
+                resolve("");
+                video.remove();
+            };
+        });
+    };
+
+    const handleVideoUrlBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+        const url = e.target.value;
+        if (!url || !durationInputRef.current) return;
+
+        // Skip if duration is already set to avoid overwriting manual entry
+        if (durationInputRef.current.value) return;
+
+        setDetectingDuration(true);
+        const duration = await getDurationFromUrl(url);
+        if (duration && durationInputRef.current) {
+            durationInputRef.current.value = duration;
+            toast.success(`Duration detected: ${duration}`);
+        } else {
+            // Optional: toast.error("Could not auto-detect duration. Please enter manually.");
+        }
+        setDetectingDuration(false);
+    };
+
     const handleAddLesson = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!managingCourse) return;
@@ -406,11 +448,31 @@ export default function AdminCoursesPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="videoUrl">Video URL</Label>
-                                        <Input id="videoUrl" name="videoUrl" placeholder="YouTube or MP4 link" required />
+                                        <Input
+                                            id="videoUrl"
+                                            name="videoUrl"
+                                            placeholder="Direct link to MP4 or WebM file"
+                                            required
+                                            onBlur={handleVideoUrlBlur}
+                                        />
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="duration">Duration</Label>
-                                        <Input id="duration" name="duration" placeholder="e.g. 10:30" required />
+                                        <div className="relative">
+                                            <Input
+                                                id="duration"
+                                                name="duration"
+                                                placeholder="e.g. 10:30"
+                                                required
+                                                ref={durationInputRef}
+                                                className={detectingDuration ? "opacity-50" : ""}
+                                            />
+                                            {detectingDuration && (
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                                 <Button type="submit" size="sm">Add Lesson</Button>
