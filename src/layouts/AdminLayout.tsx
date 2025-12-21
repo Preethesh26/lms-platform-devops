@@ -46,7 +46,7 @@ export default function AdminLayout() {
                 <div className="flex h-20 items-center px-8 border-b md:border-none">
                     <Link to="/admin" className="flex items-center gap-3 group">
                         <img src="/favicon.png" alt="Logo" className="w-10 h-10 rounded-xl shadow-lg shadow-primary/20 transition-transform group-hover:scale-105 object-contain bg-white" />
-                        <span className="font-extrabold text-xl tracking-tight">PrimeSphere Admin</span>
+                        <span className="font-extrabold text-xl tracking-tight">AcademyPro Admin</span>
                     </Link>
                     <Button
                         variant="ghost"

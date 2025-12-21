@@ -112,6 +112,7 @@ export default function UserLogin() {
                     <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm">
                         <img src="/favicon.png" alt="Logo" className="w-ful h-full object-contain p-2" />
                     </div>
+                    <p className="text-sm font-bold uppercase tracking-widest text-primary/80">AcademyPro</p>
                     <div className="space-y-2">
                         <CardTitle className="text-3xl font-extrabold tracking-tight">Student Login</CardTitle>
                         <CardDescription className="text-muted-foreground font-medium">

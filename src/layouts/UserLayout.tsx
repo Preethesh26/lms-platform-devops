@@ -34,7 +34,7 @@ export default function UserLayout() {
                         </Button>
                         <Link to={currentUser ? "/welcome" : "/"} className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
                             <img src="/favicon.png" alt="Logo" className="h-8 w-8 rounded-lg shadow-md transition-transform hover:rotate-3 object-contain bg-primary/10" />
-                            <span className="hidden xs:inline">PrimeSphere</span>
+                            <span className="inline">AcademyPro</span>
                         </Link>
                     </div>
 
@@ -135,7 +135,7 @@ export default function UserLayout() {
             <footer className="border-t border-border bg-muted py-12">
                 <div className="container mx-auto px-4 flex items-center justify-center">
                     <p className="text-center text-sm font-bold leading-loose text-foreground">
-                        © PrimeSphere. Built with Vite & React.
+                        © AcademyPro. Built with Vite & React.
                     </p>
                 </div>
             </footer>
