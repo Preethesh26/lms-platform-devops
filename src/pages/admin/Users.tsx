@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, Loader2 } from "lucide-react";
+import { UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
@@ -32,6 +32,9 @@ export default function AdminUsersPage() {
     const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
     const [createdUserCredentials, setCreatedUserCredentials] = useState<{ email: string, password: string, enrollment?: string } | null>(null);
     const [generatedId, setGeneratedId] = useState("");
+
+    // Password visibility state
+    const [showGeneratedPassword, setShowGeneratedPassword] = useState(false);
 
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,6 +90,7 @@ export default function AdminUsersPage() {
                 password,
                 enrollment,
                 role: selectedRole,
+                needsPasswordReset: true, // Enforce reset for new admin-created users
             });
 
             setCreatedUserCredentials({ email, password, enrollment });
@@ -98,6 +102,7 @@ export default function AdminUsersPage() {
             setLoading(false);
         }
     };
+
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
     const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
@@ -106,6 +111,7 @@ export default function AdminUsersPage() {
         if (!selectedUser) return;
         setLoading(true);
         const formData = new FormData(e.currentTarget);
+        const resetRequired = formData.get("needsPasswordReset") === "on";
 
         try {
             await updateUser(selectedUser.id, {
@@ -114,7 +120,8 @@ export default function AdminUsersPage() {
                 role: selectedRole as "admin" | "user",
                 enrollment: formData.get("enrollment") as string,
                 password: (formData.get("password") as string) || undefined,
-                enrolledCourses: selectedEnrollments
+                enrolledCourses: selectedEnrollments,
+                needsPasswordReset: resetRequired
             });
             setSelectedUser(null);
             toast.success("User updated successfully.");
@@ -199,10 +206,28 @@ export default function AdminUsersPage() {
                                     <Input name="email" type="email" placeholder="Enter email address" className="h-12 rounded-xl" required />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 relative">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Password</Label>
-                                        <Input name="password" type="text" value={generatedPassword} readOnly className="h-12 rounded-xl bg-slate-50 font-mono" required />
-                                        <p className="text-[10px] text-muted-foreground px-1">Auto-generated secure password</p>
+                                        <div className="relative">
+                                            <Input
+                                                name="password"
+                                                type={showGeneratedPassword ? "text" : "password"}
+                                                value={generatedPassword}
+                                                readOnly
+                                                className="h-12 rounded-xl bg-slate-50 font-mono pr-10"
+                                                required
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                onClick={() => setShowGeneratedPassword(!showGeneratedPassword)}
+                                            >
+                                                {showGeneratedPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                            </Button>
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground px-1">Auto-generated secure password (Reset required on login)</p>
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
@@ -315,12 +340,38 @@ export default function AdminUsersPage() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2 text-primary">
                                 <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Password</Label>
-                                <Input name="password" type="password" placeholder="Leave empty to retain" className="h-12 rounded-xl border-indigo-100" />
+                                <div className="relative">
+                                    <Input
+                                        name="password"
+                                        type={showGeneratedPassword ? "text" : "password"}
+                                        placeholder="Leave empty to retain"
+                                        className="h-12 rounded-xl border-indigo-100 pr-10"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                        onClick={() => setShowGeneratedPassword(!showGeneratedPassword)}
+                                    >
+                                        {showGeneratedPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                    </Button>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
                                 <Input name="enrollment" defaultValue={selectedUser?.enrollment} className="h-12 rounded-xl" />
                             </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                            <Checkbox id="needsPasswordReset" name="needsPasswordReset" defaultChecked={selectedUser?.needsPasswordReset} />
+                            <label
+                                htmlFor="needsPasswordReset"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-indigo-900"
+                            >
+                                Require password reset on next login
+                            </label>
                         </div>
 
                         {selectedUser?.role === 'user' && (

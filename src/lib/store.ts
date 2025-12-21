@@ -32,6 +32,7 @@ export type User = {
     role: "admin" | "user";
     enrolledCourses: string[];
     password?: string; // Optional for updates
+    needsPasswordReset?: boolean;
 };
 
 export function useStore() {
@@ -127,7 +128,7 @@ export function useStore() {
         }
     };
 
-    const addUser = async (userData: { name: string; email: string; password: string; enrollment?: string; role?: string }) => {
+    const addUser = async (userData: { name: string; email: string; password: string; enrollment?: string; role?: string; needsPasswordReset?: boolean }) => {
         try {
             const res = await authAPI.register(userData);
             setUsers(prev => [...prev, res.data.user || res.data.data]);
@@ -189,11 +190,6 @@ export function useStore() {
 
             // Update user enrollment locally after successful payment
             if (currentUser) {
-                // We need to refetch the user or manually update the state
-                // For now, let's just update the enrolledCourses array if we have the courseId
-                // But since we don't have courseId here easily, we might want to refetch user profile
-                // Or rely on the fact that the backend updated it
-
                 // Let's refetch the user profile to be safe and get fresh data
                 const userRes = await authAPI.getMe();
                 setCurrentUser(userRes.data.data);
@@ -219,7 +215,6 @@ export function useStore() {
         setCurrentUser(null);
     };
 
-    // ... existing exports
     const [quizzes, setQuizzes] = useState<any[]>([]); // Store loaded quizzes
 
     const createQuiz = async (quizData: any) => {
