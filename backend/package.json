@@ -1,5 +1,5 @@
 {
-    "name": "lms-backend",
+    "name": "academy-pro-backend",
     "version": "1.0.0",
     "description": "LMS Platform Backend API",
     "main": "server.js",
