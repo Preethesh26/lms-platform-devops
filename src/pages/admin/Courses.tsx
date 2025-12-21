@@ -50,9 +50,10 @@ export default function AdminCoursesPage() {
                     thumbnailInputRef.current.value = url;
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload failed:', error);
-            alert('Upload failed. Please try again.');
+            const msg = error.response?.data?.message || error.message || 'Upload failed';
+            toast.error(`Upload failed: ${msg}`);
         } finally {
             setUploading(false);
         }
