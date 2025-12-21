@@ -42,10 +42,33 @@ export default function AdminUsersPage() {
     const admins = filteredUsers.filter(u => u.role === 'admin');
     const students = filteredUsers.filter(u => u.role === 'user');
 
+    const [generatedPassword, setGeneratedPassword] = useState("");
+
     const generateId = () => {
         const year = new Date().getFullYear();
-        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        return `LMS-${year}-${random}`;
+        const prefix = `LMS-${year}-`;
+
+        // Find existing IDs with current year prefix
+        const existingIds = users
+            .filter(u => u.enrollment && u.enrollment.startsWith(prefix))
+            .map(u => {
+                const parts = u.enrollment.split('-');
+                return parseInt(parts[2] || '0');
+            });
+
+        const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+        const nextId = (maxId + 1).toString().padStart(4, '0');
+
+        return `${prefix}${nextId}`;
+    };
+
+    const generatePassword = () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        let password = "";
+        for (let i = 0; i < 12; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return password;
     };
 
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -53,6 +76,7 @@ export default function AdminUsersPage() {
         setLoading(true);
         const formData = new FormData(e.currentTarget);
         const email = formData.get("email") as string;
+        // Use generated password instead of form input if available, though form input should match
         const password = formData.get("password") as string;
         const enrollment = formData.get("enrollment") as string;
 
@@ -74,7 +98,6 @@ export default function AdminUsersPage() {
             setLoading(false);
         }
     };
-
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!selectedUser) return;
@@ -99,10 +122,15 @@ export default function AdminUsersPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm("Are you certain you wish to delete this user? This action is irreversible.")) return;
+    const handleDelete = async (user: User) => {
+        const confirmation = window.prompt(`To delete ${user.name}, please type their email address (${user.email}) to confirm:`);
+        if (confirmation !== user.email) {
+            if (confirmation !== null) toast.error("Email does not match. Deletion cancelled.");
+            return;
+        }
+
         try {
-            await deleteUser(id);
+            await deleteUser(user.id);
             toast.success("User deleted.");
         } catch (err: any) {
             toast.error("Failed to delete user.");
@@ -133,7 +161,10 @@ export default function AdminUsersPage() {
 
                     <Dialog open={isCreateOpen} onOpenChange={(open: boolean) => {
                         setIsCreateOpen(open);
-                        if (open) setGeneratedId(generateId());
+                        if (open) {
+                            setGeneratedId(generateId());
+                            setGeneratedPassword(generatePassword());
+                        }
                     }}>
                         <DialogTrigger asChild>
                             <Button className="h-12 px-6 rounded-xl font-bold w-full sm:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
@@ -160,7 +191,8 @@ export default function AdminUsersPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Password</Label>
-                                        <Input name="password" type="password" placeholder="••••••••" className="h-12 rounded-xl" required />
+                                        <Input name="password" type="text" value={generatedPassword} readOnly className="h-12 rounded-xl bg-slate-50 font-mono" required />
+                                        <p className="text-[10px] text-muted-foreground px-1">Auto-generated secure password</p>
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
@@ -234,7 +266,7 @@ export default function AdminUsersPage() {
                                 setSelectedUser(user);
                                 setSelectedRole(user.role);
                                 setSelectedEnrollments(user.enrolledCourses || []);
-                            }} onDelete={() => handleDelete(user.id)} />
+                            }} onDelete={() => handleDelete(user)} />
                         ))}
                     </div>
                 </TabsContent>
@@ -245,7 +277,7 @@ export default function AdminUsersPage() {
                             <UserCard key={user.id} user={user} onEdit={() => {
                                 setSelectedUser(user);
                                 setSelectedRole(user.role);
-                            }} onDelete={() => handleDelete(user.id)} />
+                            }} onDelete={() => handleDelete(user)} />
                         ))}
                     </div>
                 </TabsContent>
