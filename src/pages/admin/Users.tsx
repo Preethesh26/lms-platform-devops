@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, ShieldAlert, Loader2 } from "lucide-react";
+import { UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
@@ -46,11 +46,6 @@ export default function AdminUsersPage() {
         const year = new Date().getFullYear();
         const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
         return `LMS-${year}-${random}`;
-    };
-
-    const openCreateDialog = () => {
-        setGeneratedId(generateId());
-        setIsCreateOpen(true);
     };
 
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -105,7 +100,7 @@ export default function AdminUsersPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you certain you wish to delete this user? This action is irreversible.")) return;
+        if (!window.confirm("Are you certain you wish to delete this user? This action is irreversible.")) return;
         try {
             await deleteUser(id);
             toast.success("User deleted.");
@@ -132,13 +127,16 @@ export default function AdminUsersPage() {
                             placeholder="Search users..."
                             className="pl-11 h-12 rounded-xl bg-white border-none shadow-sm transition-all focus-within:shadow-md"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
-                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <Dialog open={isCreateOpen} onOpenChange={(open: boolean) => {
+                        setIsCreateOpen(open);
+                        if (open) setGeneratedId(generateId());
+                    }}>
                         <DialogTrigger asChild>
-                            <Button onClick={openCreateDialog} className="h-12 px-6 rounded-xl font-bold w-full sm:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                            <Button className="h-12 px-6 rounded-xl font-bold w-full sm:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                                 <UserPlus className="mr-2 h-4 w-4" /> Add User
                             </Button>
                         </DialogTrigger>
@@ -292,8 +290,8 @@ export default function AdminUsersPage() {
                                             <Checkbox
                                                 id={`c-${course.id}`}
                                                 checked={selectedEnrollments.includes(course.id)}
-                                                onCheckedChange={(checked) => {
-                                                    if (checked) setSelectedEnrollments([...selectedEnrollments, course.id]);
+                                                onCheckedChange={(checked: boolean | "indeterminate") => {
+                                                    if (checked === true) setSelectedEnrollments([...selectedEnrollments, course.id]);
                                                     else setSelectedEnrollments(selectedEnrollments.filter(id => id !== course.id));
                                                 }}
                                             />
