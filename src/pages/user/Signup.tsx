@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
     const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [enrollmentNumber, setEnrollmentNumber] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -160,28 +163,58 @@ export default function SignupPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Password</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium text-sm"
-                                    required
-                                    disabled={loading}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 pr-10 font-medium text-sm"
+                                        required
+                                        disabled={loading}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                        ) : (
+                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Confirm</Label>
-                                <Input
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 font-medium text-sm"
-                                    required
-                                    disabled={loading}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary px-4 pr-10 font-medium text-sm"
+                                        required
+                                        disabled={loading}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                        ) : (
+                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
                         </div>
 

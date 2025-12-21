@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, FileText, AlertCircle, CheckCircle, Loader2, Lock } from 'lucide-react';
+import { Clock, FileText, AlertCircle, CheckCircle, Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
 
@@ -21,6 +21,7 @@ export default function TestAccess() {
     // For password-based auth
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [authenticating, setAuthenticating] = useState(false);
     const [authError, setAuthError] = useState('');
     const [testToken, setTestToken] = useState('');
@@ -211,13 +212,29 @@ export default function TestAccess() {
 
                             <div>
                                 <Label>Password</Label>
-                                <Input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter password from email"
-                                    required
-                                />
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Enter password from email"
+                                        required
+                                        className="pr-10"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                        ) : (
+                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                    </Button>
+                                </div>
                                 <p className="text-xs text-muted-foreground mt-1">
                                     Check your email for the password
                                 </p>

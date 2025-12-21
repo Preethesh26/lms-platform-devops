@@ -8,12 +8,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useStore } from "@/lib/store";
 import { authAPI, settingsAPI } from "@/lib/api";
 import { TakeTestDialog } from "@/components/user/TakeTestDialog";
-import { Keyboard } from "lucide-react";
+import { Keyboard, Eye, EyeOff } from "lucide-react";
 
 export default function UserLogin() {
     const [email, setEmail] = useState("");
     const [enrollment, setEnrollment] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -164,16 +165,31 @@ export default function UserLogin() {
                                     Forgot?
                                 </button>
                             </div>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                disabled={loading}
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 pr-10 font-medium"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                         <Button type="submit" className="w-full h-12 font-bold rounded-xl shadow-xl shadow-primary/20 bg-primary text-white hover:scale-[1.02] active:scale-95 transition-all mt-4" disabled={loading}>
                             {loading ? "Authenticating..." : "Sign In to Portal"}
