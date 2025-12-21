@@ -434,8 +434,8 @@ export default function CoursePlayerPage() {
                         <span className="text-sm">Back to My Learning</span>
                     </Button>
                     <div className="space-y-2">
-                        <h1 className="text-2xl md:text-5xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
-                        <p className="text-muted-foreground font-medium text-sm md:text-lg leading-relaxed max-w-3xl line-clamp-2 md:line-clamp-none opacity-80">{course.description}</p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
+                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl line-clamp-2 opacity-80">{course.description}</p>
                     </div>
                 </div>
             </div>
@@ -472,7 +472,11 @@ export default function CoursePlayerPage() {
                                         onReady={handleReady}
                                         onError={(e: any) => {
                                             console.error("Video Error:", e);
-                                            setVideoError("Failed to load video. The URL might be invalid or protected.");
+                                            let errorMsg = "Failed to load video.";
+                                            if (!activeLesson.videoUrl) errorMsg = "Video URL is missing.";
+                                            else if (!ReactPlayerAny.canPlay(activeLesson.videoUrl)) errorMsg = "Video format not supported or URL is invalid.";
+
+                                            setVideoError(errorMsg);
                                         }}
                                         progressInterval={5000}
                                         config={{
