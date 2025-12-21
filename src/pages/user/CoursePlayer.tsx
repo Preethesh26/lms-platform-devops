@@ -435,7 +435,7 @@ export default function CoursePlayerPage() {
                     </Button>
                     <div className="space-y-2">
                         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
-                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl line-clamp-2 opacity-80">{course.description}</p>
+                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl opacity-80">{course.description}</p>
                     </div>
                 </div>
             </div>

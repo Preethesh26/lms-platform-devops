@@ -451,7 +451,7 @@ export default function AdminCoursesPage() {
                                         <Input
                                             id="videoUrl"
                                             name="videoUrl"
-                                            placeholder="Direct link to MP4 or WebM file"
+                                            placeholder="YouTube link or direct video file (MP4/WebM)"
                                             required
                                             onBlur={handleVideoUrlBlur}
                                         />
