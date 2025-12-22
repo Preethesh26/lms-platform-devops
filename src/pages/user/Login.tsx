@@ -136,7 +136,6 @@ export default function UserLogin() {
                                 className="h-12 rounded-xl border-slate-200 bg-white focus-visible:ring-primary focus-visible:ring-offset-0 px-4 font-medium"
                                 value={enrollment}
                                 onChange={(e) => setEnrollment(e.target.value)}
-                                required
                                 disabled={loading}
                             />
                         </div>

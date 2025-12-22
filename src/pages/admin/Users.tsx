@@ -88,9 +88,9 @@ export default function AdminUsersPage() {
                 name: formData.get("name") as string,
                 email,
                 password,
-                enrollment,
+                enrollment: selectedRole === 'admin' ? undefined : enrollment,
                 role: selectedRole,
-                needsPasswordReset: true, // Enforce reset for new admin-created users
+                needsPasswordReset: selectedRole === 'user', // Enforce reset for students only
             });
 
             setCreatedUserCredentials({ email, password, enrollment });
@@ -212,8 +212,9 @@ export default function AdminUsersPage() {
                                             <Input
                                                 name="password"
                                                 type={showGeneratedPassword ? "text" : "password"}
-                                                value={generatedPassword}
-                                                readOnly
+                                                value={selectedRole === 'user' ? generatedPassword : undefined}
+                                                onChange={selectedRole === 'admin' ? (e) => setGeneratedPassword(e.target.value) : undefined}
+                                                readOnly={selectedRole === 'user'}
                                                 className="h-12 rounded-xl bg-slate-50 font-mono pr-10"
                                                 required
                                             />
@@ -227,12 +228,21 @@ export default function AdminUsersPage() {
                                                 {showGeneratedPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                                             </Button>
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground px-1">Auto-generated secure password (Reset required on login)</p>
+                                        <p className="text-[10px] text-muted-foreground px-1">
+                                            {selectedRole === 'user' ? "Auto-generated secure password (Reset required on login)" : "Enter a password for the new admin"}
+                                        </p>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
-                                        <Input name="enrollment" defaultValue={generatedId} className="h-12 rounded-xl" readOnly />
-                                    </div>
+                                    {selectedRole === 'user' ? (
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
+                                            <Input name="enrollment" defaultValue={generatedId} className="h-12 rounded-xl" readOnly />
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2 opacity-30 select-none">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest px-1">User ID</Label>
+                                            <Input placeholder="Not required for Admin" className="h-12 rounded-xl bg-slate-100" disabled />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Role</Label>
