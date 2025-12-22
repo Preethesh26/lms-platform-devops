@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, Loader2, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Search, Mail, Fingerprint, Shield, Trash2, Edit2, Loader2, Eye, EyeOff, LayoutGrid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
@@ -12,6 +12,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +35,7 @@ export default function AdminUsersPage() {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     const [selectedRole, setSelectedRole] = useState("user");
     const [selectedEnrollments, setSelectedEnrollments] = useState<string[]>([]);
@@ -305,26 +314,125 @@ export default function AdminUsersPage() {
                 </TabsList>
 
                 <TabsContent value="students" className="space-y-4">
-                    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-                        {students.map(user => (
-                            <UserCard key={user.id} user={user} onEdit={() => {
-                                setSelectedUser(user);
-                                setSelectedRole(user.role);
-                                setSelectedEnrollments(user.enrolledCourses || []);
-                            }} onDelete={() => handleDeleteClick(user)} />
-                        ))}
-                    </div>
+                    {viewMode === 'grid' ? (
+                        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                            {students.map(user => (
+                                <UserCard key={user.id} user={user} onEdit={() => {
+                                    setSelectedUser(user);
+                                    setSelectedRole(user.role);
+                                    setSelectedEnrollments(user.enrolledCourses || []);
+                                }} onDelete={() => handleDeleteClick(user)} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="hover:bg-transparent border-slate-100 dark:border-slate-800">
+                                        <TableHead className="pl-6 h-14 font-black text-xs uppercase tracking-widest text-slate-400">User</TableHead>
+                                        <TableHead className="font-black text-xs uppercase tracking-widest text-slate-400">Email</TableHead>
+                                        <TableHead className="font-black text-xs uppercase tracking-widest text-slate-400">ID Code</TableHead>
+                                        <TableHead className="font-black text-xs uppercase tracking-widest text-slate-400">Courses</TableHead>
+                                        <TableHead className="text-right pr-6 font-black text-xs uppercase tracking-widest text-slate-400">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {students.map((user) => (
+                                        <TableRow key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 border-slate-100 dark:border-slate-800 transition-colors">
+                                            <TableCell className="pl-6 font-bold text-slate-900 dark:text-white">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                                        <Fingerprint className="w-4 h-4" />
+                                                    </div>
+                                                    {user.name}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground font-medium text-sm">{user.email}</TableCell>
+                                            <TableCell><span className="font-mono font-bold text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-300">{user.enrollment || '-'}</span></TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary" className="font-bold bg-primary/10 text-primary hover:bg-primary/20">
+                                                    {user.enrolledCourses?.length || 0} enrolled
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg" onClick={() => {
+                                                        setSelectedUser(user);
+                                                        setSelectedRole(user.role);
+                                                        setSelectedEnrollments(user.enrolledCourses || []);
+                                                    }}>
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg" onClick={() => handleDeleteClick(user)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="admins" className="space-y-4">
-                    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-                        {admins.map(user => (
-                            <UserCard key={user.id} user={user} onEdit={() => {
-                                setSelectedUser(user);
-                                setSelectedRole(user.role);
-                            }} onDelete={() => handleDeleteClick(user)} />
-                        ))}
-                    </div>
+                    {viewMode === 'grid' ? (
+                        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                            {admins.map(user => (
+                                <UserCard key={user.id} user={user} onEdit={() => {
+                                    setSelectedUser(user);
+                                    setSelectedRole(user.role);
+                                }} onDelete={() => handleDeleteClick(user)} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="hover:bg-transparent border-slate-100 dark:border-slate-800">
+                                        <TableHead className="pl-6 h-14 font-black text-xs uppercase tracking-widest text-slate-400">Admin User</TableHead>
+                                        <TableHead className="font-black text-xs uppercase tracking-widest text-slate-400">Email</TableHead>
+                                        <TableHead className="font-black text-xs uppercase tracking-widest text-slate-400">Role</TableHead>
+                                        <TableHead className="text-right pr-6 font-black text-xs uppercase tracking-widest text-slate-400">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {admins.map((user) => (
+                                        <TableRow key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 border-slate-100 dark:border-slate-800 transition-colors">
+                                            <TableCell className="pl-6 font-bold text-slate-900 dark:text-white">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center text-orange-500">
+                                                        <Shield className="w-4 h-4" />
+                                                    </div>
+                                                    {user.name}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground font-medium text-sm">{user.email}</TableCell>
+                                            <TableCell>
+                                                <Badge className="font-bold bg-orange-100 text-orange-700 hover:bg-orange-200 border-none shadow-none dark:bg-orange-900/30 dark:text-orange-400">
+                                                    Administrator
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg" onClick={() => {
+                                                        setSelectedUser(user);
+                                                        setSelectedRole(user.role);
+                                                    }}>
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg" onClick={() => handleDeleteClick(user)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
                 </TabsContent>
             </Tabs>
 
@@ -465,8 +573,8 @@ function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, 
             <CardHeader className="p-8 pb-4">
                 <div className="flex items-start justify-between">
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${user.role === 'admin'
-                            ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-500'
-                            : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
+                        ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-500'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
                         }`}>
                         {user.role === 'admin' ? <Shield className="w-7 h-7" /> : <Fingerprint className="w-7 h-7" />}
                     </div>

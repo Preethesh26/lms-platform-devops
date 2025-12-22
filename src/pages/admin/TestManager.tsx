@@ -126,42 +126,41 @@ export default function TestManager() {
             </div>
 
             {tests.length === 0 ? (
-                <div className="flex flex-col items-center justify-center border border-dashed rounded-lg p-12 text-center text-muted-foreground">
+                <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-12 text-center text-muted-foreground bg-slate-50/50 dark:bg-slate-900/20">
                     <FileText className="h-10 w-10 mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No Tests Created</h3>
-                    <p className="mb-4">Get started by creating your first test.</p>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">No Tests Created</h3>
+                    <p className="mb-6 max-w-sm mx-auto">Get started by creating your first standalone test assessment.</p>
                     <Link to="/admin/tests/create">
-                        <Button variant="outline">Create Test</Button>
+                        <Button className="rounded-xl font-bold px-6 shadow-lg shadow-primary/20">Create Test</Button>
                     </Link>
                 </div>
             ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {tests.map((test: any) => (
-                        <Card key={test._id} className="hover:shadow-md transition-shadow">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
+                        <Card key={test._id} className="group hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-1 dark:bg-slate-900/50 rounded-[2rem] border-2 border-transparent hover:border-slate-100 dark:hover:border-slate-800 overflow-hidden relative">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
+                                <CardTitle className="text-[10px] font-black uppercase tracking-widest">
                                     {test.isPublished ? (
-                                        <span className="text-green-600">● Published</span>
+                                        <span className="text-emerald-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
                                     ) : (
-                                        <span className="text-gray-400">● Draft</span>
+                                        <span className="text-slate-400 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-slate-400" /> Draft</span>
                                     )}
                                 </CardTitle>
-                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <div className="h-8 w-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors">
+                                    <FileText className="h-4 w-4" />
+                                </div>
                             </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold mb-2">{test.title}</div>
-                                <div className="text-xs text-muted-foreground space-y-1 mb-4">
-                                    <div className="flex items-center gap-1">
-                                        <Clock className="h-3 w-3" />
+                            <CardContent className="p-6 pt-2">
+                                <div className="text-lg font-black mb-1 line-clamp-1 text-slate-900 dark:text-white" title={test.title}>{test.title}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400 space-y-2 mb-6 font-medium">
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="h-3.5 w-3.5 opacity-70" />
                                         {test.timeLimit > 0 ? `${test.timeLimit} mins` : 'No time limit'}
                                     </div>
-                                    <div>{test.questions.length} Questions</div>
-                                    <div>Passing: {test.passingScore}%</div>
-                                    {test.hasDeadline && (
-                                        <div className="text-orange-600">
-                                            Deadline: {new Date(test.deadline).toLocaleDateString()}
-                                        </div>
-                                    )}
+                                    <div className="flex items-center justify-between">
+                                        <span>{test.questions.length} Questions</span>
+                                        <span className="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">Pass: {test.passingScore}%</span>
+                                    </div>
                                 </div>
 
                                 {test.stats && (

@@ -10,6 +10,7 @@ const generateToken = (id) => {
 
 
 const { sendWelcomeEmail, sendAdminNewUserNotification } = require('../services/emailService');
+const { appendUserToSheet } = require('../services/googleSheetsService');
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -80,6 +81,9 @@ exports.register = async (req, res) => {
         } catch (emailError) {
             console.error('Failed to send admin notification:', emailError);
         }
+
+        // Sync to Google Sheets (non-blocking)
+        appendUserToSheet(user).catch(err => console.error('Sheet Sync Background Error:', err));
 
         const token = generateToken(user._id);
 

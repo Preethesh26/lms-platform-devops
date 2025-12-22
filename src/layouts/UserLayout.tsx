@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, Home, BookOpen, LayoutDashboard, UserCircle, LogOut, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function UserLayout() {
     const { currentUser, logoutUser } = useStore();
@@ -64,6 +65,9 @@ export default function UserLayout() {
                                 <Button size="sm" variant="outline" onClick={handleLogout} className="border-2 font-bold h-9 rounded-xl hidden sm:flex">
                                     Sign Out
                                 </Button>
+                                <div className="hidden sm:block">
+                                    <ThemeToggle />
+                                </div>
                                 <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold md:hidden">
                                     {currentUser.name[0]}
                                 </div>
@@ -72,6 +76,14 @@ export default function UserLayout() {
                             <Link to="/login">
                                 <Button size="sm" className="rounded-xl px-5 md:px-6 shadow-lg shadow-primary/20 font-bold h-9 md:h-10">Sign In</Button>
                             </Link>
+                        )}
+                        <div className="block sm:hidden">
+                            <ThemeToggle />
+                        </div>
+                        {!currentUser && (
+                            <div className="hidden sm:block">
+                                <ThemeToggle />
+                            </div>
                         )}
                     </div>
                 </div>
