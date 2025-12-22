@@ -8,7 +8,7 @@ const createAdmin = async () => {
     try {
         await connectDB();
 
-        const adminEmail = 'admin@example.com';
+        const adminEmail = 'academypro.desk@gmail.com';
         const adminPassword = 'admin123';
 
         // Check if admin exists

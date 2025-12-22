@@ -57,3 +57,17 @@ Once Vercel finishes, your **AcademyPro** platform will be live!
 *   **Free Subdomains**: Vercel and Render give you free URLs (e.g., `academy-pro.vercel.app`). These are completely free and work forever.
 *   **Custom Domains**: If you want `www.academypro.com`, you usually have to buy it (~$10/year) from Namecheap or GoDaddy. You can then connect it to Vercel for free.
 *   **Recommendation**: Start with the free `.vercel.app` domain. it is professional enough for testing and initial users.
+
+## 🛠️ How to Change Your App Name (URL)
+If Vercel gave you a random name like `lms-platform-gilt-eight.vercel.app`, you can change it:
+1.  Go to your **Vercel Dashboard** -> Select your project.
+2.  Click **Settings** (top toolbar).
+3.  Go to **Domains** (left sidebar).
+4.  Click **Edit** next to your current domain.
+5.  Type your desired name (e.g., `academy-pro-app`).
+6.  If available, it will save instantly!
+
+## ⚠️ Important for Uploads
+On free hosting (Render/Vercel), **file uploads will disappear** after a while because the filesystem is temporary.
+*   **Solution**: For permanent images, you eventually need cloud storage (AWS S3, Cloudinary, etc.).
+*   **For Now**: You can paste **external links** (from Unsplash or Google Images) into the thumbnail field instead of uploading.

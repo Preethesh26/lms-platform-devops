@@ -21,7 +21,7 @@ const sendPasswordResetEmail = async (to, resetUrl) => {
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = 'Password Reset Request';
         sendSmtpEmail.htmlContent = `
@@ -52,7 +52,7 @@ const sendContactAdminEmail = async (adminEmail, userEmail, userName, message) =
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: adminEmail }];
         sendSmtpEmail.replyTo = { email: userEmail, name: userName };
         sendSmtpEmail.subject = `Support Request from ${userName}`;
@@ -89,7 +89,7 @@ const sendWelcomeEmail = async (to, name, password, enrollment) => {
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = 'Welcome to LMS Platform - Your Credentials';
         sendSmtpEmail.htmlContent = `
@@ -137,7 +137,7 @@ const sendProfileUpdateEmail = async (to, name, changes) => {
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = 'Your LMS Profile Has Been Updated';
         sendSmtpEmail.htmlContent = `
@@ -182,7 +182,7 @@ const sendAdminNewUserNotification = async (adminEmail, userName, userEmail, enr
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: adminEmail }];
         sendSmtpEmail.subject = `New Student Registration - ${userName}`;
         sendSmtpEmail.htmlContent = `
@@ -217,7 +217,7 @@ const sendTestInvitationEmail = async (to, testData) => {
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = `You're invited to take: ${testData.title}`;
         sendSmtpEmail.htmlContent = `
@@ -278,7 +278,7 @@ const sendTicketStatusUpdateEmail = async (to, userName, ticketSubject, newStatu
     try {
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
-        sendSmtpEmail.sender = { name: 'LMS Platform Support', email: 'kulalpreethesh20@gmail.com' };
+        sendSmtpEmail.sender = { name: 'LMS Platform Support', email: 'academypro.desk@gmail.com' };
         sendSmtpEmail.to = [{ email: to }];
         sendSmtpEmail.subject = `Update on your support request: ${ticketSubject}`;
 
