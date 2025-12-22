@@ -197,7 +197,7 @@ export default function AdminUsersPage() {
                                 <UserPlus className="mr-2 h-4 w-4" /> Add User
                             </Button>
                         </DialogTrigger>
-                        <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[500px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                        <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[500px] rounded-[2.5rem] border-2 border-indigo-500/20 dark:border-indigo-500/50 shadow-2xl p-0 overflow-hidden">
                             <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative">
                                 <Shield className="absolute top-0 right-0 p-8 opacity-10 w-24 h-24" />
                                 <DialogHeader>
@@ -224,7 +224,7 @@ export default function AdminUsersPage() {
                                                 value={selectedRole === 'user' ? generatedPassword : undefined}
                                                 onChange={selectedRole === 'admin' ? (e) => setGeneratedPassword(e.target.value) : undefined}
                                                 readOnly={selectedRole === 'user'}
-                                                className="h-12 rounded-xl bg-slate-50 font-mono pr-10"
+                                                className="h-12 rounded-xl bg-slate-50 dark:bg-slate-900 dark:text-white font-mono pr-10"
                                                 required
                                             />
                                             <Button
@@ -438,7 +438,7 @@ export default function AdminUsersPage() {
 
             {/* Edit User Dialog */}
             <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-                <DialogContent key={selectedUser?.id} className="sm:max-w-[500px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                <DialogContent key={selectedUser?.id} className="sm:max-w-[500px] rounded-[2.5rem] border-2 border-indigo-500/20 dark:border-indigo-500/50 shadow-2xl p-0 overflow-hidden">
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative">
                         <Edit2 className="absolute top-0 right-0 p-8 opacity-10 w-24 h-24" />
                         <DialogHeader>
@@ -462,8 +462,7 @@ export default function AdminUsersPage() {
                                     <Input
                                         name="password"
                                         type={showGeneratedPassword ? "text" : "password"}
-                                        placeholder="Leave empty to retain"
-                                        className="h-12 rounded-xl border-indigo-100 pr-10"
+                                        className="h-12 rounded-xl border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white pr-10"
                                     />
                                     <Button
                                         type="button"
