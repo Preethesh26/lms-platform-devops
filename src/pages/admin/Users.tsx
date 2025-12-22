@@ -167,10 +167,10 @@ export default function AdminUsersPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <div className="relative flex-1 sm:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                         <Input
                             placeholder="Search users..."
-                            className="pl-11 h-12 rounded-xl bg-white border-none shadow-sm transition-all focus-within:shadow-md"
+                            className="pl-11 h-12 rounded-2xl bg-white dark:bg-slate-900 border-none shadow-sm dark:shadow-slate-900/50 transition-all focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/20 dark:text-white"
                             value={searchQuery}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         />
@@ -294,18 +294,18 @@ export default function AdminUsersPage() {
             </Dialog>
 
             {/* Main Tabs */}
-            <Tabs defaultValue="students" className="space-y-6">
-                <TabsList className="bg-white border-none shadow-sm p-1.5 gap-2 rounded-2xl h-14 w-full sm:w-auto flex">
-                    <TabsTrigger value="students" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-                        Users <Badge variant="secondary" className="ml-2 rounded-lg opacity-80">{students.length}</Badge>
+            <Tabs defaultValue="students" className="space-y-8">
+                <TabsList className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-white/20 dark:border-white/5 shadow-sm p-1.5 gap-2 rounded-2xl h-16 w-full sm:w-auto flex">
+                    <TabsTrigger value="students" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-primary data-[state=active]:shadow-md transition-all h-full">
+                        Users <Badge variant="secondary" className="ml-2 rounded-lg opacity-80 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">{students.length}</Badge>
                     </TabsTrigger>
-                    <TabsTrigger value="admins" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-                        Admins <Badge variant="secondary" className="ml-2 rounded-lg opacity-80">{admins.length}</Badge>
+                    <TabsTrigger value="admins" className="flex-1 sm:flex-none px-6 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-primary data-[state=active]:shadow-md transition-all h-full">
+                        Admins <Badge variant="secondary" className="ml-2 rounded-lg opacity-80 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">{admins.length}</Badge>
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="students" className="space-y-4">
-                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                         {students.map(user => (
                             <UserCard key={user.id} user={user} onEdit={() => {
                                 setSelectedUser(user);
@@ -317,7 +317,7 @@ export default function AdminUsersPage() {
                 </TabsContent>
 
                 <TabsContent value="admins" className="space-y-4">
-                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                         {admins.map(user => (
                             <UserCard key={user.id} user={user} onEdit={() => {
                                 setSelectedUser(user);
@@ -456,44 +456,52 @@ export default function AdminUsersPage() {
 
 function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, onDelete: () => void }) {
     return (
-        <Card className="group overflow-hidden rounded-[2rem] border-none shadow-sm hover:shadow-md transition-all bg-white relative">
-            <CardHeader className="p-6 pb-2">
+        <Card className="group overflow-hidden rounded-[2.5rem] border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-1 bg-white dark:hover:border-primary/20 relative">
+            <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-primary/10 text-primary text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest">
+                    Active
+                </div>
+            </div>
+            <CardHeader className="p-8 pb-4">
                 <div className="flex items-start justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        {user.role === 'admin' ? <Shield className="w-6 h-6" /> : <Fingerprint className="w-6 h-6" />}
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${user.role === 'admin'
+                            ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-500'
+                            : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
+                        }`}>
+                        {user.role === 'admin' ? <Shield className="w-7 h-7" /> : <Fingerprint className="w-7 h-7" />}
                     </div>
-                    <Badge variant={user.role === 'admin' ? "default" : "secondary"} className="rounded-lg font-bold h-7 px-3">
+                    <Badge variant={user.role === 'admin' ? "default" : "secondary"} className="rounded-xl font-bold h-8 px-4 text-[10px] tracking-widest uppercase">
                         {user.role}
                     </Badge>
                 </div>
-                <div className="mt-4 space-y-1">
-                    <h3 className="font-extrabold text-lg line-clamp-1">{user.name}</h3>
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="mt-6 space-y-1">
+                    <h3 className="font-black text-xl line-clamp-1 tracking-tight text-slate-900 dark:text-white">{user.name}</h3>
+                    <div className="flex items-center gap-2 text-muted-foreground group-hover:text-primary/80 transition-colors">
                         <Mail className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium truncate">{user.email}</span>
+                        <span className="text-xs font-bold truncate tracking-wide">{user.email}</span>
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="p-6 pt-2">
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground font-bold uppercase tracking-wider">ID</span>
-                        <span className="font-mono font-bold text-foreground bg-slate-100 px-2 py-0.5 rounded">{user.enrollment || 'UNASSIGNED'}</span>
+            <CardContent className="p-8 pt-2">
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 group-hover:bg-white dark:group-hover:bg-slate-800 transition-colors border border-transparent group-hover:border-slate-100 dark:group-hover:border-slate-700">
+                        <span className="text-muted-foreground font-black uppercase tracking-widest opacity-70">ID Code</span>
+                        <span className="font-mono font-bold text-slate-700 dark:text-slate-200">{user.enrollment || 'N/A'}</span>
                     </div>
                     {user.role === 'user' && (
-                        <div className="flex items-center justify-between text-xs">
-                            <span className="text-muted-foreground font-bold uppercase tracking-wider">Academic Load</span>
-                            <span className="font-bold text-primary">{user.enrolledCourses?.length || 0} Courses</span>
+                        <div className="flex items-center justify-between text-xs px-3">
+                            <span className="text-muted-foreground font-bold uppercase tracking-wider opacity-70">Courses</span>
+                            <span className="font-black text-primary">{user.enrolledCourses?.length || 0}</span>
                         </div>
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="p-6 pt-0 flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1 rounded-xl h-10 font-bold border-slate-100 hover:bg-slate-50" onClick={onEdit}>
-                    Edit
+            <CardFooter className="p-8 pt-0 flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                <Button variant="outline" size="sm" className="flex-1 rounded-xl h-11 font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white" onClick={onEdit}>
+                    Edit Profile
                 </Button>
-                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-50" onClick={onDelete}>
-                    <Trash2 className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onClick={onDelete}>
+                    <Trash2 className="h-5 w-5" />
                 </Button>
             </CardFooter>
         </Card>

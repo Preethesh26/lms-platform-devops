@@ -270,14 +270,14 @@ export default function AdminCoursesPage() {
 
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {courses.length === 0 ? (
-                    <Card className="col-span-full py-20 text-center border-dashed border-2 bg-muted/20 rounded-[2.5rem]">
+                    <Card className="col-span-full py-20 text-center border-dashed border-2 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 rounded-[2.5rem]">
                         <CardContent className="space-y-4">
-                            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto opacity-40">
-                                <Plus className="w-8 h-8" />
+                            <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                                <Plus className="w-10 h-10 text-slate-300 dark:text-slate-600" />
                             </div>
                             <div className="space-y-1">
-                                <p className="text-lg font-bold">No courses yet</p>
-                                <p className="text-muted-foreground">Start by creating your first masterclass.</p>
+                                <p className="text-xl font-black text-slate-900 dark:text-white">No courses yet</p>
+                                <p className="text-muted-foreground font-medium">Start by creating your first masterclass.</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -285,64 +285,64 @@ export default function AdminCoursesPage() {
                     courses.map((course) => (
                         <Card
                             key={course.id}
-                            className="group overflow-hidden rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 bg-white relative"
+                            className="group overflow-hidden rounded-[2.5rem] border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-2 bg-white dark:hover:border-primary/20 relative"
                         >
-                            <div className="aspect-video relative overflow-hidden bg-muted">
+                            <div className="aspect-video relative overflow-hidden bg-slate-100 dark:bg-slate-800">
                                 {course.thumbnail ? (
-                                    <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                    <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${course.color}20` }}>
-                                        <Plus className="w-10 h-10 opacity-20" style={{ color: course.color }} />
+                                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${course.color}15` }}>
+                                        <div className="p-4 rounded-xl backdrop-blur-md bg-white/30 dark:bg-black/30">
+                                            <Sparkles className="w-8 h-8 opacity-50" style={{ color: course.color }} />
+                                        </div>
                                     </div>
                                 )}
                                 <div className="absolute top-4 left-4 flex gap-2">
-                                    <div className="px-3 py-1.5 rounded-full bg-white/95 backdrop-blur shadow-sm text-[10px] font-bold uppercase tracking-wider text-primary">
+                                    <div className="px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-950/90 backdrop-blur-md shadow-sm text-[10px] font-black uppercase tracking-widest text-primary border border-white/20 dark:border-white/10">
                                         ₹{course.price}
                                     </div>
                                     {course.isFeatured && (
-                                        <div className="px-3 py-1.5 rounded-full bg-amber-400 text-white shadow-sm text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                                            <Sparkles className="w-3 h-3" /> Featured
+                                        <div className="px-3 py-1.5 rounded-xl bg-amber-400 text-amber-950 shadow-sm text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-amber-300">
+                                            <Sparkles className="w-3 h-3 fill-amber-950" /> Featured
                                         </div>
                                     )}
                                 </div>
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px] flex items-center justify-center gap-3">
                                     <Button
                                         size="sm"
-                                        variant="secondary"
-                                        className="rounded-xl font-bold h-9 px-4"
+                                        className="rounded-xl font-bold h-10 px-5 bg-white text-slate-900 hover:bg-slate-100 shadow-xl"
                                         onClick={() => setEditingCourse(course)}
                                     >
                                         Edit Details
                                     </Button>
                                     <Button
                                         size="sm"
-                                        variant="secondary"
-                                        className="rounded-xl font-bold h-9 px-4"
+                                        className="rounded-xl font-bold h-10 px-5 bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20"
                                         onClick={() => setManagingCourse(course)}
                                     >
                                         Manage Curriculum
                                     </Button>
                                 </div>
                             </div>
-                            <CardHeader className="p-6">
-                                <CardTitle className="text-xl font-extrabold tracking-tight group-hover:text-primary transition-colors line-clamp-1">
+                            <CardHeader className="p-8 pb-4">
+                                <CardTitle className="text-xl font-black tracking-tight group-hover:text-primary transition-colors line-clamp-1 text-slate-900 dark:text-white">
                                     {course.title}
                                 </CardTitle>
                                 <p className="text-muted-foreground text-sm font-medium line-clamp-2 leading-relaxed h-[40px]">
                                     {course.description}
                                 </p>
                             </CardHeader>
-                            <CardContent className="px-6 pb-6 pt-0 flex items-center justify-between border-t border-border/30 mt-auto">
+                            <CardContent className="px-8 pb-8 pt-0 flex items-center justify-between border-t border-dashed border-slate-100 dark:border-slate-800 mt-auto">
                                 <div className="flex items-center gap-2 mt-4">
-                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ backgroundColor: `${course.color}15`, color: course.color }}>
+                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black" style={{ backgroundColor: `${course.color}15`, color: course.color }}>
                                         {course.lessons?.length || 0}
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Lessons</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Lessons</span>
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="mt-4 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 font-bold"
+                                    className="mt-4 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold transition-all"
                                     onClick={() => deleteCourse(course.id)}
                                 >
                                     Remove
