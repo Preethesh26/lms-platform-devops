@@ -24,6 +24,7 @@ export default function TestEditor() {
     const [questions, setQuestions] = useState([
         { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }
     ]);
+    const [maxWarnings, setMaxWarnings] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -49,6 +50,7 @@ export default function TestEditor() {
             setScheduleResultsEmail(test.scheduleResultsEmail || false);
             setResultsEmailDate(test.resultsEmailDate ? new Date(test.resultsEmailDate).toISOString().slice(0, 16) : '');
             setRequiresAccountLogin(test.requiresAccountLogin || false);
+            setMaxWarnings(test.maxWarnings || 0);
             setQuestions(test.questions || [{ questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }]);
         } catch (error) {
             console.error('Error loading test:', error);
@@ -156,6 +158,7 @@ export default function TestEditor() {
                 scheduleResultsEmail,
                 resultsEmailDate: scheduleResultsEmail ? resultsEmailDate : undefined,
                 requiresAccountLogin,
+                maxWarnings,
                 questions
             };
 
@@ -329,6 +332,25 @@ export default function TestEditor() {
                                     Users must log in with their LMS account. Only for registered students.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Proctoring Settings */}
+                <div className="bg-card border rounded-xl p-6 space-y-4">
+                    <h2 className="text-xl font-semibold">Proctoring Settings</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label>Max Tab-Switch Warnings</Label>
+                            <Input
+                                type="number"
+                                value={maxWarnings}
+                                onChange={(e) => setMaxWarnings(Number(e.target.value))}
+                                min={0}
+                            />
+                            <p className="text-sm text-muted-foreground mt-1">
+                                0 = Warnings only (Unlimited). Test will auto-submit when limit is reached.
+                            </p>
                         </div>
                     </div>
                 </div>

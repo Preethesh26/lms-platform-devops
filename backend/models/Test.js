@@ -99,6 +99,11 @@ const testSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    // Proctoring settings
+    maxWarnings: {
+        type: Number,
+        default: 0 // 0 means no limit (warning only)
     }
 }, {
     timestamps: true

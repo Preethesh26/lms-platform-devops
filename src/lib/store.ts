@@ -96,6 +96,24 @@ export function useStore() {
         };
 
         fetchData();
+
+        // 4. Implement Real-time Polling (Every 2 minutes)
+        const pollingInterval = setInterval(() => {
+            console.log("Auto-polling for updates...");
+            fetchData();
+        }, 120000); // 120,000ms = 2 minutes
+
+        // 5. Focus Revalidation (Refresh when user returns to tab)
+        const handleFocus = () => {
+            console.log("Window focused, refreshing data...");
+            fetchData();
+        };
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            clearInterval(pollingInterval);
+            window.removeEventListener('focus', handleFocus);
+        };
     }, []);
 
     const addCourse = async (course: Omit<Course, "id">) => {

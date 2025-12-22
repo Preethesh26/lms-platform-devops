@@ -55,6 +55,38 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground scroll-smooth;
+    }
+
+    /* Custom Scrollbar for Premium Look */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30 transition-colors;
+    }
+}
+
+@layer utilities {
+    .glass {
+        @apply bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-xl;
+    }
+    
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary/60;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-slate-800 dark:bg-slate-700 rounded-full;
     }
 }

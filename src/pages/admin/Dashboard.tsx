@@ -3,6 +3,9 @@ import { DashboardStats } from "@/components/admin/DashboardStats";
 import { AnalyticsCharts } from "@/components/admin/AnalyticsCharts";
 import axios from "axios";
 import { useStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Plus, Users, BookOpen, GraduationCap, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AdminDashboardPage() {
     const { currentUser } = useStore();
@@ -38,22 +41,64 @@ export default function AdminDashboardPage() {
         }
     }, [token]);
 
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good morning";
+        if (hour < 18) return "Good afternoon";
+        return "Good evening";
+    };
+
     return (
-        <div className="space-y-10 animate-in fade-in duration-500">
-            <div className="space-y-1">
-                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Intelligence Overview</h1>
-                <p className="text-muted-foreground font-medium text-sm md:text-base">Platform performance and student growth metrics at a glance.</p>
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-[0.2em] opacity-80">
+                        <span className="w-8 h-[2px] bg-primary rounded-full"></span>
+                        Admin Dashboard
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                        {getGreeting()}, <span className="text-primary">{currentUser?.name?.split(' ')[0]}</span>.
+                    </h1>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base max-w-2xl">
+                        Here's a strategic overview of your platform's growth and student engagement for today.
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <Link to="/admin/courses">
+                        <Button className="rounded-2xl h-14 px-8 font-black shadow-xl shadow-primary/20 gap-2">
+                            <Plus className="w-5 h-5" />
+                            Create Course
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+                <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-4 rounded-2xl border border-red-100 dark:border-red-900/50 font-bold flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
                     {error}
                 </div>
             )}
 
+            {/* Quick Stats Grid */}
             <DashboardStats stats={stats} loading={loading} />
 
-            <AnalyticsCharts data={chartsData} loading={loading} />
+            {/* Analytics Section */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-2xl font-black tracking-tight">Intelligence Trends</h2>
+                        <p className="text-sm text-muted-foreground font-medium">Deep dive into user acquisition and revenue scaling.</p>
+                    </div>
+                    <Button variant="outline" className="rounded-xl font-bold text-xs gap-2 group">
+                        Full Report
+                        <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </Button>
+                </div>
+                <AnalyticsCharts data={chartsData} loading={loading} />
+            </div>
         </div>
     );
 }

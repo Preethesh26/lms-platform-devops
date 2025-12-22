@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Clock, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 
 export default function TestPlayer() {
@@ -14,6 +14,8 @@ export default function TestPlayer() {
     const [timeLeft, setTimeLeft] = useState(0);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [warningCount, setWarningCount] = useState(0);
+    const [showWarning, setShowWarning] = useState(false);
 
     useEffect(() => {
         fetchTest();
@@ -33,6 +35,47 @@ export default function TestPlayer() {
             return () => clearInterval(timer);
         }
     }, [test, timeLeft]);
+
+    // Proctoring: Tab Switching Logic
+    useEffect(() => {
+        if (!test || submitting) return;
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                triggerWarning();
+            }
+        };
+
+        const handleBlur = () => {
+            triggerWarning();
+        };
+
+        const triggerWarning = () => {
+            if (submitting) return;
+
+            setWarningCount(prev => {
+                const newCount = prev + 1;
+
+                // If limit reached, submit immediately
+                if (test.maxWarnings > 0 && newCount >= test.maxWarnings) {
+                    setShowWarning(false);
+                    handleSubmit("Excessive tab switching detected (Proctoring Enforcement)");
+                    return newCount;
+                }
+
+                setShowWarning(true);
+                return newCount;
+            });
+        };
+
+        window.addEventListener('blur', handleBlur);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('blur', handleBlur);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [test, submitting]);
 
     const fetchTest = async () => {
         try {
@@ -73,9 +116,13 @@ export default function TestPlayer() {
         setAnswers({ ...answers, [currentQuestion]: optionIndex });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (reason?: string) => {
         if (submitting) return;
         setSubmitting(true);
+
+        if (reason) {
+            alert(reason);
+        }
 
         const formattedAnswers = Object.entries(answers).map(([qIndex, oIndex]) => ({
             questionIndex: parseInt(qIndex),
@@ -118,7 +165,40 @@ export default function TestPlayer() {
     const progress = ((currentQuestion + 1) / test.questions.length) * 100;
 
     return (
-        <div className="min-h-screen bg-background p-4">
+        <div
+            className="min-h-screen bg-background p-4 select-none"
+            onContextMenu={(e) => e.preventDefault()}
+            onCopy={(e) => e.preventDefault()}
+            onPaste={(e) => e.preventDefault()}
+        >
+            {showWarning && (
+                <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 text-center animate-in fade-in duration-300">
+                    <Card className="max-w-md p-8 border-4 border-red-600 space-y-6">
+                        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-600 animate-pulse">
+                            <AlertCircle className="h-10 w-10" />
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-black text-red-600 uppercase">Warning!</h2>
+                            <p className="font-bold underline">Tab switching or leaving the screen is not allowed.</p>
+                        </div>
+                        <div className="bg-muted p-4 rounded-xl border-2">
+                            <div className="text-sm font-bold opacity-70 uppercase tracking-widest">Warning Status</div>
+                            <div className="text-3xl font-black">{warningCount} / {test.maxWarnings || '∞'}</div>
+                        </div>
+                        <p className="text-sm text-muted-foreground italic">
+                            {test.maxWarnings > 0
+                                ? "If you exceed the warning limit, your test will be automatically submitted."
+                                : "Please return to the test screen immediately."}
+                        </p>
+                        <Button
+                            className="w-full h-14 text-lg font-black"
+                            onClick={() => setShowWarning(false)}
+                        >
+                            I Understand, Return to Test
+                        </Button>
+                    </Card>
+                </div>
+            )}
             <div className="max-w-4xl mx-auto space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
@@ -184,7 +264,7 @@ export default function TestPlayer() {
 
                     {currentQuestion === test.questions.length - 1 ? (
                         <Button
-                            onClick={handleSubmit}
+                            onClick={() => handleSubmit()}
                             disabled={submitting || Object.keys(answers).length === 0}
                             className="px-8"
                         >
