@@ -180,45 +180,52 @@ export default function TestManager() {
                                     </div>
                                 )}
 
-                                <div className="flex gap-2">
-                                    <Link to={`/admin/tests/${test._id}/invitations`} className="flex-1">
-                                        <Button variant="outline" size="sm" className="w-full">
-                                            <Users className="h-3 w-3 mr-1" />
-                                            Invitations
-                                        </Button>
-                                    </Link>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleExportResults(test._id, test.title)}
-                                        title="Export Results CSV"
-                                    >
-                                        <FileText className="h-3 w-3" />
-                                    </Button>
-                                    <Link to={`/admin/tests/${test._id}/edit`}>
+                                <div className="space-y-2">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Link to={`/admin/tests/${test._id}/invitations`} className="col-span-2">
+                                            <Button variant="outline" size="sm" className="w-full rounded-xl font-bold">
+                                                <Users className="h-3.5 w-3.5 mr-2" />
+                                                Invitations
+                                            </Button>
+                                        </Link>
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            title="Edit Test"
+                                            onClick={() => handleExportResults(test._id, test.title)}
+                                            title="Export Results CSV"
+                                            className="rounded-xl font-bold"
                                         >
-                                            <Edit className="h-3 w-3" />
+                                            <FileText className="h-3.5 w-3.5 mr-1.5" />
+                                            Export
                                         </Button>
-                                    </Link>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleTogglePublish(test._id)}
-                                    >
-                                        {test.isPublished ? 'Unpublish' : 'Publish'}
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => handleDelete(test._id)}
-                                        className="text-red-600"
-                                    >
-                                        Delete
-                                    </Button>
+                                        <Link to={`/admin/tests/${test._id}/edit`}>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                title="Edit Test"
+                                                className="w-full rounded-xl font-bold"
+                                            >
+                                                <Edit className="h-3.5 w-3.5 mr-1.5" />
+                                                Edit
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleTogglePublish(test._id)}
+                                            className={`rounded-xl font-bold ${test.isPublished ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400' : 'bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-400'}`}
+                                        >
+                                            {test.isPublished ? 'Unpublish' : 'Publish'}
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDelete(test._id)}
+                                            className="rounded-xl font-bold text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
