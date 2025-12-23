@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { updateUserInSheet, deleteUserFromSheet } = require('../services/googleSheetsService');
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -71,6 +72,9 @@ exports.updateUser = async (req, res) => {
             // Don't fail the update if email fails
         }
 
+        // Sync to Google Sheets (non-blocking)
+        updateUserInSheet(user).catch(err => console.error('Sheet Update Background Error:', err));
+
         res.status(200).json({ success: true, data: user });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -82,10 +86,15 @@ exports.updateUser = async (req, res) => {
 // @access  Private/Admin
 exports.deleteUser = async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        const userId = req.params.id;
+        const user = await User.findByIdAndDelete(userId);
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+
+        // Sync to Google Sheets (non-blocking)
+        deleteUserFromSheet(userId).catch(err => console.error('Sheet Delete Background Error:', err));
+
         res.status(200).json({ success: true, data: {} });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
