@@ -276,7 +276,7 @@ export default function AdminUsersPage() {
 
             {/* Success Dialog for new user credentials */}
             <Dialog open={!!createdUserCredentials} onOpenChange={(open) => !open && setCreatedUserCredentials(null)}>
-                <DialogContent className="sm:max-w-[400px] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden text-center">
+                <DialogContent className="sm:max-w-[400px] rounded-[2rem] border-2 border-emerald-500/20 dark:border-emerald-500/50 shadow-2xl p-0 overflow-hidden text-center">
                     <div className="bg-emerald-500 p-8 text-white relative">
                         <UserPlus className="w-16 h-16 mx-auto opacity-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                         <h3 className="text-2xl font-bold relative z-10">User Created</h3>
@@ -522,7 +522,7 @@ export default function AdminUsersPage() {
             </Dialog>
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
-                <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-[400px] rounded-[2.5rem] border-2 border-red-500/20 dark:border-red-500/50 shadow-2xl p-0 overflow-hidden">
                     <div className="bg-red-500 p-8 text-white relative">
                         <Trash2 className="absolute top-0 right-0 p-8 opacity-20 w-32 h-32" />
                         <DialogHeader>
@@ -535,13 +535,13 @@ export default function AdminUsersPage() {
                     <div className="p-8 space-y-6">
                         <div className="space-y-4">
                             <p className="text-sm font-medium text-muted-foreground">
-                                To delete <span className="font-bold text-foreground">{userToDelete?.name}</span>, please type their email address (<span className="font-bold text-foreground font-mono bg-slate-100 px-1 rounded">{userToDelete?.email}</span>) below to confirm:
+                                To delete <span className="font-bold text-foreground">{userToDelete?.name}</span>, please type their email address (<span className="font-bold text-slate-800 dark:text-slate-200 font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded border border-slate-200 dark:border-slate-700">{userToDelete?.email}</span>) below to confirm:
                             </p>
                             <Input
                                 value={deleteConfirmation}
                                 onChange={(e) => setDeleteConfirmation(e.target.value)}
                                 placeholder={userToDelete?.email}
-                                className="h-12 rounded-xl text-center font-bold"
+                                className="h-12 rounded-xl text-center font-bold bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 focus-visible:ring-offset-0 focus-visible:ring-red-500/50"
                             />
                         </div>
                         <div className="flex gap-3">
@@ -557,7 +557,7 @@ export default function AdminUsersPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     );
 }
 

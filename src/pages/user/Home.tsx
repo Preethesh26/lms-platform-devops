@@ -137,7 +137,7 @@ export default function UserHomePage() {
                         { name: "Visual Arts", icon: <Palette />, count: "15 Courses", color: "text-pink-600", bg: "bg-pink-50" },
                         { name: "Cyber Ops", icon: <Shield />, count: "12 Courses", color: "text-red-600", bg: "bg-red-50" },
                     ].map((cat) => (
-                        <Card key={cat.name} className="group border-none bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden p-2">
+                        <Card key={cat.name} className="group border border-border/50 dark:border-border/30 bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer overflow-hidden p-2">
                             <CardContent className="p-8 flex flex-col items-center text-center space-y-4">
                                 <div className={`w-16 h-16 rounded-2xl ${cat.bg} ${cat.color} flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm`}>
                                     {cat.icon}
@@ -296,7 +296,7 @@ export default function UserHomePage() {
                             { name: "Mark Peterson", role: "UX Designer", text: "The project-based learning approach actually gives you skills you can use immediately.", avatar: "MP" },
                             { name: "Elisa Vance", role: "Data Scientist", text: "From zero to pro in months. The community support kept me going through tough weeks.", avatar: "EV" },
                         ].map((t, i) => (
-                            <Card key={i} className="bg-card border-none shadow-lg hover:shadow-2xl transition-all cursor-default p-8 rounded-3xl group">
+                            <Card key={i} className="bg-card border border-border/50 dark:border-border/30 shadow-lg hover:shadow-2xl transition-all cursor-default p-8 rounded-3xl group">
                                 <CardContent className="p-0 space-y-6">
                                     <div className="flex gap-1 text-yellow-400">
                                         {[1, 2, 3, 4, 5].map(s => <Star key={s} className="h-4 w-4 fill-current" />)}

@@ -111,7 +111,7 @@ export default function MyLearningPage() {
                     { label: "Completion Rate", value: `${overallProgress}%`, icon: TrendingUp, color: "text-green-500", bg: "bg-green-50 dark:bg-green-500/10" },
                     { label: "Certificates", value: "2", icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-500/10" },
                 ].map((stat, i) => (
-                    <Card key={i} className="border-none bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 group p-2 rounded-[2rem]">
+                    <Card key={i} className="border border-border/50 dark:border-border/30 bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 group p-2 rounded-[2rem]">
                         <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                             <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform shadow-sm`}>
                                 <stat.icon className="h-6 w-6" />
@@ -221,7 +221,7 @@ export default function MyLearningPage() {
                         ) : (
                             newCourses.map((course) => (
                                 <Link to="/" key={course.id} className="block group">
-                                    <Card className="border-none bg-muted hover:bg-muted-foreground/10 transition-all duration-300 overflow-hidden">
+                                    <Card className="border border-border/50 dark:border-border/30 bg-muted hover:bg-muted-foreground/10 transition-all duration-300 overflow-hidden">
                                         <CardContent className="p-4 flex gap-4">
                                             <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-border">
                                                 <img

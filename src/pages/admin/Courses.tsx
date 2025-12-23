@@ -187,7 +187,7 @@ export default function AdminCoursesPage() {
                             <Plus className="mr-2 h-4 w-4" /> Create Masterclass
                         </Button>
                     </DialogTrigger>
-                    <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto rounded-[2.5rem] border-none shadow-2xl p-0">
+                    <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto rounded-[2.5rem] border-2 border-indigo-500/20 dark:border-indigo-500/50 shadow-2xl p-0">
                         <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative flex-shrink-0">
                             <div className="absolute top-0 right-0 p-8 opacity-10">
                                 <Plus className="w-24 h-24" />
@@ -355,7 +355,7 @@ export default function AdminCoursesPage() {
 
             {/* Edit Course Dialog */}
             <Dialog open={!!editingCourse} onOpenChange={(open) => !open && setEditingCourse(null)}>
-                <DialogContent key={editingCourse?.id || 'edit'} className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto rounded-[2.5rem] border-none shadow-2xl p-0">
+                <DialogContent key={editingCourse?.id || 'edit'} className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto rounded-[2.5rem] border-2 border-indigo-500/20 dark:border-indigo-500/50 shadow-2xl p-0">
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-8 text-white relative flex-shrink-0">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <Plus className="w-24 h-24 rotate-45" />
