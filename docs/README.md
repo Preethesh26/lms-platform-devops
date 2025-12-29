@@ -25,9 +25,9 @@ Step-by-step guides for completed features:
 - **[walkthrough.md](./walkthrough.md)** - General feature walkthrough
 - **[test_system_walkthrough.md](./test_system_walkthrough.md)** - Complete standalone test system guide
 
-## Deployment
-
-- **[deployment.md](./deployment.md)** - Deployment guide for production
+## Testing
+- **[postman_collection.json](./postman_collection.json)** - Postman collection for backend API testing
+- **[postman_guide.md](./postman_guide.md)** - Detailed guide for testing APIs with Postman
 
 ## Task Tracking
 
