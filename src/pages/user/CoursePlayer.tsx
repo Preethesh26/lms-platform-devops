@@ -512,9 +512,29 @@ export default function CoursePlayerPage() {
                                         />
                                     </div>
                                 ) : (
-                                    /* Use Native HTML5 Video for R2 Uploads - Verified to work */
+                                    {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */ }
+                                    {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
+                                    <ReactPlayerAny
+                                        key={`yt-${activeLesson.id}`}
+                                        url={activeLesson.videoUrl}
+                                        width="100%"
+                                        height="100%"
+                                        controls={true}
+                                        playing={isPlaying}
+                                        onPlay={() => setIsPlaying(true)}
+                                        onPause={() => setIsPlaying(false)}
+                                        onProgress={handleProgress as any}
+                                        onEnded={handleEnded}
+                                        onReady={handleReady}
+                                        config={{
+                                            youtube: {
+                                                playerVars: { showinfo: 1 }
+                                            }
+                                        }}
+                                    />
+                                ) : (
                                     <video
-                                        key={activeLesson.id}
+                                        key={`native-${activeLesson.id}`}
                                         className="w-full h-full object-contain"
                                         src={activeLesson.videoUrl}
                                         controls
@@ -537,6 +557,7 @@ export default function CoursePlayerPage() {
                                             setVideoError("Video playback failed. Try opening in a new tab.");
                                         }}
                                     />
+                                )}
                                 )}
                                 {videoError && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-white z-10">
