@@ -494,7 +494,7 @@ export default function CoursePlayerPage() {
             </div>
 
             <div className={`grid grid-cols-1 ${showAISidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6 transition-all duration-300`}>
-                {/* Video Player Section */}
+                {/* Video Player Section (Left Column) */}
                 <div className={`${showAISidebar ? 'lg:col-span-2' : 'lg:col-span-2'} space-y-4`}>
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-border relative group">
                         {activeLesson ? (
@@ -505,12 +505,12 @@ export default function CoursePlayerPage() {
                                             quizId={activeLesson.quizId.toString()}
                                             onComplete={(score: number, passed: boolean) => {
                                                 console.log('Quiz completed:', score, passed);
-                                                saveProgress(passed, 0); // Save as completed if passed
+                                                saveProgress(passed, 0);
                                             }}
                                         />
                                     </div>
                                 ) : (
-                                    /* REPLACED ReactPlayer with Native Video for Reliability */
+                                    /* Use Native HTML5 Video for R2 Uploads - Verified to work */
                                     <video
                                         key={activeLesson.id}
                                         className="w-full h-full object-contain"
@@ -523,7 +523,6 @@ export default function CoursePlayerPage() {
                                         onCanPlay={handleReady}
                                         onTimeUpdate={(e) => {
                                             const video = e.currentTarget;
-                                            // Adapt native event to match ReactPlayer's expected format for handleProgress
                                             handleProgress({
                                                 playedSeconds: video.currentTime,
                                                 played: video.duration > 0 ? video.currentTime / video.duration : 0,
@@ -533,7 +532,7 @@ export default function CoursePlayerPage() {
                                         }}
                                         onError={(e) => {
                                             console.error("Video Error:", e);
-                                            setVideoError("Video playback failed. Please try downloading or opening in a new tab.");
+                                            setVideoError("Video playback failed. Try opening in a new tab.");
                                         }}
                                     />
                                 )}
@@ -563,6 +562,7 @@ export default function CoursePlayerPage() {
                             </div>
                         )}
                     </div>
+
                     {activeLesson && (
                         <div className="p-4 rounded-lg bg-card border-2 shadow-xl flex justify-between items-center">
                             <div>
@@ -579,55 +579,13 @@ export default function CoursePlayerPage() {
                                 onClick={() => saveProgress(!progress[activeLesson.id]?.completed, getPlayerTime())}
                             >
                                 {progress[activeLesson.id]?.completed ? (
-                                    <>
-                                        <CheckCircle className="mr-2 h-5 w-5 text-green-600" /> Completed
-                                    </>
+                                    <><CheckCircle className="mr-2 h-5 w-5 text-green-600" /> Completed</>
                                 ) : (
                                     "Mark as Complete"
                                 )}
                             </Button>
                         </div>
                     )}
-
-                    {/* AI Tools Strip (Hidden for now) */}
-                    {/* {activeLesson && activeLesson.type !== 'quiz' && (
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                className="flex-1 gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10"
-                                onClick={() => setShowAISidebar(!showAISidebar)}
-                            >
-                                <Bot className="w-4 h-4 text-primary" />
-                                {showAISidebar ? "Close AI Tutor" : "Ask AI Tutor"}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="flex-1 gap-2"
-                                onClick={handleGenerateSummary}
-                                disabled={summaryLoading || !activeLesson.transcript}
-                            >
-                                {summaryLoading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <FileText className="w-4 h-4" />
-                                )}
-                                {lessonSummary ? "View Summary" : "Smart Summary"}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="flex-1 gap-2"
-                                onClick={handleGeneratePracticeQuiz}
-                                disabled={aiQuizLoading}
-                            >
-                                {aiQuizLoading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <Sparkles className="w-4 h-4" />
-                                )}
-                                {aiQuizData ? "Retake Practice" : "Practice Quiz"}
-                            </Button>
-                        </div>
-                    )} */}
                 </div>
 
                 {/* AI Sidebar Area */}
@@ -772,6 +730,6 @@ export default function CoursePlayerPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div >
+        </div>
     );
 }
