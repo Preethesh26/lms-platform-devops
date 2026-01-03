@@ -308,12 +308,12 @@ export default function AdminCoursesPage() {
                                 <p className="text-[10px] text-muted-foreground font-medium px-1">Upload an image or paste a cloud link manually.</p>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
+                                <Label htmlFor="videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Video Preview (Link or Upload)</Label>
                                 <div className="flex gap-2">
                                     <Input
                                         id="videoUrl"
                                         name="videoUrl"
-                                        placeholder="https://..."
+                                        placeholder="Paste URL or click Upload button"
                                         className="h-12 rounded-xl flex-1"
                                         ref={videoInputRef}
                                     />
@@ -495,12 +495,13 @@ export default function AdminCoursesPage() {
                             <p className="text-[10px] text-muted-foreground font-medium px-1">You can upload a new one or keep the existing link.</p>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="edit-videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
+                            <Label htmlFor="edit-videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Video Preview (Link or Upload)</Label>
                             <div className="flex gap-2">
                                 <Input
                                     id="edit-videoUrl"
                                     name="videoUrl"
                                     defaultValue={editingCourse?.videoUrl}
+                                    placeholder="Paste URL or click Upload button"
                                     className="h-12 rounded-xl flex-1"
                                     ref={editVideoInputRef}
                                 />
@@ -558,12 +559,12 @@ export default function AdminCoursesPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="videoUrl">Video URL</Label>
+                                        <Label htmlFor="videoUrl">Video Source</Label>
                                         <div className="flex gap-2">
                                             <Input
                                                 id="videoUrl"
                                                 name="videoUrl"
-                                                placeholder="YouTube link or Upload Video"
+                                                placeholder="Paste YouTube link or Upload Video File"
                                                 required
                                                 onBlur={handleVideoUrlBlur}
                                                 ref={lessonVideoInputRef}
