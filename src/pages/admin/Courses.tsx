@@ -327,11 +327,12 @@ export default function AdminCoursesPage() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                        className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold shrink-0"
                                         onClick={() => createVideoFileRef.current?.click()}
                                         disabled={uploading}
                                     >
-                                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                        {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+                                        {uploading ? "Uploading..." : "Upload"}
                                     </Button>
                                 </div>
                             </div>
@@ -513,11 +514,12 @@ export default function AdminCoursesPage() {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                    className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold shrink-0"
                                     onClick={() => editVideoFileRef.current?.click()}
                                     disabled={uploading}
                                 >
-                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+                                    {uploading ? "Uploading..." : "Upload"}
                                 </Button>
                             </div>
                         </div>
@@ -577,12 +579,13 @@ export default function AdminCoursesPage() {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                size="icon"
-                                                className="aspect-square border-dashed border-2 hover:bg-muted/50"
+                                                size="default"
+                                                className="h-10 px-3 border-dashed border-2 hover:bg-muted/50 shrink-0"
                                                 onClick={() => lessonVideoFileRef.current?.click()}
                                                 disabled={uploading}
                                             >
-                                                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                                {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+                                                Upload
                                             </Button>
                                         </div>
                                     </div>
