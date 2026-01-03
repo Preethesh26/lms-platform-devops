@@ -27,10 +27,20 @@ export default function AdminCoursesPage() {
     const [managingCourse, setManagingCourse] = useState<Course | null>(null);
     const [uploading, setUploading] = useState(false);
 
-    // Refs for thumbnail inputs to programmatically update them after upload
+    // Refs for thumbnail inputs
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const editThumbnailInputRef = useRef<HTMLInputElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Refs for video inputs
+    const videoInputRef = useRef<HTMLInputElement>(null);
+    const editVideoInputRef = useRef<HTMLInputElement>(null);
+    const lessonVideoInputRef = useRef<HTMLInputElement>(null);
+
+    // Upload Targets
+    const createVideoFileRef = useRef<HTMLInputElement>(null);
+    const editVideoFileRef = useRef<HTMLInputElement>(null);
+    const lessonVideoFileRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
         const file = e.target.files?.[0];
@@ -58,6 +68,56 @@ export default function AdminCoursesPage() {
             setUploading(false);
         }
     };
+
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'create' | 'edit' | 'lesson') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // check max size (500MB)
+        if (file.size > 500 * 1024 * 1024) {
+            toast.error("Video file is too large. Max size is 500MB.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        setUploading(true);
+        const loadingToast = toast.loading("Uploading video...");
+
+        try {
+            const res = await uploadAPI.upload(formData);
+            if (res.data.success) {
+                const url = res.data.url;
+
+                if (target === 'create' && videoInputRef.current) {
+                    videoInputRef.current.value = url;
+                    // Trigger duration detection
+                    handleVideoUrlBlur({ target: { value: url } } as any);
+                } else if (target === 'edit' && editVideoInputRef.current) {
+                    editVideoInputRef.current.value = url;
+                } else if (target === 'lesson' && lessonVideoInputRef.current) {
+                    lessonVideoInputRef.current.value = url;
+                    // Trigger duration detection for lesson
+                    handleVideoUrlBlur({ target: { value: url } } as any);
+                }
+                toast.success("Video uploaded successfully!");
+            }
+        } catch (error: any) {
+            console.error('Video upload failed:', error);
+            const msg = error.response?.data?.message || error.message || 'Upload failed';
+            toast.error(`Upload failed: ${msg}`);
+        } finally {
+            setUploading(false);
+            toast.dismiss(loadingToast);
+            // Reset input
+            e.target.value = '';
+        }
+    };
+
+    // ... existing handleCreate ...
+
+
 
     const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -249,7 +309,31 @@ export default function AdminCoursesPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
-                                <Input id="videoUrl" name="videoUrl" placeholder="https://youtube.com/..." className="h-12 rounded-xl" />
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="videoUrl"
+                                        name="videoUrl"
+                                        placeholder="https://..."
+                                        className="h-12 rounded-xl flex-1"
+                                        ref={videoInputRef}
+                                    />
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        ref={createVideoFileRef}
+                                        accept="video/mp4,video/webm,video/quicktime"
+                                        onChange={(e) => handleVideoUpload(e, 'create')}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                        onClick={() => createVideoFileRef.current?.click()}
+                                        disabled={uploading}
+                                    >
+                                        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-3 p-4 bg-muted/40 rounded-2xl border border-border/50">
@@ -411,7 +495,31 @@ export default function AdminCoursesPage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="edit-videoUrl" className="text-xs font-bold uppercase tracking-widest opacity-70">Preview Video URL</Label>
-                            <Input id="edit-videoUrl" name="videoUrl" defaultValue={editingCourse?.videoUrl} className="h-12 rounded-xl" />
+                            <div className="flex gap-2">
+                                <Input
+                                    id="edit-videoUrl"
+                                    name="videoUrl"
+                                    defaultValue={editingCourse?.videoUrl}
+                                    className="h-12 rounded-xl flex-1"
+                                    ref={editVideoInputRef}
+                                />
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    ref={editVideoFileRef}
+                                    accept="video/mp4,video/webm,video/quicktime"
+                                    onChange={(e) => handleVideoUpload(e, 'edit')}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="h-12 px-4 rounded-xl border-dashed border-2 hover:bg-muted/50 transition-all font-bold"
+                                    onClick={() => editVideoFileRef.current?.click()}
+                                    disabled={uploading}
+                                >
+                                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                </Button>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-3 p-4 bg-muted/40 rounded-2xl border border-border/50">
@@ -449,13 +557,34 @@ export default function AdminCoursesPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="videoUrl">Video URL</Label>
-                                        <Input
-                                            id="videoUrl"
-                                            name="videoUrl"
-                                            placeholder="YouTube link or direct video file (MP4/WebM)"
-                                            required
-                                            onBlur={handleVideoUrlBlur}
-                                        />
+                                        <div className="flex gap-2">
+                                            <Input
+                                                id="videoUrl"
+                                                name="videoUrl"
+                                                placeholder="YouTube link or Upload Video"
+                                                required
+                                                onBlur={handleVideoUrlBlur}
+                                                ref={lessonVideoInputRef}
+                                                className="flex-1"
+                                            />
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                ref={lessonVideoFileRef}
+                                                accept="video/mp4,video/webm,video/quicktime"
+                                                onChange={(e) => handleVideoUpload(e, 'lesson')}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="icon"
+                                                className="aspect-square border-dashed border-2 hover:bg-muted/50"
+                                                onClick={() => lessonVideoFileRef.current?.click()}
+                                                disabled={uploading}
+                                            >
+                                                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                                            </Button>
+                                        </div>
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="duration">Duration</Label>

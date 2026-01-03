@@ -23,9 +23,12 @@ exports.uploadImage = async (req, res) => {
 
         // If Cloudflare R2 credentials are provided, upload to R2
         if (s3Client) {
+            const isVideo = file.mimetype.startsWith('video/');
+            const folder = isVideo ? 'videos' : 'thumbnails';
+
             const uploadParams = {
                 Bucket: process.env.R2_BUCKET_NAME,
-                Key: `thumbnails/${fileName}`,
+                Key: `${folder}/${fileName}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
             };
@@ -33,7 +36,7 @@ exports.uploadImage = async (req, res) => {
             await s3Client.send(new PutObjectCommand(uploadParams));
 
             // Generate public URL (either from a custom domain or the R2 public URL)
-            const publicUrl = `${process.env.R2_PUBLIC_URL}/thumbnails/${fileName}`;
+            const publicUrl = `${process.env.R2_PUBLIC_URL}/${folder}/${fileName}`;
 
             return res.status(200).json({
                 success: true,

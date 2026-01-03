@@ -8,12 +8,15 @@ const { protect, authorize } = require('../middleware/auth');
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit for videos
     fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
+        if (file.mimetype.startsWith('image/') ||
+            file.mimetype === 'video/mp4' ||
+            file.mimetype === 'video/webm' ||
+            file.mimetype === 'video/quicktime') {
             cb(null, true);
         } else {
-            cb(new Error('Only images are allowed'), false);
+            cb(new Error('Only images and videos (mp4, webm, mov) are allowed'), false);
         }
     }
 });
