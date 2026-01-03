@@ -510,32 +510,30 @@ export default function CoursePlayerPage() {
                                         />
                                     </div>
                                 ) : (
-                                    <ReactPlayerAny
+                                    /* REPLACED ReactPlayer with Native Video for Reliability */
+                                    <video
                                         key={activeLesson.id}
-                                        ref={playerRef}
-                                        url={activeLesson.videoUrl}
-                                        width="100%"
-                                        height="100%"
-                                        controls={true}
-                                        playing={isPlaying}
+                                        className="w-full h-full object-contain"
+                                        src={activeLesson.videoUrl}
+                                        controls
+                                        crossOrigin="anonymous"
                                         onPlay={() => setIsPlaying(true)}
                                         onPause={() => setIsPlaying(false)}
-                                        onProgress={handleProgress as any}
                                         onEnded={handleEnded}
-                                        onReady={handleReady}
-                                        onError={(e: any) => {
-                                            console.error("Video Error:", e);
-                                            let errorMsg = "Failed to load video.";
-                                            if (!activeLesson.videoUrl) errorMsg = "Video URL is missing.";
-                                            else if (!ReactPlayerAny.canPlay(activeLesson.videoUrl)) errorMsg = "Video format not supported or URL is invalid.";
-
-                                            setVideoError(errorMsg);
+                                        onCanPlay={handleReady}
+                                        onTimeUpdate={(e) => {
+                                            const video = e.currentTarget;
+                                            // Adapt native event to match ReactPlayer's expected format for handleProgress
+                                            handleProgress({
+                                                playedSeconds: video.currentTime,
+                                                played: video.duration > 0 ? video.currentTime / video.duration : 0,
+                                                loaded: 0,
+                                                loadedSeconds: 0
+                                            });
                                         }}
-                                        progressInterval={5000}
-                                        config={{
-                                            youtube: {
-                                                playerVars: { showinfo: 1 }
-                                            }
+                                        onError={(e) => {
+                                            console.error("Video Error:", e);
+                                            setVideoError("Video playback failed. Please try downloading or opening in a new tab.");
                                         }}
                                     />
                                 )}
@@ -774,6 +772,6 @@ export default function CoursePlayerPage() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
+        </div >
     );
 }
