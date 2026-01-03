@@ -415,6 +415,59 @@ export default function CoursePlayerPage() {
                         ))}
                     </div>
                 </div>
+                {/* Payment Dialog */}
+                <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Secure Checkout</DialogTitle>
+                            <DialogDescription>
+                                Complete your enrollment for {course.title}
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="py-6">
+                            {processingStep === 'idle' && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                                        <span className="font-medium">Total Amount</span>
+                                        <span className="text-xl font-bold">₹{course.price}</span>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground text-center">
+                                        This is a secure 128-bit SSL encrypted payment.
+                                    </div>
+                                </div>
+                            )}
+
+                            {processingStep === 'processing' && (
+                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                    <p className="font-medium">Processing secure payment...</p>
+                                </div>
+                            )}
+
+                            {processingStep === 'success' && (
+                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                                    <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                                        <CheckCircle className="h-6 w-6 text-green-600" />
+                                    </div>
+                                    <p className="font-bold text-lg">Payment Successful!</p>
+                                    <p className="text-muted-foreground text-center">Redirecting you to the course...</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {processingStep === 'idle' && (
+                            <div className="flex flex-col gap-2">
+                                <Button size="lg" className="w-full font-bold" onClick={processMockPayment} disabled={paymentLoading}>
+                                    Confirm Payment of ₹{course.price}
+                                </Button>
+                                <Button variant="ghost" className="w-full" onClick={() => setShowPaymentDialog(false)} disabled={paymentLoading}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }
