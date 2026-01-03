@@ -22,6 +22,8 @@ type ProgressState = {
 };
 
 export default function CoursePlayerPage() {
+    // Deployment Marker: v1.0.3-native
+    console.log("CoursePlayerPage Version: 1.0.3 (Native Player)");
     const params = useParams();
     const navigate = useNavigate();
     const { courses, isInitialized, currentUser, createOrder, verifyPayment } = useStore();
