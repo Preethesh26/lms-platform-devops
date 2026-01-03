@@ -489,7 +489,12 @@ export default function CoursePlayerPage() {
                         <span className="text-sm">Back to My Learning</span>
                     </Button>
                     <div className="space-y-2">
-                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
+                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">
+                                v1.0.4-live
+                            </span>
+                        </div>
                         <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl opacity-80">{course.description}</p>
                     </div>
                 </div>
