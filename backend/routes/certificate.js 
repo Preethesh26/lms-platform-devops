@@ -1,0 +1,59 @@
+import express from "express";
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+
+const router = express.Router();
+
+router.post("/generate", async (req, res) => {
+    try {
+        const { studentName, courseName } = req.body;
+
+        const certificateId = uuidv4();
+        const fileName = `certificate-${certificateId}.pdf`;
+        const filePath = path.join("certificates", fileName);
+
+        const doc = new PDFDocument({
+            layout: "landscape",
+            size: "A4"
+        });
+
+        doc.pipe(fs.createWriteStream(filePath));
+
+        // Title
+        doc.fontSize(28).text("CERTIFICATE OF COMPLETION", { align: "center" });
+
+        doc.moveDown(2);
+        doc.fontSize(18).text(`This is to certify that`, { align: "center" });
+
+        doc.moveDown(1);
+        doc.fontSize(24).text(studentName, { align: "center", bold: true });
+
+        doc.moveDown(1);
+        doc.fontSize(18).text(`has successfully completed the course`, { align: "center" });
+
+        doc.moveDown(1);
+        doc.fontSize(24).text(courseName, { align: "center" });
+
+        doc.moveDown(2);
+        doc.fontSize(16).text(
+            `Certificate ID: ${certificateId}`,
+            { align: "center" }
+        );
+
+        doc.end();
+
+        res.json({
+            success: true,
+            url: `/certificates/${fileName}`,
+            certificateId
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Error generating certificate" });
+    }
+});
+
+export default router;
