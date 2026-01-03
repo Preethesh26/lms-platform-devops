@@ -512,52 +512,54 @@ export default function CoursePlayerPage() {
                                         />
                                     </div>
                                 ) : (
-                                    {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */ }
-                                    {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
-                                    <ReactPlayerAny
-                                        key={`yt-${activeLesson.id}`}
-                                        url={activeLesson.videoUrl}
-                                        width="100%"
-                                        height="100%"
-                                        controls={true}
-                                        playing={isPlaying}
-                                        onPlay={() => setIsPlaying(true)}
-                                        onPause={() => setIsPlaying(false)}
-                                        onProgress={handleProgress as any}
-                                        onEnded={handleEnded}
-                                        onReady={handleReady}
-                                        config={{
-                                            youtube: {
-                                                playerVars: { showinfo: 1 }
-                                            }
-                                        }}
-                                    />
-                                ) : (
-                                    <video
-                                        key={`native-${activeLesson.id}`}
-                                        className="w-full h-full object-contain"
-                                        src={activeLesson.videoUrl}
-                                        controls
-                                        crossOrigin="anonymous"
-                                        onPlay={() => setIsPlaying(true)}
-                                        onPause={() => setIsPlaying(false)}
-                                        onEnded={handleEnded}
-                                        onCanPlay={handleReady}
-                                        onTimeUpdate={(e) => {
-                                            const video = e.currentTarget;
-                                            handleProgress({
-                                                playedSeconds: video.currentTime,
-                                                played: video.duration > 0 ? video.currentTime / video.duration : 0,
-                                                loaded: 0,
-                                                loadedSeconds: 0
-                                            });
-                                        }}
-                                        onError={(e) => {
-                                            console.error("Video Error:", e);
-                                            setVideoError("Video playback failed. Try opening in a new tab.");
-                                        }}
-                                    />
-                                )}
+                                    <>
+                                        {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */}
+                                        {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
+                                            <ReactPlayerAny
+                                                key={`yt-${activeLesson.id}`}
+                                                url={activeLesson.videoUrl}
+                                                width="100%"
+                                                height="100%"
+                                                controls={true}
+                                                playing={isPlaying}
+                                                onPlay={() => setIsPlaying(true)}
+                                                onPause={() => setIsPlaying(false)}
+                                                onProgress={handleProgress as any}
+                                                onEnded={handleEnded}
+                                                onReady={handleReady}
+                                                config={{
+                                                    youtube: {
+                                                        playerVars: { showinfo: 1 }
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <video
+                                                key={`native-${activeLesson.id}`}
+                                                className="w-full h-full object-contain"
+                                                src={activeLesson.videoUrl}
+                                                controls
+                                                crossOrigin="anonymous"
+                                                onPlay={() => setIsPlaying(true)}
+                                                onPause={() => setIsPlaying(false)}
+                                                onEnded={handleEnded}
+                                                onCanPlay={handleReady}
+                                                onTimeUpdate={(e) => {
+                                                    const video = e.currentTarget;
+                                                    handleProgress({
+                                                        playedSeconds: video.currentTime,
+                                                        played: video.duration > 0 ? video.currentTime / video.duration : 0,
+                                                        loaded: 0,
+                                                        loadedSeconds: 0
+                                                    });
+                                                }}
+                                                onError={(e) => {
+                                                    console.error("Video Error:", e);
+                                                    setVideoError("Video playback failed. Try opening in a new tab.");
+                                                }}
+                                            />
+                                        )}
+                                    </>
                                 )}
                                 {videoError && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-white z-10">
