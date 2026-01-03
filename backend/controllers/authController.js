@@ -61,7 +61,7 @@ exports.register = async (req, res) => {
 
         // Send welcome email to user (non-blocking)
         try {
-            await sendWelcomeEmail(email, name, password, enrollment);
+            await sendWelcomeEmail(email, name, password, enrollment, role);
             console.log(`Welcome email sent to ${email}`);
         } catch (emailError) {
             console.error('Failed to send welcome email:', emailError);

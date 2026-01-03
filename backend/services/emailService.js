@@ -78,14 +78,15 @@ const sendContactAdminEmail = async (adminEmail, userEmail, userName, message) =
 };
 
 // Send welcome email with credentials
-const sendWelcomeEmail = async (to, name, password, enrollment) => {
+const sendWelcomeEmail = async (to, name, password, enrollment, role) => {
     if (!apiInstance) {
         console.error('Brevo API not initialized');
         return { success: false, error: 'Email service not configured' };
     }
 
     try {
-        const loginUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const loginUrl = role === 'admin' ? `${baseUrl}/admin/login` : `${baseUrl}/login`;
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
@@ -101,9 +102,10 @@ const sendWelcomeEmail = async (to, name, password, enrollment) => {
                     <p><strong>Email:</strong> ${to}</p>
                     <p><strong>Password:</strong> ${password}</p>
                     ${enrollment ? `<p><strong>Enrollment Number:</strong> ${enrollment}</p>` : ''}
+                    <p><strong>Role:</strong> ${role === 'admin' ? 'Administrator' : 'Student'}</p>
                 </div>
 
-                <a href="${loginUrl}/login" style="display: inline-block; padding: 12px 24px; background-color: #0070f3; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">Login to Dashboard</a>
+                <a href="${loginUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0070f3; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">Login to Dashboard</a>
                 
                 <p style="color: #666; font-size: 14px;">Please change your password after your first login for security.</p>
             </div>
