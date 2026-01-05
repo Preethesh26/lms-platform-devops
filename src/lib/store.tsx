@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI } from "./api";
-import { MOCK_COURSES, MOCK_USERS } from "./mockData";
+import { MOCK_COURSES, MOCK_USERS, MOCK_QUIZZES, MOCK_TICKETS, MOCK_TESTS } from "./mockData";
 
 export type Lesson = {
     id: string;
@@ -139,8 +139,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 // Ignore parsing errors or missing userData
             }
 
-            if (isDemoUser) {
+            if (isDemoUser || window.location.search.includes('demo=1') || window.location.pathname.startsWith('/demo/')) {
                 finalCourses = MOCK_COURSES;
+                setQuizzes(MOCK_QUIZZES as any);
                 setIsDemoMode(true);
             } else {
                 setIsDemoMode(false);
@@ -273,11 +274,17 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('userData');
         setCurrentUser(null);
         setUsers([]);
+        setCourses([]);
         setIsDemoMode(false);
-        setIsInitialized(true);
+        setIsInitialized(false);
+        fetchData(); // Reset to public real data
     };
 
     const fetchQuizzes = async () => {
+        if (isDemoMode) {
+            setQuizzes(MOCK_QUIZZES as any);
+            return;
+        }
         const res = await quizzesAPI.getQuizzes();
         setQuizzes(res.data.data);
     };

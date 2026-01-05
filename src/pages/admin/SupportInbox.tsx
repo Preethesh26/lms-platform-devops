@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2, Mail, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { supportAPI } from '@/lib/api';
+import { useStore } from '@/lib/store';
+import { MOCK_TICKETS } from '@/lib/mockData';
 
 interface Ticket {
     _id: string;
@@ -18,6 +20,7 @@ interface Ticket {
 }
 
 export default function SupportInbox() {
+    const { isDemoMode } = useStore();
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -29,6 +32,11 @@ export default function SupportInbox() {
 
     const fetchTickets = async () => {
         try {
+            if (isDemoMode) {
+                setTickets(MOCK_TICKETS as any);
+                setLoading(false);
+                return;
+            }
             const res = await supportAPI.getTickets();
             setTickets(res.data.data);
         } catch (error) {

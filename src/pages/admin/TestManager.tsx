@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, FileText, Users, CheckCircle, Clock, Loader2, Edit } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
+import { MOCK_TESTS } from '@/lib/mockData';
 export default function TestManager() {
     const { isDemoMode } = useStore();
     const [tests, setTests] = useState<any[]>([]);
@@ -16,6 +17,11 @@ export default function TestManager() {
 
     const fetchTests = async () => {
         try {
+            if (isDemoMode) {
+                setTests(MOCK_TESTS as any);
+                setLoading(false);
+                return;
+            }
             const res = await testsAPI.getAll();
             setTests(res.data.data);
         } catch (error) {

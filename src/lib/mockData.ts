@@ -99,3 +99,77 @@ export const MOCK_CHARTS = {
         { name: "Other", value: 5 }
     ]
 };
+export const MOCK_TICKETS = [
+    {
+        _id: "t1",
+        name: "James Wilson",
+        email: "james.w@example.com",
+        subject: "Payment issue with Masterclass",
+        message: "I tried to enroll in the Web Development course but the payment page timed out. Can you please check if it went through?",
+        status: "Open",
+        createdAt: new Date(Date.now() - 3600000 * 2).toISOString()
+    },
+    {
+        _id: "t2",
+        name: "Maria Garcia",
+        email: "maria.g@example.com",
+        subject: "Certificate not appearing",
+        message: "I've completed all lessons but I don't see the download button for my certificate. Help!",
+        status: "In Progress",
+        createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+    },
+    {
+        _id: "t3",
+        name: "David Smith",
+        email: "david.s@example.com",
+        subject: "Bulk upload question",
+        message: "How do I format the CSV for bulk user uploads? Is there a template?",
+        status: "Resolved",
+        createdAt: new Date(Date.now() - 3600000 * 48).toISOString()
+    }
+];
+
+export const MOCK_QUIZZES = [
+    {
+        _id: "q1",
+        title: "Introduction to React Hooks",
+        course: { title: "Full-Stack Web Development" },
+        timeLimit: 15,
+        passingScore: 70,
+        questions: [
+            { id: "1", text: "What is the purpose of useEffect?", type: "multiple-choice" },
+            { id: "2", text: "How do you define state in a functional component?", type: "multiple-choice" }
+        ]
+    },
+    {
+        _id: "q2",
+        title: "Neural Network Architectures",
+        course: { title: "Advanced AI Masterclass" },
+        timeLimit: 30,
+        passingScore: 80,
+        questions: [
+            { id: "1", text: "What is backpropagation?", type: "multiple-choice" }
+        ]
+    }
+];
+
+export const MOCK_TESTS = [
+    {
+        _id: "test1",
+        title: "Full-Stack Developer Entrance Exam",
+        isPublished: true,
+        timeLimit: 60,
+        passingScore: 75,
+        questions: Array(10).fill({}),
+        stats: { totalInvited: 150, completed: 120, pending: 30 }
+    },
+    {
+        _id: "test2",
+        title: "Cyber Security Intermediate Assessment",
+        isPublished: false,
+        timeLimit: 45,
+        passingScore: 80,
+        questions: Array(5).fill({}),
+        stats: { totalInvited: 45, completed: 0, pending: 45 }
+    }
+];
