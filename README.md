@@ -6,8 +6,9 @@ AcademyPro is a modern, high-performance Learning Management System (LMS) design
 Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
 
 - **Student Portal**: Explore the student experience instantly.
-  - **Email**: `student@example.com`
+  - **Email**: `demo-student@academypro.com`
   - **Password**: `student123`
+  - **Enrollment**: `DEMO-2024-001`
 - **Administrative Access**: To protect system integrity, full admin credentials are not public.
 
 > [!IMPORTANT]
@@ -15,7 +16,7 @@ Check out the live website: **[https://academypro-liard.vercel.app/](https://aca
 
 *Note: The Admin demo is in **Read-Only Mode** to protect live data.*
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Tech](https://img.shields.io/badge/stack-React%2019%20%7C%20Vite%20%7C%20Node.js-blue)
 
@@ -44,6 +45,19 @@ AcademyPro includes a powerful standalone test hosting system, ideal for recruit
 - **AI-Powered Tools**: Integrated AI for lesson summaries and quiz generation.
 - **Support System**: Full support ticket workflow with automated status update notifications.
 
+### 🛡️ Enterprise Security (Admin Protection)
+AcademyPro implements military-grade security for administrative accounts:
+- **Two-Factor Authentication (2FA)**: TOTP-based authentication using Google Authenticator
+  - QR code generation for easy setup
+  - Mandatory verification during login for protected accounts
+  - Secure disable flow with password confirmation
+- **Inactivity Auto-Lock**: Automatic session lock after 10 minutes of inactivity
+  - Non-destructive overlay preserves work context
+  - OTP verification required to unlock
+  - Exempt for demo admin accounts
+- **Password Security**: Bcrypt hashing with proper salt generation
+- **Session Management**: JWT-based authentication with secure token handling
+
 ### 🛡 Secure Demo Experience (Parallel Universe)
 AcademyPro features a sophisticated "Parallel Universe" demo mode that allows stakeholders to explore the platform without touching production data.
 - **Dynamic Routing**: Automatic switching between `/admin/*` (live) and `/demo/*` (preview) routes based on user identity.
@@ -66,6 +80,7 @@ The platform features a comprehensive notification system powered by **Brevo (fo
 
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS 4, Radix UI
 - **Backend**: Node.js, Express, MongoDB
+- **Security**: bcryptjs, otplib (TOTP), qrcode, JWT
 - **Email Service**: Brevo (Sendinblue API V3)
 - **State Management**: React Context + Custom Hook pattern (Global Synchronization)
 - **Deployment**: Vercel (Frontend), Render (Backend)
@@ -110,8 +125,9 @@ The platform features a comprehensive notification system powered by **Brevo (fo
    # Backend (from backend directory)
    npm start
 
-   # Create Demo Admin account
+   # Create Demo Accounts
    node createDemoAdmin.js
+   node createDemoStudent.js
    ```
 
 ---

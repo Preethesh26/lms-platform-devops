@@ -6,10 +6,13 @@ import { useStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function UserLayout() {
-    const { currentUser, logoutUser } = useStore();
+    const { currentUser, logoutUser, isDemoMode } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Alias for easier usage
+    const isDemo = isDemoMode;
 
     useEffect(() => {
         setIsMenuOpen(false);
@@ -33,21 +36,21 @@ export default function UserLayout() {
                         >
                             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </Button>
-                        <Link to={currentUser ? "/welcome" : "/"} className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
+                        <Link to={currentUser ? ((isDemo ? "/demo-student/welcome" : "/welcome")) : "/"} className="flex items-center gap-2 font-bold text-lg md:text-xl tracking-tight">
                             <img src="/favicon.png" alt="Logo" className="h-8 w-8 rounded-lg shadow-md transition-transform hover:rotate-3 object-contain bg-primary/10" />
                             <span className="inline">AcademyPro</span>
                         </Link>
                     </div>
 
                     <nav className="hidden md:flex items-center gap-8 text-sm font-bold">
-                        <Link to="/" className={`transition-all ${location.pathname === "/" ? "text-primary" : "text-foreground hover:text-primary"}`}>
+                        <Link to={isDemo ? "/demo-student/welcome" : "/"} className={`transition-all ${location.pathname === (isDemo ? "/demo-student/welcome" : "/") ? "text-primary" : "text-foreground hover:text-primary"}`}>
                             Home
                         </Link>
-                        <Link to="/browse" className={`transition-all ${location.pathname === "/browse" ? "text-primary" : "text-foreground hover:text-primary"}`}>
+                        <Link to={isDemo ? "/demo-student/browse" : "/browse"} className={`transition-all ${location.pathname === (isDemo ? "/demo-student/browse" : "/browse") ? "text-primary" : "text-foreground hover:text-primary"}`}>
                             Browse
                         </Link>
                         {currentUser && (
-                            <Link to="/my-learning" className={`transition-all ${location.pathname === "/my-learning" ? "text-primary" : "text-foreground hover:text-primary"}`}>
+                            <Link to={isDemo ? "/demo-student/my-learning" : "/my-learning"} className={`transition-all ${location.pathname === (isDemo ? "/demo-student/my-learning" : "/my-learning") ? "text-primary" : "text-foreground hover:text-primary"}`}>
                                 Dashboard
                             </Link>
                         )}
@@ -84,9 +87,9 @@ export default function UserLayout() {
                     <div className="md:hidden border-t bg-background animate-in slide-in-from-top duration-300">
                         <nav className="flex flex-col p-4 gap-1">
                             {[
-                                { to: "/", label: "Home", icon: Home },
-                                { to: "/browse", label: "Browse Catalog", icon: BookOpen },
-                                ...(currentUser ? [{ to: "/my-learning", label: "My Learning", icon: LayoutDashboard }] : []),
+                                { to: isDemo ? "/demo-student/welcome" : "/", label: "Home", icon: Home },
+                                { to: isDemo ? "/demo-student/browse" : "/browse", label: "Browse Catalog", icon: BookOpen },
+                                ...(currentUser ? [{ to: isDemo ? "/demo-student/my-learning" : "/my-learning", label: "My Learning", icon: LayoutDashboard }] : []),
                             ].map((item) => (
                                 <Link
                                     key={item.to}

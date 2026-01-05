@@ -66,7 +66,9 @@ export default function UserLogin() {
                     const isDemoAdmin = user.email === 'demo-admin@academypro.com';
                     navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
                 } else {
-                    navigate("/welcome");
+                    // Check for demo student
+                    const isDemoStudent = user.email === 'demo-student@academypro.com';
+                    navigate(isDemoStudent ? "/demo-student/welcome" : "/welcome");
                 }
             }, 100);
         } catch (err: any) {

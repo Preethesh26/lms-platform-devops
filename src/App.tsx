@@ -51,6 +51,15 @@ function App() {
                             <Route path="/courses/:courseId" element={<CoursePlayerPage />} />
                             <Route path="/contact-admin" element={<ContactAdminPage />} />
                         </Route>
+
+                        {/* Demo Student Routes */}
+                        <Route element={<UserLayout />}>
+                            <Route path="/demo-student/welcome" element={<WelcomePage />} />
+                            <Route path="/demo-student/my-learning" element={<MyLearningPage />} />
+                            <Route path="/demo-student/browse" element={<BrowsePage />} />
+                            <Route path="/demo-student/courses/:courseId" element={<CoursePlayerPage />} />
+                        </Route>
+
                         <Route path="/test/:slug" element={<TestAccess />} />
                         <Route path="/test/:slug/take" element={<TestPlayer />} />
                         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />

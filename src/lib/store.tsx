@@ -188,7 +188,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 if (userDataString) {
                     const userData = JSON.parse(userDataString);
                     isDemoUser = userData.email === 'demo-admin@academypro.com' ||
-                        userData.email === 'student@example.com';
+                        userData.email === 'demo-student@academypro.com';
 
                     if (isDemoUser && userRole === 'admin') {
                         setUsers(MOCK_USERS as any);
@@ -221,7 +221,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 const userDataString = localStorage.getItem('userData');
                 if (userDataString) {
                     const userData = JSON.parse(userDataString);
-                    if (userData.email === 'demo-admin@academypro.com' || userData.email === 'student@example.com') {
+                    if (userData.email === 'demo-admin@academypro.com' || userData.email === 'demo-student@academypro.com') {
                         setCourses(MOCK_COURSES as any);
                         setIsDemoMode(true);
                         if (userData.role === 'admin') {
