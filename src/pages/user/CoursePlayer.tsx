@@ -486,7 +486,7 @@ export default function CoursePlayerPage() {
                     <Button
                         variant="ghost"
                         onClick={() => navigate("/my-learning")}
-                        className="mb-4 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent transition-opacity"
+                        className="mb-4 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent opacity-60 hover:opacity-100 transition-opacity"
                     >
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                             <ArrowLeft className="h-4 w-4" />
@@ -497,7 +497,7 @@ export default function CoursePlayerPage() {
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
                         </div>
-                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl">{course.description}</p>
+                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl opacity-80">{course.description}</p>
                     </div>
                 </div>
             </div>

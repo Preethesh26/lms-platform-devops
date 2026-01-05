@@ -80,7 +80,7 @@ export default function WelcomePage() {
                     className="group relative overflow-hidden border-primary bg-white hover:shadow-2xl hover:shadow-primary transition-all duration-300 cursor-pointer border-2"
                     onClick={() => navigate("/browse")}
                 >
-                    <div className="absolute top-0 right-0 p-4">
+                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <BookOpen className="h-32 w-32 -mr-8 -mt-8 rotate-12 text-primary/20" />
                     </div>
                     <CardHeader>
@@ -104,7 +104,7 @@ export default function WelcomePage() {
                     className="group relative overflow-hidden border-purple-600 bg-white hover:shadow-2xl hover:shadow-purple-600 transition-all duration-300 cursor-pointer border-2"
                     onClick={() => navigate("/my-learning")}
                 >
-                    <div className="absolute top-0 right-0 p-4">
+                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <LayoutDashboard className="h-32 w-32 -mr-8 -mt-8 rotate-12 text-purple-600/20" />
                     </div>
                     <CardHeader>

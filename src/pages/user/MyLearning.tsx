@@ -86,7 +86,7 @@ export default function MyLearningPage() {
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
                             Hi, {currentUser.name}!
                         </h1>
-                        <p className="text-indigo-50 text-lg md:text-xl font-medium leading-relaxed">
+                        <p className="text-indigo-50 text-lg md:text-xl font-medium leading-relaxed opacity-90">
                             Your potential is limitless. You've conquered <span className="text-yellow-200 font-bold">{overallProgress}%</span> of your courses. Ready for the next challenge?
                         </p>
                     </div>
