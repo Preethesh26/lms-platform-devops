@@ -153,6 +153,12 @@ export default function AdminLayout() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3 md:gap-4">
+                        {currentUser?.email === 'demo-admin@academypro.com' && (
+                            <div className="hidden lg:flex items-center gap-2 bg-amber-500/10 text-amber-500 px-4 py-2 rounded-xl border border-amber-500/20 shadow-sm animate-pulse">
+                                <Monitor className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase tracking-tighter">Read-Only Demo Terminal</span>
+                            </div>
+                        )}
                         <div className="hidden sm:flex items-center gap-2 bg-green-50 dark:bg-green-950/40 px-3 py-1.5 rounded-full border border-green-100 dark:border-green-900/50">
                             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                             <span className="text-[10px] font-black text-green-600 dark:text-green-400 uppercase tracking-widest">Server Live</span>
@@ -164,6 +170,11 @@ export default function AdminLayout() {
                         </div>
                     </div>
                 </header>
+                {currentUser?.email === 'demo-admin@academypro.com' && (
+                    <div className="bg-amber-500 text-white px-8 py-1.5 text-center text-[10px] font-black uppercase tracking-[0.2em] shadow-lg relative z-10">
+                        ⚠️ Preview Environment: Changes will not be saved to protect live data.
+                    </div>
+                )}
                 <div className="p-4 md:p-8 flex-1 overflow-auto bg-slate-50/50 dark:bg-slate-950/50 scroll-smooth">
                     <div className="max-w-[1600px] mx-auto">
                         <Outlet />

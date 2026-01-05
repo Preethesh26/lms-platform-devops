@@ -4,7 +4,14 @@ AcademyPro is a modern, high-performance Learning Management System (LMS) design
 
 ### 🌐 Live Demo
 Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
-*Feel free to explore the features as a student or admin.*
+
+#### **Demo Credentials**
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Admin** | `demo-admin@academypro.com` | `demo1234` |
+| **Student** | `student@example.com` | `student123` |
+
+*Note: The Admin demo is in **Read-Only Mode** to protect live data.*
 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -93,6 +100,9 @@ The platform features a comprehensive notification system powered by **Brevo (fo
 
    # Backend (from backend directory)
    npm start
+
+   # Create Demo Admin account
+   node createDemoAdmin.js
    ```
 
 ---

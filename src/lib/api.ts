@@ -14,9 +14,37 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
+        const userDataString = localStorage.getItem('userData');
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // --- Demo Mode Safeguard ---
+        // If the user is logged in as 'demo-admin@academypro.com', block all non-GET requests
+        if (userDataString) {
+            try {
+                const userData = JSON.parse(userDataString);
+                const isDemoUser = userData.email === 'demo-admin@academypro.com';
+                const isMutation = ['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase() || '');
+
+                // Allow login and me requests even for demo user
+                const isLoginOrAuth = config.url?.includes('/auth/login') || config.url?.includes('/auth/me');
+
+                if (isDemoUser && isMutation && !isLoginOrAuth) {
+                    // Create a descriptive error for the UI
+                    const error: any = new Error('Demo Mode: Changes are not saved in the preview.');
+                    error.response = {
+                        status: 403,
+                        data: { message: 'This is a public demo account. Administrative changes are disabled to protect the live data.' }
+                    };
+                    return Promise.reject(error);
+                }
+            } catch (e) {
+                // Silently fail if JSON parsing fails
+            }
+        }
+
         return config;
     },
     (error) => {
