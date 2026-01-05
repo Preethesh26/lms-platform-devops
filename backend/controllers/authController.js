@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const authenticator = require('otplib').authenticator;
+const qrcode = require('qrcode');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -130,6 +132,14 @@ exports.login = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
+        if (user.role === 'admin' && user.email !== 'demo-admin@academypro.com' && user.twoFactorEnabled) {
+            return res.status(200).json({
+                success: true,
+                requires2FA: true,
+                tempToken: generateToken(user._id) // Short-lived token for 2FA verification step
+            });
+        }
+
         const token = generateToken(user._id);
 
         res.status(200).json({
@@ -140,7 +150,8 @@ exports.login = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 enrollment: user.enrollment,
-                enrolledCourses: user.enrolledCourses
+                enrolledCourses: user.enrolledCourses,
+                twoFactorEnabled: user.twoFactorEnabled
             }
         });
     } catch (error) {
@@ -156,6 +167,82 @@ exports.getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         res.status(200).json({ success: true, data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+// @desc    Setup 2FA (Generate secret and QR)
+// @route   POST /api/auth/2fa/setup
+// @access  Private
+exports.setup2FA = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const secret = authenticator.generateSecret();
+
+        user.twoFactorSecret = secret;
+        await user.save();
+
+        const otpauth = authenticator.keyuri(user.email, 'AcademyPro LMS', secret);
+        const imageUrl = await qrcode.toDataURL(otpauth);
+
+        res.status(200).json({
+            success: true,
+            secret,
+            qrCode: imageUrl
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Verify 2FA and Enable
+// @route   POST /api/auth/2fa/enable
+// @access  Private
+exports.enable2FA = async (req, res) => {
+    try {
+        const { token } = req.body;
+        const user = await User.findById(req.user.id).select('+twoFactorSecret');
+
+        if (!authenticator.check(token, user.twoFactorSecret)) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
+        }
+
+        user.twoFactorEnabled = true;
+        await user.save();
+
+        res.status(200).json({ success: true, message: '2FA Enabled Successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Verify 2FA during Login
+// @route   POST /api/auth/2fa/verify
+// @access  Public (with temp token)
+exports.verify2FA = async (req, res) => {
+    try {
+        const { token } = req.body;
+        // User is attached via middleware using tempToken
+        const user = await User.findById(req.user.id).select('+twoFactorSecret');
+
+        if (!authenticator.check(token, user.twoFactorSecret)) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
+        }
+
+        const access_token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            token: access_token,
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role,
+                enrollment: user.enrollment,
+                enrolledCourses: user.enrolledCourses,
+                twoFactorEnabled: user.twoFactorEnabled
+            }
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

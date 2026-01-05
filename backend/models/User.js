@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    twoFactorSecret: {
+        type: String,
+        select: false
+    },
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false
+    },
     enrolledCourses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'

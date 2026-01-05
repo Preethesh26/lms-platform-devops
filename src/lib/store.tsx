@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI } from "./api";
 import { MOCK_COURSES, MOCK_USERS, MOCK_QUIZZES, MOCK_TICKETS, MOCK_TESTS } from "./mockData";
 
@@ -34,6 +34,7 @@ export type User = {
     enrolledCourses: string[];
     password?: string;
     needsPasswordReset?: boolean;
+    twoFactorEnabled?: boolean;
 };
 
 interface StoreContextType {
@@ -42,6 +43,14 @@ interface StoreContextType {
     currentUser: User | null;
     isInitialized: boolean;
     isDemoMode: boolean;
+    isLocked: boolean;
+    tempToken: string | null;
+    requires2FA: boolean;
+    unlockSession: (token: string) => void;
+    verify2FA: (token: string) => Promise<boolean>;
+    setup2FA: () => Promise<any>;
+    enable2FA: (token: string) => Promise<boolean>;
+    setRequires2FA: (required: boolean, tempToken: string | null) => void;
     error: string | null;
     quizzes: any[];
     addCourse: (course: Omit<Course, "id">) => Promise<void>;
@@ -60,6 +69,11 @@ interface StoreContextType {
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
     refetchData: () => Promise<void>;
     refetchUsers: () => Promise<void>;
+    isLoading: boolean;
+    itemsFound: boolean;
+    registerUser: (userData: any) => Promise<void>;
+    searchCourses: (query: string) => void;
+    clearSearch: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -69,9 +83,47 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [users, setUsers] = useState<User[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isDemoMode, setIsDemoMode] = useState(false);
+
+    // Auth & Security State
     const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [isLocked, setIsLocked] = useState(false);
+    const [tempToken, setTempToken] = useState<string | null>(null); // For 2FA verification flow
+    const [requires2FA, setRequires2FAState] = useState(false);
+
     const [error, setError] = useState<string | null>(null);
     const [quizzes, setQuizzes] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [itemsFound, setItemsFound] = useState(true);
+
+    // Inactivity Timer Ref
+    const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
+
+    // Activity Listener
+    useEffect(() => {
+        const resetTimer = () => {
+            // Only lock if: user exists, is admin, not demo admin, not already locked, and not in demo mode
+            if (!currentUser || currentUser.role !== 'admin' || isDemoMode || isLocked) return;
+            if (currentUser.email === 'demo-admin@academypro.com') return;
+
+            if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+            inactivityTimer.current = setTimeout(() => {
+                setIsLocked(true);
+            }, 10 * 60 * 1000); // 10 minutes
+        };
+
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('keypress', resetTimer);
+        window.addEventListener('click', resetTimer);
+
+        resetTimer(); // Start timer
+
+        return () => {
+            window.removeEventListener('mousemove', resetTimer);
+            window.removeEventListener('keypress', resetTimer);
+            window.removeEventListener('click', resetTimer);
+            if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+        };
+    }, [currentUser, isLocked, isDemoMode]);
 
     const fetchUsers = async () => {
         try {
@@ -222,6 +274,11 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         await fetchData();
     };
 
+    const registerUser = async (userData: any) => {
+        await authAPI.register(userData);
+        await fetchData();
+    };
+
     const updateUser = async (id: string, updates: Partial<User>) => {
         await usersAPI.update(id, updates);
         await fetchData();
@@ -277,6 +334,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         setCourses([]);
         setIsDemoMode(false);
         setIsInitialized(false);
+        setIsLocked(false);
+        setRequires2FAState(false);
+        setTempToken(null);
         fetchData(); // Reset to public real data
     };
 
@@ -300,14 +360,80 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         return res.data.data;
     };
 
+    const setRequires2FA = (required: boolean, token: string | null) => {
+        setRequires2FAState(required);
+        setTempToken(token);
+    };
+
+    const verify2FA = async (otp: string) => {
+        try {
+            const tokenToUse = tempToken || localStorage.getItem('token');
+            // If checking from lock screen, we use current token. If login, we use tempToken.
+            const res = await authAPI.verify2FA({ token: otp }, tokenToUse);
+
+            if (res.data.success) {
+                if (res.data.token) {
+                    localStorage.setItem('token', res.data.token);
+                }
+                setTempToken(null);
+                setRequires2FAState(false);
+                setIsLocked(false);
+                if (currentUser) {
+                    // Ensure local user state reflects 2FA enabled status
+                    const updatedUser = { ...currentUser, twoFactorEnabled: true };
+                    setCurrentUser(updatedUser);
+                    localStorage.setItem('userData', JSON.stringify(updatedUser));
+                }
+                await fetchData();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+
+    const unlockSession = async (otp: string) => {
+        await verify2FA(otp);
+    };
+
+    const setup2FA = async () => {
+        const res = await authAPI.setup2FA();
+        return res.data;
+    };
+
+    const enable2FA = async (otp: string) => {
+        const res = await authAPI.enable2FA({ token: otp });
+        if (res.data.success) {
+            if (currentUser) {
+                const updatedUser = { ...currentUser, twoFactorEnabled: true };
+                setCurrentUser(updatedUser);
+                localStorage.setItem('userData', JSON.stringify(updatedUser));
+            }
+            return true;
+        }
+        return false;
+    };
+
+    const searchCourses = (query: string) => {
+        // Implementation placeholder if needed, or rely on filtered rendering
+    };
+
+    const clearSearch = () => {
+        // Implementation placeholder
+    };
+
     return (
         <StoreContext.Provider value={{
             courses, users, currentUser, isInitialized, isDemoMode, error, quizzes,
+            isLocked, tempToken, requires2FA, isLoading, itemsFound,
             addCourse, updateCourse, deleteCourse, addUser, updateUser, deleteUser,
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
             fetchQuizzes, createQuiz, submitQuiz,
             refetchData: fetchData,
-            refetchUsers: fetchUsers
+            refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
+            unlockSession, verify2FA, setup2FA, enable2FA, setRequires2FA
         }}>
             {children}
         </StoreContext.Provider>

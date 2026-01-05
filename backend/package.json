@@ -30,7 +30,9 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.0.0",
         "multer": "^2.0.2",
+        "otplib": "^12.0.1",
         "pdfkit": "^0.13.0",
+        "qrcode": "^1.5.4",
         "resend": "^6.5.2"
     },
     "devDependencies": {

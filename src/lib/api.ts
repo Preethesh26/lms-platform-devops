@@ -85,7 +85,13 @@ export const authAPI = {
     forgotPassword: (data: { email: string }) =>
         api.post('/auth/forgot-password', data),
     resetPassword: (token: string, data: { password: string }) =>
-        api.post(`/auth/reset-password/${token}`, data)
+        api.post(`/auth/reset-password/${token}`, data),
+    setup2FA: () => api.post('/auth/2fa/setup'),
+    enable2FA: (data: { token: string }) => api.post('/auth/2fa/enable', data),
+    verify2FA: (data: { token: string }, tempToken?: string | null) => {
+        const config = tempToken ? { headers: { Authorization: `Bearer ${tempToken}` } } : {};
+        return api.post('/auth/2fa/verify', data, config);
+    }
 };
 
 // Courses API

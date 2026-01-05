@@ -4,6 +4,7 @@ import { ClipboardList, Menu, X, Monitor, ChevronRight, LayoutDashboard, Databas
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { InactivityLock } from "@/components/admin/InactivityLock";
 
 export default function AdminLayout() {
     const navigate = useNavigate();
@@ -54,6 +55,7 @@ export default function AdminLayout() {
 
     return (
         <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+            <InactivityLock />
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
