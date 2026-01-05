@@ -65,7 +65,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {items.map((item, index) => (
                 <Card key={index} className="group border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-2 rounded-[2.5rem] overflow-hidden bg-white dark:hover:border-primary/20 relative">
-                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-0 right-0 p-6">
                         <div className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest">
                             {item.trend}
                         </div>
@@ -76,13 +76,13 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
                         </div>
                     </CardHeader>
                     <CardContent className="px-8 pb-8 pt-4">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 mb-2">
                             {item.title}
                         </CardTitle>
                         <div className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                             {item.value}
                         </div>
-                        <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mt-2 flex items-center gap-1.5 uppercase tracking-wide">
+                        <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5 uppercase tracking-wide">
                             <span className="w-3 h-[1px] bg-slate-200 dark:bg-slate-700"></span>
                             {item.description}
                         </p>
