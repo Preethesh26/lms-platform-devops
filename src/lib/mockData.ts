@@ -60,29 +60,42 @@ export const MOCK_COURSES = [
 ];
 
 export const MOCK_USERS = [
-    { id: "u1", name: "Alice Johnson", email: "alice@example.com", role: "student", enrollment: "STU001", enrolledCourses: ["mock-course-1"] },
-    { id: "u2", name: "Bob Smith", email: "bob@example.com", role: "student", enrollment: "STU002", enrolledCourses: ["mock-course-1", "mock-course-2"] },
-    { id: "u3", name: "Charlie Davis", email: "charlie@example.com", role: "student", enrollment: "STU003", enrolledCourses: ["mock-course-3"] },
-    { id: "u4", name: "Diana Prince", email: "diana@example.com", role: "student", enrollment: "STU004", enrolledCourses: ["mock-course-1", "mock-course-4"] },
+    { id: "u1", name: "Alice Johnson", email: "alice@example.com", role: "user", enrollment: "STU001", enrolledCourses: ["mock-course-1"] },
+    { id: "u2", name: "Bob Smith", email: "bob@example.com", role: "user", enrollment: "STU002", enrolledCourses: ["mock-course-1", "mock-course-2"] },
+    { id: "u3", name: "Charlie Davis", email: "charlie@example.com", role: "user", enrollment: "STU003", enrolledCourses: ["mock-course-3"] },
+    { id: "u4", name: "Diana Prince", email: "diana@example.com", role: "user", enrollment: "STU004", enrolledCourses: ["mock-course-1", "mock-course-4"] },
     { id: "u5", name: "Ethan Hunt", email: "ethan@example.com", role: "admin", enrollment: "ADM999", enrolledCourses: [] }
 ];
 
 export const MOCK_STATS = {
     totalRevenue: 2450890,
-    activeStudents: 15420,
+    totalUsers: 15420,
     totalCourses: 48,
-    completionRate: 78.5,
-    revenueChange: 12.5,
-    studentsChange: 8.2,
-    completionChange: 4.1
+    totalEnrollments: 22400
 };
 
-export const MOCK_CHARTS = [
-    { name: "Jan", students: 4000, revenue: 240000 },
-    { name: "Feb", students: 3000, revenue: 139800 },
-    { name: "Mar", students: 2000, revenue: 980000 },
-    { name: "Apr", students: 2780, revenue: 390800 },
-    { name: "May", students: 1890, revenue: 480000 },
-    { name: "Jun", students: 2390, revenue: 380000 },
-    { name: "Jul", students: 3490, revenue: 430000 }
-];
+export const MOCK_CHARTS = {
+    userGrowth: [
+        { name: "Jan", users: 400 },
+        { name: "Feb", users: 600 },
+        { name: "Mar", users: 800 },
+        { name: "Apr", users: 1100 },
+        { name: "May", users: 1500 },
+        { name: "Jun", users: 2100 }
+    ],
+    revenueTrends: [
+        { name: "Jan", revenue: 120000 },
+        { name: "Feb", revenue: 180000 },
+        { name: "Mar", revenue: 250000 },
+        { name: "Apr", revenue: 380000 },
+        { name: "May", revenue: 520000 },
+        { name: "Jun", revenue: 680000 }
+    ],
+    coursePopularity: [
+        { name: "Web Systems", value: 45 },
+        { name: "AI & ML", value: 25 },
+        { name: "Cyber Ops", value: 15 },
+        { name: "Visual Arts", value: 10 },
+        { name: "Other", value: 5 }
+    ]
+};

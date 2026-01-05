@@ -53,7 +53,7 @@ export default function AdminDashboardPage() {
             const interval = setInterval(fetchAnalytics, 30000);
             return () => clearInterval(interval);
         }
-    }, [token, stats]);
+    }, [token, stats, currentUser]);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
