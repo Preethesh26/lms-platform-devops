@@ -15,7 +15,7 @@ Access the Admin Dashboard here: **[https://academypro-liard.vercel.app/demo/log
 
 *Note: The Admin demo is in **Read-Only Mode** to protect live data.*
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Tech](https://img.shields.io/badge/stack-React%2019%20%7C%20Vite%20%7C%20Node.js-blue)
 
@@ -43,6 +43,13 @@ AcademyPro includes a powerful standalone test hosting system, ideal for recruit
 - **Content Management**: Advanced CRUD for courses, modules, lessons, and assignments.
 - **AI-Powered Tools**: Integrated AI for lesson summaries and quiz generation.
 - **Support System**: Full support ticket workflow with automated status update notifications.
+
+### 🛡 Secure Demo Experience (Parallel Universe)
+AcademyPro features a sophisticated "Parallel Universe" demo mode that allows stakeholders to explore the platform without touching production data.
+- **Dynamic Routing**: Automatic switching between `/admin/*` (live) and `/demo/*` (preview) routes based on user identity.
+- **Universal Mock Data**: Every vista (Dashboard, Courses, Support, Tests, Quizzes) is populated with professional, high-quality fake data.
+- **Environment Isolation**: Redirection guards prevent real admins from seeing demo data and vice-versa.
+- **Universal Trigger**: Append `?demo=1` to any URL (e.g., `/browse?demo=1`) to instantly showcase the platform with mock data, even without logging in.
 
 ---
 
