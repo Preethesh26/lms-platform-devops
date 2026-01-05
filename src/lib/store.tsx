@@ -57,11 +57,12 @@ interface StoreContextType {
     createQuiz: (quizData: any) => Promise<any>;
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
     refetchData: () => Promise<void>;
+    refetchUsers: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
-export function StoreProvider({ children }: { children: ReactNode }): React.ReactElement {
+export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
@@ -233,7 +234,9 @@ export function StoreProvider({ children }: { children: ReactNode }): React.Reac
             courses, users, currentUser, isInitialized, error, quizzes,
             addCourse, updateCourse, deleteCourse, addUser, updateUser, deleteUser,
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
-            fetchQuizzes, createQuiz, submitQuiz, refetchData: fetchData
+            fetchQuizzes, createQuiz, submitQuiz,
+            refetchData: fetchData,
+            refetchUsers: fetchUsers
         }}>
             {children}
         </StoreContext.Provider>
