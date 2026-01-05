@@ -59,6 +59,7 @@ function App() {
                         <Route path="/admin/login" element={<AdminLoginPage />} />
                         <Route path="/demo/login" element={<AdminLoginPage />} />
                         <Route element={<AdminLayout />}>
+                            {/* Standard Admin Routes */}
                             <Route path="/admin/dashboard" element={<AdminDashboard />} />
                             <Route path="/admin/courses" element={<AdminCoursesPage />} />
                             <Route path="/admin/users" element={<AdminUsersPage />} />
@@ -71,6 +72,20 @@ function App() {
                             <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
                             <Route path="/admin/settings" element={<Settings />} />
                             <Route path="/admin/support" element={<SupportInbox />} />
+
+                            {/* Demo Specific Routes */}
+                            <Route path="/demo/dashboard" element={<AdminDashboard />} />
+                            <Route path="/demo/courses" element={<AdminCoursesPage />} />
+                            <Route path="/demo/users" element={<AdminUsersPage />} />
+                            <Route path="/demo/users/bulk-upload" element={<BulkUserUpload />} />
+                            <Route path="/demo/quizzes" element={<QuizManager />} />
+                            <Route path="/demo/quizzes/create" element={<QuizEditor />} />
+                            <Route path="/demo/tests" element={<TestManager />} />
+                            <Route path="/demo/tests/create" element={<TestEditor />} />
+                            <Route path="/demo/tests/:id/edit" element={<TestEditor />} />
+                            <Route path="/demo/tests/:id/invitations" element={<TestInvitations />} />
+                            <Route path="/demo/settings" element={<Settings />} />
+                            <Route path="/demo/support" element={<SupportInbox />} />
                         </Route>
                         <Route path="*" element={<NotFound />} />
                     </Routes>

@@ -16,27 +16,32 @@ export default function AdminLayout() {
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
-    useEffect(() => {
-        if (isInitialized) {
-            if (!currentUser || currentUser.role !== 'admin') {
-                navigate("/admin/login");
-            }
-        }
-    }, [currentUser, isInitialized, navigate]);
-
     if (!isInitialized) return null;
 
     // If not admin (and waiting for redirect), don't render content
     if (!currentUser || currentUser.role !== 'admin') return null;
 
+    const isDemoUser = currentUser.email === 'demo-admin@academypro.com';
+    const currentPrefix = isDemoUser ? '/demo' : '/admin';
+
+    // Redirection Logic: Ensure user is on the correct prefix
+    useEffect(() => {
+        const path = location.pathname;
+        if (isDemoUser && path.startsWith('/admin/')) {
+            navigate(path.replace('/admin/', '/demo/'));
+        } else if (!isDemoUser && path.startsWith('/demo/')) {
+            navigate(path.replace('/demo/', '/admin/'));
+        }
+    }, [location.pathname, isDemoUser, navigate]);
+
     const navItems = [
-        { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, category: "Analytics" },
-        { to: "/admin/courses", label: "Courses", icon: Database, category: "Management" },
-        { to: "/admin/users", label: "Students", icon: GraduationCap, category: "Management" },
-        { to: "/admin/quizzes", label: "Quizzes", icon: PenTool, category: "Management" },
-        { to: "/admin/tests", label: "Tests", icon: ClipboardList, category: "Management" },
-        { to: "/admin/support", label: "Help Tickets", icon: MessageSquare, category: "Support" },
-        { to: "/admin/settings", label: "Settings", icon: SettingsIcon, category: "System" },
+        { to: `${currentPrefix}/dashboard`, label: "Dashboard", icon: LayoutDashboard, category: "Analytics" },
+        { to: `${currentPrefix}/courses`, label: "Courses", icon: Database, category: "Management" },
+        { to: `${currentPrefix}/users`, label: "Students", icon: GraduationCap, category: "Management" },
+        { to: `${currentPrefix}/quizzes`, label: "Quizzes", icon: PenTool, category: "Management" },
+        { to: `${currentPrefix}/tests`, label: "Tests", icon: ClipboardList, category: "Management" },
+        { to: `${currentPrefix}/support`, label: "Help Tickets", icon: MessageSquare, category: "Support" },
+        { to: `${currentPrefix}/settings`, label: "Settings", icon: SettingsIcon, category: "System" },
     ];
 
     return (

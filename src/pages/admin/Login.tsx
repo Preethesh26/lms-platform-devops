@@ -33,7 +33,9 @@ export default function AdminLogin() {
 
             localStorage.setItem('token', token);
             localStorage.setItem('userData', JSON.stringify(user));
-            navigate("/admin/courses");
+
+            const isDemoAdmin = user.email === 'demo-admin@academypro.com';
+            navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid email or password.");
