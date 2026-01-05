@@ -9,7 +9,7 @@ import { settingsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
 
 export default function Settings() {
-    const { currentUser, setup2FA, enable2FA } = useStore();
+    const { currentUser, setup2FA, enable2FA, disable2FA } = useStore();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
@@ -18,6 +18,9 @@ export default function Settings() {
 
     // 2FA Setup State
     const [isSettingUp2FA, setIsSettingUp2FA] = useState(false);
+    const [isDisabling2FA, setIsDisabling2FA] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState("");
+
     const [qrCode, setQrCode] = useState("");
     const [secret, setSecret] = useState("");
     const [otp, setOtp] = useState("");
@@ -33,6 +36,24 @@ export default function Settings() {
             setSettings(prev => ({ ...prev, ...res.data.data }));
         } catch (error) {
             console.error('Failed to fetch settings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDisable2FA = async () => {
+        setLoading(true);
+        try {
+            const success = await disable2FA(confirmPassword);
+            if (success) {
+                setIsDisabling2FA(false);
+                setConfirmPassword("");
+                alert("2FA Disabled Successfully");
+            } else {
+                alert("Incorrect Password");
+            }
+        } catch (error) {
+            alert("Failed to disable 2FA");
         } finally {
             setLoading(false);
         }
@@ -168,12 +189,67 @@ export default function Settings() {
                                     Setup 2FA
                                 </Button>
                             ) : (
-                                <div className="flex items-center gap-2 text-green-600 font-medium text-sm">
-                                    <CheckCircle2 className="w-5 h-5" />
-                                    Active & Protected
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2 text-green-600 font-medium text-sm">
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        Active & Protected
+                                    </div>
+                                    <Button
+                                        onClick={() => setIsDisabling2FA(true)}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                        Disable
+                                    </Button>
                                 </div>
                             )}
                         </div>
+
+                        {/* Disable 2FA Confirmation */}
+                        {isDisabling2FA && (
+                            <div className="animate-in fade-in slide-in-from-top-4 duration-300 border-t pt-6">
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-4">
+                                    <div className="flex items-start gap-3">
+                                        <div className="bg-white p-2 rounded-full border border-red-100">
+                                            <ShieldCheck className="w-6 h-6 text-red-500" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-red-900">Disable Security Protection?</h4>
+                                            <p className="text-sm text-red-700 mt-1">
+                                                This will lower your account security. Please verify your password to continue.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3 max-w-sm ml-auto">
+                                        <Input
+                                            type="password"
+                                            placeholder="Enter your password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className="bg-white"
+                                        />
+                                        <Button
+                                            variant="destructive"
+                                            onClick={handleDisable2FA}
+                                            disabled={loading || !confirmPassword}
+                                        >
+                                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm"}
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => {
+                                                setIsDisabling2FA(false);
+                                                setConfirmPassword("");
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {isSettingUp2FA && !currentUser?.twoFactorEnabled && (
                             <div className="animate-in fade-in slide-in-from-top-4 duration-300 border-t pt-6">

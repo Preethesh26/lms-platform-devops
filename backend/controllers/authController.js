@@ -247,3 +247,26 @@ exports.verify2FA = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Disable 2FA
+// @route   POST /api/auth/2fa/disable
+// @access  Private
+exports.disable2FA = async (req, res) => {
+    try {
+        const { password } = req.body;
+        const user = await User.findById(req.user.id).select('+password');
+
+        if (!await user.comparePassword(password)) {
+            return res.status(401).json({ success: false, message: 'Incorrect password' });
+        }
+
+        user.twoFactorSecret = undefined;
+        user.twoFactorEnabled = false;
+        await user.save();
+
+        res.status(200).json({ success: true, message: '2FA Disabled Successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

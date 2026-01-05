@@ -50,6 +50,7 @@ interface StoreContextType {
     verify2FA: (token: string) => Promise<boolean>;
     setup2FA: () => Promise<any>;
     enable2FA: (token: string) => Promise<boolean>;
+    disable2FA: (password: string) => Promise<boolean>;
     setRequires2FA: (required: boolean, tempToken: string | null) => void;
     error: string | null;
     quizzes: any[];
@@ -416,6 +417,19 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         return false;
     };
 
+    const disable2FA = async (password: string) => {
+        const res = await authAPI.disable2FA({ password });
+        if (res.data.success) {
+            if (currentUser) {
+                const updatedUser = { ...currentUser, twoFactorEnabled: false };
+                setCurrentUser(updatedUser);
+                localStorage.setItem('userData', JSON.stringify(updatedUser));
+            }
+            return true;
+        }
+        return false;
+    };
+
     const searchCourses = (query: string) => {
         // Implementation placeholder if needed, or rely on filtered rendering
     };
@@ -433,7 +447,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             fetchQuizzes, createQuiz, submitQuiz,
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
-            unlockSession, verify2FA, setup2FA, enable2FA, setRequires2FA
+            unlockSession, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA
         }}>
             {children}
         </StoreContext.Provider>

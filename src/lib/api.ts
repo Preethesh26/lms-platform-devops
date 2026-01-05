@@ -88,6 +88,7 @@ export const authAPI = {
         api.post(`/auth/reset-password/${token}`, data),
     setup2FA: () => api.post('/auth/2fa/setup'),
     enable2FA: (data: { token: string }) => api.post('/auth/2fa/enable', data),
+    disable2FA: (data: { password: string }) => api.post('/auth/2fa/disable', data),
     verify2FA: (data: { token: string }, tempToken?: string | null) => {
         const config = tempToken ? { headers: { Authorization: `Bearer ${tempToken}` } } : {};
         return api.post('/auth/2fa/verify', data, config);
