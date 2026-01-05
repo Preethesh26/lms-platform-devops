@@ -76,7 +76,7 @@ export default function BrowsePage() {
     };
 
     if (!isInitialized) return null;
-    
+
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -88,6 +88,7 @@ export default function BrowsePage() {
                 <div className="absolute bottom-1/2 -left-12 h-48 w-48 rounded-full bg-indigo-400/20 blur-2xl"></div>
 
                 <div className="max-w-7xl mx-auto relative z-10 px-4 md:px-0">
+                
                     <Button
                         variant="ghost"
                         onClick={() => navigate(-1)}
