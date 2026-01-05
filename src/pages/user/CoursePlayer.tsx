@@ -14,6 +14,13 @@ import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText
 
 const ReactPlayerAny = ReactPlayer as any;
 
+const getYouTubeId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+};
+
 type ProgressState = {
     [lessonId: string]: {
         completed: boolean;
@@ -22,8 +29,8 @@ type ProgressState = {
 };
 
 export default function CoursePlayerPage() {
-    // Deployment Marker: v1.0.7-yt-fix
-    console.log("CoursePlayerPage Version: 1.0.7-yt-fix (Hybrid Player)");
+    // Deployment Marker: v1.0.8-yt-iframe
+    console.log("CoursePlayerPage Version: 1.0.8-yt-iframe (Iframe Fallback)");
     const params = useParams();
     const navigate = useNavigate();
     const { courses, isInitialized, currentUser, createOrder, verifyPayment } = useStore();
@@ -492,7 +499,7 @@ export default function CoursePlayerPage() {
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
                             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">
-                                v1.0.7-yt-fix
+                                v1.0.8-yt-iframe
                             </span>
                         </div>
                         <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl">{course.description}</p>
@@ -518,31 +525,25 @@ export default function CoursePlayerPage() {
                                     </div>
                                 ) : (
                                     <>
-                                        {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */}
+                                        {/* Hybrid Player: YouTube needs Iframe/ReactPlayer, R2 Files need Native Player */}
                                         <div className="absolute top-2 left-2 z-50 pointer-events-none">
-                                            <span className="bg-black/80 text-white text-[8px] px-1.5 py-0.5 rounded border border-white/20">
-                                                Player: {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? 'YouTube' : 'Native'}
+                                            <span className="bg-black text-white text-[10px] px-2 py-1 rounded-md border border-white/40 shadow-xl font-black">
+                                                Player: {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? 'YouTube (Iframe)' : 'Native'}
                                             </span>
                                         </div>
                                         {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
-                                            <ReactPlayerAny
-                                                key={`yt-${activeLesson.id}`}
-                                                url={activeLesson.videoUrl}
-                                                width="100%"
-                                                height="100%"
-                                                controls={true}
-                                                playing={isPlaying}
-                                                onPlay={() => setIsPlaying(true)}
-                                                onPause={() => setIsPlaying(false)}
-                                                onProgress={handleProgress as any}
-                                                onEnded={handleEnded}
-                                                onReady={handleReady}
-                                                config={{
-                                                    youtube: {
-                                                        playerVars: { autoplay: 0 }
-                                                    }
-                                                }}
-                                            />
+                                            <div className="w-full h-full bg-black">
+                                                <iframe
+                                                    key={`yt-iframe-${activeLesson.id}`}
+                                                    className="w-full h-full"
+                                                    src={`https://www.youtube.com/embed/${getYouTubeId(activeLesson.videoUrl)}?autoplay=0&rel=0&modestbranding=1`}
+                                                    title="YouTube video player"
+                                                    frameBorder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                    onLoad={handleReady}
+                                                />
+                                            </div>
                                         ) : (
                                             <video
                                                 key={`native-${activeLesson.id}`}
