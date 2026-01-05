@@ -5,16 +5,13 @@ AcademyPro is a modern, high-performance Learning Management System (LMS) design
 ### 🌐 Live Demo & Inquiries
 Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
 
-#### **Explore the Dashboard Overview**
-Experience the full power of the administrative terminal instantly:
-- **Direct Preview**: **[Launch Dashboard Demo](https://academypro-liard.vercel.app/demo/dashboard?demo=1)**
 - **Student Portal**: Explore the student experience instantly.
   - **Email**: `student@example.com`
   - **Password**: `student123`
-- **Administrative Access**: To protect system integrity, full admin credentials are not public. 
+- **Administrative Access**: To protect system integrity, full admin credentials are not public.
 
 > [!IMPORTANT]
-> Interested in a full technical walkthrough with administrative or instructor privileges? Please **[Contact Me on LinkedIn](https://www.linkedin.com/in/preethesh26)** or email me at **[kulalpreethesh20@gmail.com](mailto:kulalpreethesh20@gmail.com)** for private credentials.
+> Interested in a full technical walkthrough with administrative privileges? Please **[Contact Me on LinkedIn](https://www.linkedin.com/in/preethesh26)** or email me at **[kulalpreethesh20@gmail.com](mailto:kulalpreethesh20@gmail.com)** for private credentials.
 
 *Note: The Admin demo is in **Read-Only Mode** to protect live data.*
 
@@ -135,4 +132,4 @@ The backend is hosted on **Render** as a Web Service.
 ## 📄 License
 This project is licensed under the MIT License.
 
-Developed by [Preethesh](https://github.com/Preethesh26) | [LinkedIn](https://www.linkedin.com/in/preethesh26) | [Email](mailto:kulalpreethesh20@gmail.com)
+Developed by Preethesh [Github](https://github.com/Preethesh26) | [LinkedIn](https://www.linkedin.com/in/preethesh26) | [Email](mailto:kulalpreethesh20@gmail.com)
