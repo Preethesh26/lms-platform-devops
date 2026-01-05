@@ -112,7 +112,7 @@ export default function UserLogin() {
                     <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm">
                         <img src="/favicon.png" alt="Logo" className="w-ful h-full object-contain p-2" />
                     </div>
-                    <p className="text-sm font-bold uppercase tracking-widest text-primary/80">AcademyPro</p>
+                    <p className="text-sm font-bold uppercase tracking-widest text-primary">AcademyPro</p>
                     <div className="space-y-2 relative">
                         <CardTitle className="text-3xl font-extrabold tracking-tight">Student Login</CardTitle>
                         <div className="absolute -top-1 right-0">
@@ -133,7 +133,7 @@ export default function UserLogin() {
                             </div>
                         )}
                         <div className="space-y-2">
-                            <Label htmlFor="enrollment" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Enrollment Number</Label>
+                            <Label htmlFor="enrollment" className="text-xs font-bold uppercase tracking-widest px-1">Enrollment Number</Label>
                             <Input
                                 id="enrollment"
                                 type="text"
@@ -145,7 +145,7 @@ export default function UserLogin() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Email Address</Label>
+                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest px-1">Email Address</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -159,7 +159,7 @@ export default function UserLogin() {
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between px-1">
-                                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest opacity-70">Password</Label>
+                                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest">Password</Label>
                                 <button
                                     type="button"
                                     onClick={() => setShowForgotPassword(true)}

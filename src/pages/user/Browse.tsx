@@ -107,7 +107,7 @@ export default function BrowsePage() {
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
                                 Learning That <br className="hidden sm:block" /> <span className="text-yellow-200">Moves You.</span>
                             </h1>
-                            <p className="text-indigo-50 font-medium text-base md:text-lg max-w-xl leading-relaxed opacity-90">
+                            <p className="text-indigo-50 font-medium text-base md:text-lg max-w-xl leading-relaxed">
                                 Join our global community of learners and transform your career with expert-led courses across every industry.
                             </p>
                         </div>
@@ -219,7 +219,7 @@ export default function BrowsePage() {
 
                                     <CardFooter className="flex items-center justify-between p-6 pt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-muted-foreground line-through opacity-60">₹{(course.price * 1.5).toFixed(0)}</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground line-through">₹{(course.price * 1.5).toFixed(0)}</span>
                                             <span className="text-2xl font-bold text-primary">₹{course.price}</span>
                                         </div>
 
@@ -246,7 +246,7 @@ export default function BrowsePage() {
                 ) : (
                     <div className="flex flex-col items-center justify-center py-24 bg-muted/40 rounded-[3rem] border-2 border-dashed border-border/60 text-center space-y-6">
                         <div className="h-24 w-24 bg-background rounded-full flex items-center justify-center border border-border shadow-xl">
-                            <SearchX className="h-10 w-10 text-muted-foreground opacity-40" />
+                            <SearchX className="h-10 w-10 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-2xl font-extrabold tracking-tight">No Courses Found</h3>

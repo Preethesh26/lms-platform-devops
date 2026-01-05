@@ -135,7 +135,7 @@ export default function SignupPage() {
                 <CardContent className="px-8 pb-10">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-2">
-                            <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Full Name</Label>
+                            <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest px-1">Full Name</Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -148,7 +148,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Email Address</Label>
+                            <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest px-1">Email Address</Label>
                             <Input
                                 id="email"
                                 name="email"
@@ -162,7 +162,7 @@ export default function SignupPage() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Password</Label>
+                                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest px-1">Password</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -190,7 +190,7 @@ export default function SignupPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-widest px-1 opacity-70">Confirm</Label>
+                                <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase tracking-widest px-1">Confirm</Label>
                                 <div className="relative">
                                     <Input
                                         id="confirmPassword"
