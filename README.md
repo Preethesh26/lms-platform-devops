@@ -6,7 +6,7 @@ AcademyPro is a modern, high-performance Learning Management System (LMS) design
 Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
 
 #### **Demo Credentials**
-Access the Admin Dashboard here: **[https://academypro-liard.vercel.app/admin/login](https://academypro-liard.vercel.app/admin/login)**
+Access the Admin Dashboard here: **[https://academypro-liard.vercel.app/demo/login](https://academypro-liard.vercel.app/demo/login)**
 
 | Role | Email | Password |
 | :--- | :--- | :--- |

@@ -19,7 +19,7 @@ export default function AdminLayout() {
     useEffect(() => {
         if (isInitialized) {
             if (!currentUser || currentUser.role !== 'admin') {
-                navigate("/admin/login");
+                navigate("/demo/login");
             }
         }
     }, [currentUser, isInitialized, navigate]);
@@ -121,7 +121,7 @@ export default function AdminLayout() {
                                     className="h-8 w-8 rounded-lg hover:bg-red-500/10 hover:text-red-500 transition-colors"
                                     onClick={() => {
                                         logoutUser();
-                                        navigate("/admin/login");
+                                        navigate("/demo/login");
                                     }}
                                 >
                                     <LogOut className="h-4 w-4" />

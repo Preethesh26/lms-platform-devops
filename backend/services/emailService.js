@@ -86,7 +86,7 @@ const sendWelcomeEmail = async (to, name, password, enrollment, role) => {
 
     try {
         const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-        const loginUrl = role === 'admin' ? `${baseUrl}/admin/login` : `${baseUrl}/login`;
+        const loginUrl = role === 'admin' ? `${baseUrl}/demo/login` : `${baseUrl}/login`;
 
         const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 

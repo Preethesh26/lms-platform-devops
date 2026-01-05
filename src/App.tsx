@@ -56,7 +56,7 @@ function App() {
                         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
                         {/* Admin Routes */}
-                        <Route path="/admin/login" element={<AdminLoginPage />} />
+                        <Route path="/demo/login" element={<AdminLoginPage />} />
                         <Route element={<AdminLayout />}>
                             <Route path="/admin/dashboard" element={<AdminDashboard />} />
                             <Route path="/admin/courses" element={<AdminCoursesPage />} />
