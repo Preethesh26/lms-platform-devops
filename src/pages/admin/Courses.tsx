@@ -392,7 +392,7 @@ export default function AdminCoursesPage() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="absolute inset-0 bg-slate-900/60 transition-opacity backdrop-blur-[2px] flex items-center justify-center gap-3">
+                                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px] flex items-center justify-center gap-3">
                                     <Button
                                         size="sm"
                                         className="rounded-xl font-bold h-10 px-5 bg-white text-slate-900 hover:bg-slate-100 shadow-xl"

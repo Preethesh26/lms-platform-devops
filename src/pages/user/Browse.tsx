@@ -107,7 +107,7 @@ export default function BrowsePage() {
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
                                 Learning That <br className="hidden sm:block" /> <span className="text-yellow-200">Moves You.</span>
                             </h1>
-                            <p className="text-indigo-50 font-medium text-base md:text-lg max-w-xl leading-relaxed">
+                            <p className="text-indigo-50 font-medium text-base md:text-lg max-w-xl leading-relaxed opacity-90">
                                 Join our global community of learners and transform your career with expert-led courses across every industry.
                             </p>
                         </div>
@@ -219,7 +219,7 @@ export default function BrowsePage() {
 
                                     <CardFooter className="flex items-center justify-between p-6 pt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-bold text-muted-foreground line-through">₹{(course.price * 1.5).toFixed(0)}</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground line-through opacity-60">₹{(course.price * 1.5).toFixed(0)}</span>
                                             <span className="text-2xl font-bold text-primary">₹{course.price}</span>
                                         </div>
 

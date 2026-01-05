@@ -74,7 +74,7 @@ export default function UserHomePage() {
                                 Unlock Your Potential with <br className="hidden xs:block" />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Master-Level Training</span>
                             </h1>
-                            <p className="mx-auto max-w-xl text-sm md:text-base lg:text-lg text-indigo-50 leading-relaxed px-4">
+                            <p className="mx-auto max-w-xl text-sm md:text-base lg:text-lg text-indigo-50 leading-relaxed opacity-90 px-4">
                                 Access industry-leading courses, expert instructors, and a global community.
                                 Master new skills and accelerate your career today.
                             </p>
@@ -101,15 +101,15 @@ export default function UserHomePage() {
                         <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10 mt-8 bg-black/10 backdrop-blur-sm rounded-2xl p-4 max-w-2xl mx-auto">
                             <div>
                                 <p className="text-2xl font-bold text-white">100+</p>
-                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest">Courses</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Courses</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-white">50+</p>
-                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest">Mentors</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Mentors</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-white">10k+</p>
-                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest">Learners</p>
+                                <p className="text-indigo-100 text-[10px] font-medium uppercase tracking-widest opacity-80">Learners</p>
                             </div>
                         </div>
                     </div>

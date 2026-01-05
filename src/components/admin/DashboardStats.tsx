@@ -65,7 +65,7 @@ export function DashboardStats({ stats, loading }: DashboardStatsProps) {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {items.map((item, index) => (
                 <Card key={index} className="group border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-2 rounded-[2.5rem] overflow-hidden bg-white dark:hover:border-primary/20 relative">
-                    <div className="absolute top-0 right-0 p-6">
+                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest">
                             {item.trend}
                         </div>

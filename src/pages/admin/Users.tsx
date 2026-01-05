@@ -564,7 +564,7 @@ export default function AdminUsersPage() {
 function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, onDelete: () => void }) {
     return (
         <Card className="group overflow-hidden rounded-[2.5rem] border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-1 bg-white dark:hover:border-primary/20 relative">
-            <div className="absolute top-0 right-0 p-6">
+            <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="bg-primary/10 text-primary text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest">
                     Active
                 </div>
@@ -603,7 +603,7 @@ function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, 
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="p-8 pt-0 flex gap-3 transition-all">
+            <CardFooter className="p-8 pt-0 flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                 <Button variant="outline" size="sm" className="flex-1 rounded-xl h-11 font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white" onClick={onEdit}>
                     Edit Profile
                 </Button>
