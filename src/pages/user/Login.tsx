@@ -113,8 +113,13 @@ export default function UserLogin() {
                         <img src="/favicon.png" alt="Logo" className="w-ful h-full object-contain p-2" />
                     </div>
                     <p className="text-sm font-bold uppercase tracking-widest text-primary/80">AcademyPro</p>
-                    <div className="space-y-2">
+                    <div className="space-y-2 relative">
                         <CardTitle className="text-3xl font-extrabold tracking-tight">Student Login</CardTitle>
+                        <div className="absolute -top-1 right-0">
+                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">
+                                v1.0.6-sync-check
+                            </span>
+                        </div>
                         <CardDescription className="text-muted-foreground font-medium">
                             Welcome back! Sign in to continue your journey.
                         </CardDescription>
