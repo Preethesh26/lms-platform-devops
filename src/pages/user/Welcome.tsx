@@ -66,7 +66,7 @@ export default function WelcomePage() {
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary dark:text-white px-2">
                                 Welcome, {currentUser?.name.split(' ')[0]}!
                             </h1>
-                            <p className="text-base md:text-xl text-foreground font-bold italic opacity-80 px-4">
+                            <p className="text-base md:text-xl text-foreground font-bold italic px-4">
                                 {overallProgress !== null && overallProgress > 0
                                     ? `You've completed ${overallProgress}% of your courses. Ready to continue?`
                                     : "Your learning journey starts here. Where to today?"}
