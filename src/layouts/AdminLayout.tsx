@@ -16,6 +16,15 @@ export default function AdminLayout() {
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
+    useEffect(() => {
+        if (isInitialized) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                const isDemoPath = location.pathname.startsWith('/demo/');
+                navigate(isDemoPath ? "/demo/login" : "/admin/login");
+            }
+        }
+    }, [currentUser, isInitialized, navigate, location.pathname]);
+
     if (!isInitialized) return null;
 
     // If not admin (and waiting for redirect), don't render content
