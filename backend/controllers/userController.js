@@ -39,6 +39,13 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        // If password is being updated, hash it first
+        if (req.body.password) {
+            const bcrypt = require('bcryptjs');
+            const salt = await bcrypt.genSalt(10);
+            req.body.password = await bcrypt.hash(req.body.password, salt);
+        }
+
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
