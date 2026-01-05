@@ -63,7 +63,7 @@ interface StoreContextType {
     enrollUser: (userId: string, courseId: string) => Promise<void>;
     createOrder: (courseId: string) => Promise<any>;
     verifyPayment: (data: { transactionId: string }) => Promise<any>;
-    loginUser: (userData: User, token: string) => void;
+    loginUser: (userData: User, token: string) => Promise<void>;
     logoutUser: () => void;
     fetchQuizzes: () => Promise<void>;
     createQuiz: (quizData: any) => Promise<any>;
@@ -320,11 +320,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         return res.data;
     };
 
-    const loginUser = (userData: User, token: string) => {
+    const loginUser = async (userData: User, token: string) => {
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(userData));
-        setCurrentUser(userData);
-        fetchData(); // Trigger full sync on login
+        // We defer to fetchData to set the single source of truth for currentUser
+        // to avoid double-renders or temporary inconsistent states.
+        await fetchData();
     };
 
     const logoutUser = () => {

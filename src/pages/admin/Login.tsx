@@ -45,10 +45,12 @@ export default function AdminLogin() {
             }
 
             // Use store action to update global state immediately
-            loginUser(user, token);
+            await loginUser(user, token);
 
             const isDemoAdmin = user.email === 'demo-admin@academypro.com';
-            navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
+            setTimeout(() => {
+                navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
+            }, 100);
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid email or password.");

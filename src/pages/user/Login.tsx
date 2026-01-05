@@ -54,18 +54,21 @@ export default function UserLogin() {
                 return;
             }
 
-            loginUser(user, token);
+            await loginUser(user, token);
 
             // Check for redirect parameter
             const redirectTo = searchParams.get('redirect');
-            if (redirectTo) {
-                navigate(redirectTo);
-            } else if (user.role === 'admin') {
-                const isDemoAdmin = user.email === 'demo-admin@academypro.com';
-                navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
-            } else {
-                navigate("/welcome");
-            }
+
+            setTimeout(() => {
+                if (redirectTo) {
+                    navigate(redirectTo);
+                } else if (user.role === 'admin') {
+                    const isDemoAdmin = user.email === 'demo-admin@academypro.com';
+                    navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
+                } else {
+                    navigate("/welcome");
+                }
+            }, 100);
         } catch (err: any) {
             console.error(err);
             setError(err.response?.data?.message || "Invalid credentials.");
