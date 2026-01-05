@@ -62,7 +62,7 @@ interface StoreContextType {
     deleteUser: (id: string) => Promise<void>;
     enrollUser: (userId: string, courseId: string) => Promise<void>;
     createOrder: (courseId: string) => Promise<any>;
-    verifyPayment: (data: { transactionId: string }) => Promise<any>;
+    verifyPayment: (data: { transactionId: string }, courseId?: string) => Promise<any>;
     loginUser: (userData: User, token: string) => Promise<void>;
     logoutUser: () => void;
     fetchQuizzes: () => Promise<void>;
@@ -309,11 +309,36 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const createOrder = async (courseId: string) => {
+        if (isDemoMode && currentUser?.email === 'demo-student@academypro.com') {
+            return {
+                order: {
+                    id: `mock_order_${Date.now()}`,
+                    amount: 49900,
+                    currency: "INR"
+                }
+            };
+        }
         const res = await paymentAPI.createOrder(courseId);
         return res.data;
     };
 
-    const verifyPayment = async (data: { transactionId: string }) => {
+    const verifyPayment = async (data: { transactionId: string }, courseId?: string) => {
+        if (isDemoMode && currentUser?.email === 'demo-student@academypro.com') {
+            if (courseId && currentUser) {
+                // Use the enroll endpoint to persist consistency with backend for demo user
+                await usersAPI.enroll(currentUser.id, courseId);
+
+                // Update local state immediately
+                const updatedUser = {
+                    ...currentUser,
+                    enrolledCourses: [...currentUser.enrolledCourses, courseId]
+                };
+                setCurrentUser(updatedUser);
+                localStorage.setItem('userData', JSON.stringify(updatedUser));
+                return { success: true };
+            }
+        }
+
         const res = await paymentAPI.verifyPayment(data);
         if (currentUser) {
             const userRes = await authAPI.getMe();

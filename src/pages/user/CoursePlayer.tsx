@@ -273,7 +273,7 @@ export default function CoursePlayerPage() {
             // 2. Verify Payment (Mock)
             await verifyPayment({
                 transactionId: orderData.order.id
-            });
+            }, course.id);
 
             setProcessingStep('success');
 

@@ -71,8 +71,8 @@ export default function BrowsePage() {
             navigate("/login");
             return;
         }
-        enrollUser(currentUser.id, courseId);
-        navigate(`/courses/${courseId}`);
+        // Don't auto-enroll here. Let the CoursePlayer page handle the payment/enrollment flow.
+        navigate(currentUser.email === 'demo-student@academypro.com' ? `/demo-student/courses/${courseId}` : `/courses/${courseId}`);
     };
 
     if (!isInitialized) return null;
