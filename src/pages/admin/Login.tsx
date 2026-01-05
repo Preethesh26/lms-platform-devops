@@ -9,7 +9,7 @@ import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 export default function AdminLogin() {
-    const { setRequires2FA, verify2FA } = useStore();
+    const { setRequires2FA, verify2FA, loginUser } = useStore();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [otp, setOtp] = useState("");
@@ -44,8 +44,8 @@ export default function AdminLogin() {
                 return;
             }
 
-            localStorage.setItem('token', token);
-            localStorage.setItem('userData', JSON.stringify(user));
+            // Use store action to update global state immediately
+            loginUser(user, token);
 
             const isDemoAdmin = user.email === 'demo-admin@academypro.com';
             navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
