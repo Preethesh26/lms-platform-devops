@@ -481,7 +481,7 @@ export default function CoursePlayerPage() {
                     <Button
                         variant="ghost"
                         onClick={() => navigate("/my-learning")}
-                        className="mb-4 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent opacity-60 hover:opacity-100 transition-opacity"
+                        className="mb-4 p-0 h-auto font-bold flex items-center gap-2 group hover:bg-transparent transition-opacity"
                     >
                         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                             <ArrowLeft className="h-4 w-4" />
@@ -495,7 +495,7 @@ export default function CoursePlayerPage() {
                                 v1.0.7-yt-fix
                             </span>
                         </div>
-                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl opacity-80">{course.description}</p>
+                        <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl">{course.description}</p>
                     </div>
                 </div>
             </div>
@@ -519,8 +519,8 @@ export default function CoursePlayerPage() {
                                 ) : (
                                     <>
                                         {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */}
-                                        <div className="absolute top-2 left-2 z-50 pointer-events-none opacity-50">
-                                            <span className="bg-black/50 text-white text-[8px] px-1 rounded border border-white/20">
+                                        <div className="absolute top-2 left-2 z-50 pointer-events-none">
+                                            <span className="bg-black/80 text-white text-[8px] px-1.5 py-0.5 rounded border border-white/20">
                                                 Player: {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? 'YouTube' : 'Native'}
                                             </span>
                                         </div>

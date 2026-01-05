@@ -86,7 +86,7 @@ export default function MyLearningPage() {
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
                             Hi, {currentUser.name}!
                         </h1>
-                        <p className="text-indigo-50 text-lg md:text-xl font-medium leading-relaxed opacity-90">
+                        <p className="text-indigo-50 text-lg md:text-xl font-medium leading-relaxed">
                             Your potential is limitless. You've conquered <span className="text-yellow-200 font-bold">{overallProgress}%</span> of your courses. Ready for the next challenge?
                         </p>
                     </div>
@@ -96,7 +96,7 @@ export default function MyLearningPage() {
                                 Resume Learning
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="h-12 px-8 rounded-xl border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all font-bold">
+                        <Button size="lg" variant="outline" className="h-12 px-8 rounded-xl border-white text-white hover:bg-white/10 backdrop-blur-sm transition-all font-bold">
                             View Roadmap
                         </Button>
                     </div>
