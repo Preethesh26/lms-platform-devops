@@ -125,4 +125,4 @@ The backend is hosted on **Render** as a Web Service.
 ## 📄 License
 This project is licensed under the MIT License.
 
-Developed with ❤️ by [Preethesh](https://github.com/Preethesh26)
+Developed by [Preethesh](https://github.com/Preethesh26) | [LinkedIn](https://www.linkedin.com/in/preethesh26)
