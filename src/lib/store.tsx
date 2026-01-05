@@ -96,15 +96,17 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [itemsFound, setItemsFound] = useState(true);
 
+
     // Inactivity Timer Ref
     const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
-    // Activity Listener
+    // Activity Listener - Only for admins with 2FA enabled
     useEffect(() => {
         const resetTimer = () => {
-            // Only lock if: user exists, is admin, not demo admin, not already locked, and not in demo mode
+            // Only lock if: user exists, is admin, has 2FA enabled, not demo admin, not already locked, and not in demo mode
             if (!currentUser || currentUser.role !== 'admin' || isDemoMode || isLocked) return;
             if (currentUser.email === 'demo-admin@academypro.com') return;
+            if (!currentUser.twoFactorEnabled) return; // Only lock if 2FA is enabled
 
             if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             inactivityTimer.current = setTimeout(() => {
@@ -112,19 +114,24 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             }, 10 * 60 * 1000); // 10 minutes
         };
 
-        window.addEventListener('mousemove', resetTimer);
-        window.addEventListener('keypress', resetTimer);
-        window.addEventListener('click', resetTimer);
+        // Only set up listeners if user has 2FA enabled
+        if (currentUser?.role === 'admin' && currentUser?.twoFactorEnabled && !isDemoMode) {
+            window.addEventListener('mousemove', resetTimer);
+            window.addEventListener('keypress', resetTimer);
+            window.addEventListener('click', resetTimer);
+            window.addEventListener('scroll', resetTimer);
 
-        resetTimer(); // Start timer
+            resetTimer(); // Start timer
 
-        return () => {
-            window.removeEventListener('mousemove', resetTimer);
-            window.removeEventListener('keypress', resetTimer);
-            window.removeEventListener('click', resetTimer);
-            if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
-        };
-    }, [currentUser, isLocked, isDemoMode]);
+            return () => {
+                window.removeEventListener('mousemove', resetTimer);
+                window.removeEventListener('keypress', resetTimer);
+                window.removeEventListener('click', resetTimer);
+                window.removeEventListener('scroll', resetTimer);
+                if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+            };
+        }
+    }, [currentUser?.id, currentUser?.twoFactorEnabled, isLocked, isDemoMode]);
 
     const fetchUsers = async () => {
         try {
