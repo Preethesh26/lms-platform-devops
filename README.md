@@ -1,6 +1,10 @@
 # 🎓 AcademyPro - Advanced LMS Platform
 
-AcademyPro is a modern, high-performance Learning Management System (LMS) designed for a premium student experience and powerful administrative control. Built with **React 19**, **Vite**, and **TypeScript**, it features a sophisticated state management system, seamless video integration, and a robust standalone test engine.
+AcademyPro is a modern, high-performance Learning Management System (LMS) designed for a premium student experience and powerful administrative control. This project was built to understand how a complex, full-stack application works from the ground up, integrating front-end state management, back-end API logic, and automated services.
+
+### 🌐 Live Demo
+Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
+*Feel free to explore the features as a student or admin.*
 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
