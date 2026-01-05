@@ -41,6 +41,7 @@ interface StoreContextType {
     users: User[];
     currentUser: User | null;
     isInitialized: boolean;
+    isDemoMode: boolean;
     error: string | null;
     quizzes: any[];
     addCourse: (course: Omit<Course, "id">) => Promise<void>;
@@ -67,6 +68,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [courses, setCourses] = useState<Course[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [isDemoMode, setIsDemoMode] = useState(false);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [quizzes, setQuizzes] = useState<any[]>([]);
@@ -139,6 +141,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
             if (isDemoUser) {
                 finalCourses = MOCK_COURSES;
+                setIsDemoMode(true);
+            } else {
+                setIsDemoMode(false);
             }
 
             setCourses(finalCourses);
@@ -158,13 +163,17 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                     const userData = JSON.parse(userDataString);
                     if (userData.email === 'demo-admin@academypro.com' || userData.email === 'student@example.com') {
                         setCourses(MOCK_COURSES as any);
+                        setIsDemoMode(true);
                         if (userData.role === 'admin') {
                             setUsers(MOCK_USERS as any);
                         }
+                    } else {
+                        setIsDemoMode(false);
                     }
                 }
             } catch (e) {
                 // Ignore parsing errors
+                setIsDemoMode(false);
             }
 
             setIsInitialized(true);
@@ -264,6 +273,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('userData');
         setCurrentUser(null);
         setUsers([]);
+        setIsDemoMode(false);
         setIsInitialized(true);
     };
 
@@ -285,7 +295,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <StoreContext.Provider value={{
-            courses, users, currentUser, isInitialized, error, quizzes,
+            courses, users, currentUser, isInitialized, isDemoMode, error, quizzes,
             addCourse, updateCourse, deleteCourse, addUser, updateUser, deleteUser,
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
             fetchQuizzes, createQuiz, submitQuiz,

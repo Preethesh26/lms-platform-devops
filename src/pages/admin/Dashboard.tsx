@@ -9,8 +9,9 @@ import { Plus, Users, BookOpen, GraduationCap, ArrowUpRight } from "lucide-react
 import { Link } from "react-router-dom";
 
 export default function AdminDashboardPage() {
-    const { currentUser } = useStore();
+    const { currentUser, isDemoMode } = useStore();
     const token = localStorage.getItem('token');
+    const currentPrefix = isDemoMode ? '/demo' : '/admin';
     const [stats, setStats] = useState(null);
     const [chartsData, setChartsData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const fetchAnalytics = async () => {
             // Check for demo admin - Use mock data instead of real API
-            if (currentUser?.email === 'demo-admin@academypro.com') {
+            if (isDemoMode) {
                 setStats(MOCK_STATS as any);
                 setChartsData(MOCK_CHARTS as any);
                 setLoading(false);
@@ -80,7 +81,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <Link to="/admin/courses">
+                    <Link to={`${currentPrefix}/courses`}>
                         <Button className="rounded-2xl h-14 px-8 font-black shadow-xl shadow-primary/20 gap-2">
                             <Plus className="w-5 h-5" />
                             Create Course

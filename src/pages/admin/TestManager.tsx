@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, FileText, Users, CheckCircle, Clock, Loader2, Edit } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
-
+import { useStore } from '@/lib/store';
 export default function TestManager() {
+    const { isDemoMode } = useStore();
     const [tests, setTests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -117,7 +118,7 @@ export default function TestManager() {
                     <h2 className="text-3xl font-bold tracking-tight">Test Management</h2>
                     <p className="text-muted-foreground">Create and manage standalone tests</p>
                 </div>
-                <Link to="/admin/tests/create">
+                <Link to={`${isDemoMode ? '/demo' : '/admin'}/tests/create`}>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Create Test
@@ -130,7 +131,7 @@ export default function TestManager() {
                     <FileText className="h-10 w-10 mb-4 opacity-50" />
                     <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">No Tests Created</h3>
                     <p className="mb-6 max-w-sm mx-auto">Get started by creating your first standalone test assessment.</p>
-                    <Link to="/admin/tests/create">
+                    <Link to={`${isDemoMode ? '/demo' : '/admin'}/tests/create`}>
                         <Button className="rounded-xl font-bold px-6 shadow-lg shadow-primary/20">Create Test</Button>
                     </Link>
                 </div>
@@ -182,7 +183,7 @@ export default function TestManager() {
 
                                 <div className="space-y-2">
                                     <div className="grid grid-cols-2 gap-2">
-                                        <Link to={`/admin/tests/${test._id}/invitations`} className="col-span-2">
+                                        <Link to={`${isDemoMode ? '/demo' : '/admin'}/tests/${test._id}/invitations`} className="col-span-2">
                                             <Button variant="outline" size="sm" className="w-full rounded-xl font-bold">
                                                 <Users className="h-3.5 w-3.5 mr-2" />
                                                 Invitations
@@ -198,7 +199,7 @@ export default function TestManager() {
                                             <FileText className="h-3.5 w-3.5 mr-1.5" />
                                             Export
                                         </Button>
-                                        <Link to={`/admin/tests/${test._id}/edit`}>
+                                        <Link to={`${isDemoMode ? '/demo' : '/admin'}/tests/${test._id}/edit`}>
                                             <Button
                                                 variant="outline"
                                                 size="sm"

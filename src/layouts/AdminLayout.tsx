@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { currentUser, logoutUser, isInitialized } = useStore();
+    const { currentUser, logoutUser, isInitialized, isDemoMode } = useStore();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Close sidebar on mobile when route changes
@@ -30,18 +30,17 @@ export default function AdminLayout() {
     // If not admin (and waiting for redirect), don't render content
     if (!currentUser || currentUser.role !== 'admin') return null;
 
-    const isDemoUser = currentUser.email === 'demo-admin@academypro.com';
-    const currentPrefix = isDemoUser ? '/demo' : '/admin';
+    const currentPrefix = isDemoMode ? '/demo' : '/admin';
 
     // Redirection Logic: Ensure user is on the correct prefix
     useEffect(() => {
         const path = location.pathname;
-        if (isDemoUser && path.startsWith('/admin/')) {
+        if (isDemoMode && path.startsWith('/admin/')) {
             navigate(path.replace('/admin/', '/demo/'));
-        } else if (!isDemoUser && path.startsWith('/demo/')) {
+        } else if (!isDemoMode && path.startsWith('/demo/')) {
             navigate(path.replace('/demo/', '/admin/'));
         }
-    }, [location.pathname, isDemoUser, navigate]);
+    }, [location.pathname, isDemoMode, navigate]);
 
     const navItems = [
         { to: `${currentPrefix}/dashboard`, label: "Dashboard", icon: LayoutDashboard, category: "Analytics" },
@@ -167,7 +166,7 @@ export default function AdminLayout() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3 md:gap-4">
-                        {currentUser?.email === 'demo-admin@academypro.com' && (
+                        {isDemoMode && (
                             <div className="hidden lg:flex items-center gap-2 bg-amber-500/10 text-amber-500 px-4 py-2 rounded-xl border border-amber-500/20 shadow-sm animate-pulse">
                                 <Monitor className="w-4 h-4" />
                                 <span className="text-[10px] font-black uppercase tracking-tighter">Read-Only Demo Terminal</span>
@@ -184,7 +183,7 @@ export default function AdminLayout() {
                         </div>
                     </div>
                 </header>
-                {currentUser?.email === 'demo-admin@academypro.com' && (
+                {isDemoMode && (
                     <div className="bg-amber-500 text-white px-8 py-1.5 text-center text-[10px] font-black uppercase tracking-[0.2em] shadow-lg relative z-10">
                         ⚠️ Preview Environment: Changes will not be saved to protect live data.
                     </div>

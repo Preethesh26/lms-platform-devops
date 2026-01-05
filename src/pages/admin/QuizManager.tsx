@@ -6,7 +6,7 @@ import { Plus, BookOpen, Clock, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function QuizManager() {
-    const { quizzes, fetchQuizzes, isInitialized } = useStore();
+    const { quizzes, fetchQuizzes, isInitialized, isDemoMode } = useStore();
 
     useEffect(() => {
         if (isInitialized) {
@@ -30,7 +30,7 @@ export default function QuizManager() {
                     <h2 className="text-3xl font-bold tracking-tight">Quiz Management</h2>
                     <p className="text-muted-foreground">Create and manage your quizzes here</p>
                 </div>
-                <Link to="/admin/quizzes/create">
+                <Link to={`${isDemoMode ? '/demo' : '/admin'}/quizzes/create`}>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Create Quiz
@@ -43,7 +43,7 @@ export default function QuizManager() {
                     <BookOpen className="h-10 w-10 mb-4 opacity-50" />
                     <h3 className="text-lg font-semibold mb-2">No Quizzes Created</h3>
                     <p className="mb-4">Get started by creating your first quiz.</p>
-                    <Link to="/admin/quizzes/create">
+                    <Link to={`${isDemoMode ? '/demo' : '/admin'}/quizzes/create`}>
                         <Button variant="outline">Create Quiz</Button>
                     </Link>
                 </div>

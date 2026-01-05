@@ -61,7 +61,8 @@ export default function UserLogin() {
             if (redirectTo) {
                 navigate(redirectTo);
             } else if (user.role === 'admin') {
-                navigate("/admin/dashboard");
+                const isDemoAdmin = user.email === 'demo-admin@academypro.com';
+                navigate(isDemoAdmin ? "/demo/dashboard" : "/admin/dashboard");
             } else {
                 navigate("/welcome");
             }
