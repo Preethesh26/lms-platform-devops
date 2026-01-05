@@ -18,7 +18,8 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const fetchAnalytics = async () => {
             try {
-                setLoading(true);
+                // Only show loading on initial fetch
+                if (!stats) setLoading(true);
                 const headers = { Authorization: `Bearer ${token}` };
 
                 const [statsRes, growthRes] = await Promise.all([
@@ -38,8 +39,12 @@ export default function AdminDashboardPage() {
 
         if (token) {
             fetchAnalytics();
+
+            // Automatic refresh every 30 seconds
+            const interval = setInterval(fetchAnalytics, 30000);
+            return () => clearInterval(interval);
         }
-    }, [token]);
+    }, [token, stats]);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
