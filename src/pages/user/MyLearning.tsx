@@ -96,9 +96,7 @@ export default function MyLearningPage() {
                                 Resume Learning
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="h-12 px-8 rounded-xl border-white text-white hover:bg-white/10 backdrop-blur-sm transition-all font-bold">
-                            View Roadmap
-                        </Button>
+
                     </div>
                 </div>
             </div>
