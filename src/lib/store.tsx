@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI } from "./api";
+import { MOCK_COURSES, MOCK_USERS } from "./mockData";
 
 export type Lesson = {
     id: string;
@@ -76,6 +77,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             setUsers(usersRes.data.data || []);
             setError(null);
         } catch (err: any) {
+            const userData = localStorage.getItem('userData');
+            if (userData && JSON.parse(userData).email === 'demo-admin@academypro.com') {
+                setUsers(MOCK_USERS as any);
+                setError(null);
+                return;
+            }
             console.error('Error fetching users:', err);
             setError(err.response?.data?.message || 'Failed to fetch users');
         }
@@ -104,15 +111,39 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             }
 
             const coursesRes = await coursesAPI.getAll();
-            setCourses(coursesRes.data.data || []);
+            let finalCourses = coursesRes.data.data || [];
 
-            if (userRole === 'admin') {
+            // --- Mock Data Injection for Demo ---
+            const userDataString = localStorage.getItem('userData');
+            const isDemoUser = userDataString && (
+                JSON.parse(userDataString).email === 'demo-admin@academypro.com' ||
+                JSON.parse(userDataString).email === 'student@example.com'
+            );
+
+            if (isDemoUser) {
+                finalCourses = MOCK_COURSES;
+                if (userRole === 'admin') {
+                    setUsers(MOCK_USERS as any);
+                }
+            }
+
+            setCourses(finalCourses);
+
+            if (userRole === 'admin' && !isDemoUser) {
                 await fetchUsers();
             }
 
             setIsInitialized(true);
         } catch (error) {
             console.error('Error fetching data:', error);
+
+            // Fail-safe for demo mode even on network error
+            const userDataString = localStorage.getItem('userData');
+            if (userDataString && (JSON.parse(userDataString).email === 'demo-admin@academypro.com')) {
+                setCourses(MOCK_COURSES as any);
+                setUsers(MOCK_USERS as any);
+            }
+
             setIsInitialized(true);
         }
     };

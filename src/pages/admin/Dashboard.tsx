@@ -3,6 +3,7 @@ import { DashboardStats } from "@/components/admin/DashboardStats";
 import { AnalyticsCharts } from "@/components/admin/AnalyticsCharts";
 import axios from "axios";
 import { useStore } from "@/lib/store";
+import { MOCK_STATS, MOCK_CHARTS } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, BookOpen, GraduationCap, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -17,6 +18,14 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         const fetchAnalytics = async () => {
+            // Check for demo admin - Use mock data instead of real API
+            if (currentUser?.email === 'demo-admin@academypro.com') {
+                setStats(MOCK_STATS as any);
+                setChartsData(MOCK_CHARTS as any);
+                setLoading(false);
+                return;
+            }
+
             try {
                 // Only show loading on initial fetch
                 if (!stats) setLoading(true);
