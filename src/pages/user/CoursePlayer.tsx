@@ -29,8 +29,6 @@ type ProgressState = {
 };
 
 export default function CoursePlayerPage() {
-    // Deployment Marker: v1.0.8-yt-iframe
-    console.log("CoursePlayerPage Version: 1.0.8-yt-iframe (Iframe Fallback)");
     const params = useParams();
     const navigate = useNavigate();
     const { courses, isInitialized, currentUser, createOrder, verifyPayment } = useStore();
@@ -498,9 +496,6 @@ export default function CoursePlayerPage() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
-                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">
-                                v1.0.8-yt-iframe
-                            </span>
                         </div>
                         <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl">{course.description}</p>
                     </div>
@@ -526,11 +521,6 @@ export default function CoursePlayerPage() {
                                 ) : (
                                     <>
                                         {/* Hybrid Player: YouTube needs Iframe/ReactPlayer, R2 Files need Native Player */}
-                                        <div className="absolute top-2 left-2 z-50 pointer-events-none">
-                                            <span className="bg-black text-white text-[10px] px-2 py-1 rounded-md border border-white/40 shadow-xl font-black">
-                                                Player: {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? 'YouTube (Iframe)' : 'Native'}
-                                            </span>
-                                        </div>
                                         {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
                                             <div className="w-full h-full bg-black">
                                                 <iframe
