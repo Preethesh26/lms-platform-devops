@@ -100,13 +100,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     // Inactivity Timer Ref
     const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
-    // Activity Listener - Only for admins with 2FA enabled
+    // Activity Listener - For all real admins (not demo)
     useEffect(() => {
         const resetTimer = () => {
-            // Only lock if: user exists, is admin, has 2FA enabled, not demo admin, not already locked, and not in demo mode
+            // Only lock if: user exists, is admin, not demo admin, not already locked, and not in demo mode
             if (!currentUser || currentUser.role !== 'admin' || isDemoMode || isLocked) return;
             if (currentUser.email === 'demo-admin@academypro.com') return;
-            if (!currentUser.twoFactorEnabled) return; // Only lock if 2FA is enabled
 
             if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             inactivityTimer.current = setTimeout(() => {
@@ -114,8 +113,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             }, 10 * 60 * 1000); // 10 minutes
         };
 
-        // Only set up listeners if user has 2FA enabled
-        if (currentUser?.role === 'admin' && currentUser?.twoFactorEnabled && !isDemoMode) {
+        // Set up listeners for all real admins
+        if (currentUser?.role === 'admin' && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
             window.addEventListener('mousemove', resetTimer);
             window.addEventListener('keypress', resetTimer);
             window.addEventListener('click', resetTimer);
@@ -131,7 +130,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             };
         }
-    }, [currentUser?.id, currentUser?.twoFactorEnabled, isLocked, isDemoMode]);
+    }, [currentUser?.id, isLocked, isDemoMode]);
 
     const fetchUsers = async () => {
         try {
