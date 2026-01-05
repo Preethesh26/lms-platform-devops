@@ -1,40 +1,54 @@
 # 🎓 AcademyPro - Advanced LMS Platform
 
-AcademyPro is a modern, high-performance Learning Management System (LMS) designed for a premium student experience and powerful administrative control. Built with **React 19**, **Vite**, and **TypeScript**, it features a sophisticated state management system and seamless video integration.
+AcademyPro is a modern, high-performance Learning Management System (LMS) designed for a premium student experience and powerful administrative control. Built with **React 19**, **Vite**, and **TypeScript**, it features a sophisticated state management system, seamless video integration, and a robust standalone test engine.
 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Tech](https://img.shields.io/badge/stack-React%2019%20%7C%20Vite%20%7C%20TS-blue)
+![Tech](https://img.shields.io/badge/stack-React%2019%20%7C%20Vite%20%7C%20Node.js-blue)
 
 ---
 
-## 🚀 Core Features
+## 🚀 Key Features
 
 ### 👨‍🎓 Student Portal
 - **Intelligent Dashboard**: Track course progress, daily streaks, and completion rates.
 - **Hybrid Video Player**: Smooth playback of both YouTube (Iframe API) and self-hosted videos with position memory.
-- **Global Data Sync**: Automatic background synchronization every 30 seconds.
+- **Global Data Sync**: Automatic background synchronization every 30 seconds ensures you never miss an update.
 - **Interactive Quizzes**: Take assessments directly within the course player.
-- **Progress Tracking**: Automatic check-offs for completed lessons.
-- **Dark/Light Mode**: Premium glassmorphism design that adapts to user preference.
+- **Progress Tracking**: Automatic check-offs for completed lessons and course certificates.
 
-### 🔐 Admin Panel
-- **Real-time Analytics**: Visual insights into revenue growth and student engagement using Recharts.
-- **Course Management**: Full CRUD for courses, modules, and lessons.
-- **User Orchestration**: Manage student enrollments, status, and credentials.
-- **Support Inbox**: Integrated ticketing system for direct student interaction.
-- **Quiz Builder**: Create and manage multiple-choice assessments linked to lessons.
+### 📝 Standalone Test Engine (Aptitude & Exams)
+AcademyPro includes a powerful standalone test hosting system, ideal for recruitment, skill assessments, or entrance exams.
+- **Ad-hoc Invitations**: Invite users via email with unique access links.
+- **Advanced Configuration**: Set time limits, passing scores, and strict deadlines.
+- **Auto-Grading**: Instant calculation of results and pass/fail status.
+- **Anti-Cheat**: One-time attempt enforcement at the database level.
+- **Real-time Analytics**: Admins can track invited vs. completed attempts and individual performance.
+
+### 🔐 Admin Orchestration
+- **Strategic Insights**: Real-time analytics for revenue and student engagement using Recharts.
+- **Content Management**: Advanced CRUD for courses, modules, lessons, and assignments.
+- **AI-Powered Tools**: Integrated AI for lesson summaries and quiz generation.
+- **Support System**: Full support ticket workflow with automated status update notifications.
+
+---
+
+## 📧 Automated Notifications (Brevo Integration)
+The platform features a comprehensive notification system powered by **Brevo (formerly Sendinblue)**:
+- **Welcome Credentials**: Automated emails to new students with login details.
+- **Test Invitations**: Branded invitations for standalone exams with secure link access.
+- **Support Updates**: Real-time status notifications for support requests.
+- **Security**: Secure OTP-less password reset workflows via verified email tokens.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React 19, Vite, TypeScript
-- **Styling**: Tailwind CSS 4, Radix UI, Lucide Icons
-- **State Management**: React Context + Custom Hook pattern (Global Sync)
-- **Networking**: Axios with centralized API configuration
-- **Visualization**: Recharts for administrative analytics
-- **Notifications**: Sonner for toast management
+- **Frontend**: React 19, Vite, TypeScript, Tailwind CSS 4, Radix UI
+- **Backend**: Node.js, Express, MongoDB
+- **Email Service**: Brevo (Sendinblue API V3)
+- **State Management**: React Context + Custom Hook pattern (Global Synchronization)
+- **Deployment**: Vercel (Frontend), Render (Backend)
 
 ---
 
@@ -42,48 +56,57 @@ AcademyPro is a modern, high-performance Learning Management System (LMS) design
 
 ### Prerequisites
 - Node.js (v18 or higher)
-- npm or yarn
+- MongoDB account (Atlas)
+- Brevo API Key
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone & Install**
    ```bash
    git clone https://github.com/Preethesh26/lms-platform.git
-   cd lms-platform
-   ```
-
-2. **Install dependencies**
-   ```bash
    npm install
    ```
 
-3. **Environment Setup**
-   Create a `.env` file in the root directory and add the following:
+2. **Environment Configuration**
+   Create a `.env` in the root (frontend) and `backend/` directories.
+   
+   **Root `.env` (Frontend):**
    ```env
-   VITE_API_URL=your_backend_api_url
-   VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
-   VITE_RAZORPAY_KEY=your_razorpay_key
+   VITE_API_URL=https://your-backend-url.onrender.com/api
    ```
 
-4. **Start the development server**
+   **Backend `.env`:**
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   BREVO_API_KEY=your_brevo_api_key
+   ```
+
+3. **Execution**
    ```bash
+   # Development
    npm run dev
+
+   # Backend (from backend directory)
+   npm start
    ```
 
 ---
 
-## 🏗 Build & Deployment
+## 🌐 Deployment Logic
 
-To generate a production-ready build:
-```bash
-npm run build
-```
+### **Frontend (Vercel)**
+The frontend is optimized for **Vercel**. It uses the Vite preset and connects to the backend via the `VITE_API_URL` environment variable.
 
-The output will be in the `dist/` folder, which can be deployed to Vercel, Netlify, or any static hosting service.
+### **Backend (Render)**
+The backend is hosted on **Render** as a Web Service.
+- **Node Runtime**: Optimized for Render's environment.
+- **CORS Management**: Dynamically handles requests from the Vercel frontend.
+- **Continuous Deployment**: Automatically redeploys on every push to the `main` branch.
 
 ---
 
 ## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 Developed with ❤️ by [Preethesh](https://github.com/Preethesh26)
