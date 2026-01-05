@@ -492,7 +492,7 @@ export default function CoursePlayerPage() {
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight">{course.title}</h1>
                             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full border border-primary/20">
-                                v1.0.5-live
+                                v1.0.7-yt-fix
                             </span>
                         </div>
                         <p className="text-muted-foreground font-medium text-sm md:text-sm leading-relaxed max-w-3xl opacity-80">{course.description}</p>
@@ -519,6 +519,11 @@ export default function CoursePlayerPage() {
                                 ) : (
                                     <>
                                         {/* Hybrid Player: YouTube needs ReactPlayer, R2 Files need Native Player */}
+                                        <div className="absolute top-2 left-2 z-50 pointer-events-none opacity-50">
+                                            <span className="bg-black/50 text-white text-[8px] px-1 rounded border border-white/20">
+                                                Player: {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? 'YouTube' : 'Native'}
+                                            </span>
+                                        </div>
                                         {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
                                             <ReactPlayerAny
                                                 key={`yt-${activeLesson.id}`}
@@ -534,7 +539,7 @@ export default function CoursePlayerPage() {
                                                 onReady={handleReady}
                                                 config={{
                                                     youtube: {
-                                                        playerVars: { showinfo: 1 }
+                                                        playerVars: { autoplay: 0 }
                                                     }
                                                 }}
                                             />
