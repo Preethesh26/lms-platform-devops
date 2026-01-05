@@ -114,7 +114,10 @@ export default function AdminLayout() {
                         </div>
                     ))}
 
-                    <div className="mt-auto space-y-4 pt-6 border-t border-slate-800">
+                </nav>
+
+                <div className="p-6 border-t border-slate-800 bg-slate-900/50">
+                    <div className="space-y-4">
                         <Link to="/">
                             <Button variant="ghost" className="w-full justify-start h-11 rounded-xl font-bold text-xs text-slate-400 hover:bg-white/5 gap-3">
                                 <Monitor className="h-4 w-4" />
@@ -144,7 +147,7 @@ export default function AdminLayout() {
                             </div>
                         </div>
                     </div>
-                </nav>
+                </div>
             </aside>
 
             {/* Main Content */}
