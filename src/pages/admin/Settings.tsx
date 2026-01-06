@@ -4,16 +4,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Loader2, Save, ShieldCheck, Lock, CheckCircle2 } from 'lucide-react';
+import { Loader2, Save, ShieldCheck, Lock, CheckCircle2, Construction, Megaphone } from 'lucide-react';
 import { settingsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Settings() {
     const { currentUser, setup2FA, enable2FA, disable2FA } = useStore();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({
-        showTakeTestButton: false
+        showTakeTestButton: false,
+        maintenanceMode: false,
+        maintenanceMessage: 'We are currently updating the platform. Please check back soon.',
+        announcementEnabled: false,
+        announcementText: '',
+        announcementType: 'info'
     });
 
     // 2FA Setup State
@@ -142,6 +149,143 @@ export default function Settings() {
                                 onCheckedChange={(checked: boolean) => setSettings({ ...settings, showTakeTestButton: checked })}
                             />
                         </div>
+                    </CardContent>
+                    <CardFooter className="border-t px-6 py-4">
+                        <Button onClick={handleSave} disabled={saving} className="ml-auto flex items-center gap-2">
+                            {saving ? (
+                                <>
+                                    <Loader2 className="animate-spin h-4 w-4" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    Save Changes
+                                </>
+                            )}
+                        </Button>
+                    </CardFooter>
+                </Card>
+
+                {/* Access Control Card */}
+                <Card className="border-amber-500/20 shadow-sm">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Construction className="h-5 w-5 text-amber-600" />
+                            <CardTitle>Access Control</CardTitle>
+                        </div>
+                        <CardDescription>Manage platform accessibility and maintenance</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between space-x-2">
+                            <div className="space-y-1">
+                                <Label htmlFor="maintenanceMode" className="text-base font-medium">
+                                    Maintenance Mode
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Lock the platform for all users except admins. Displays a maintenance page with a custom message.
+                                </p>
+                            </div>
+                            <Switch
+                                id="maintenanceMode"
+                                checked={settings.maintenanceMode}
+                                onCheckedChange={(checked: boolean) => setSettings({ ...settings, maintenanceMode: checked })}
+                            />
+                        </div>
+
+                        {settings.maintenanceMode && (
+                            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300 pl-4 border-l-2 border-amber-200">
+                                <Label htmlFor="maintenanceMessage" className="text-sm font-medium">
+                                    Maintenance Message
+                                </Label>
+                                <Textarea
+                                    id="maintenanceMessage"
+                                    value={settings.maintenanceMessage}
+                                    onChange={(e) => setSettings({ ...settings, maintenanceMessage: e.target.value })}
+                                    placeholder="Enter the message to display during maintenance..."
+                                    className="min-h-[80px]"
+                                />
+                            </div>
+                        )}
+                    </CardContent>
+                    <CardFooter className="border-t px-6 py-4">
+                        <Button onClick={handleSave} disabled={saving} className="ml-auto flex items-center gap-2">
+                            {saving ? (
+                                <>
+                                    <Loader2 className="animate-spin h-4 w-4" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    Save Changes
+                                </>
+                            )}
+                        </Button>
+                    </CardFooter>
+                </Card>
+
+                {/* Announcement Bar Card */}
+                <Card className="border-blue-500/20 shadow-sm">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <Megaphone className="h-5 w-5 text-blue-600" />
+                            <CardTitle>Announcement Bar</CardTitle>
+                        </div>
+                        <CardDescription>Display important messages to all users</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between space-x-2">
+                            <div className="space-y-1">
+                                <Label htmlFor="announcementEnabled" className="text-base font-medium">
+                                    Show Announcement
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Display a banner at the top of the page for all users.
+                                </p>
+                            </div>
+                            <Switch
+                                id="announcementEnabled"
+                                checked={settings.announcementEnabled}
+                                onCheckedChange={(checked: boolean) => setSettings({ ...settings, announcementEnabled: checked })}
+                            />
+                        </div>
+
+                        {settings.announcementEnabled && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 pl-4 border-l-2 border-blue-200">
+                                <div className="space-y-2">
+                                    <Label htmlFor="announcementText" className="text-sm font-medium">
+                                        Announcement Text
+                                    </Label>
+                                    <Input
+                                        id="announcementText"
+                                        value={settings.announcementText}
+                                        onChange={(e) => setSettings({ ...settings, announcementText: e.target.value })}
+                                        placeholder="Enter your announcement message..."
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="announcementType" className="text-sm font-medium">
+                                        Banner Type
+                                    </Label>
+                                    <Select
+                                        value={settings.announcementType}
+                                        onValueChange={(value) => setSettings({ ...settings, announcementType: value })}
+                                    >
+                                        <SelectTrigger id="announcementType">
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="info">Info (Blue)</SelectItem>
+                                            <SelectItem value="success">Success (Green)</SelectItem>
+                                            <SelectItem value="warning">Warning (Amber)</SelectItem>
+                                            <SelectItem value="critical">Critical (Red)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                     <CardFooter className="border-t px-6 py-4">
                         <Button onClick={handleSave} disabled={saving} className="ml-auto flex items-center gap-2">

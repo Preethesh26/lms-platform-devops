@@ -4,9 +4,10 @@ import { Menu, X, Home, BookOpen, LayoutDashboard, UserCircle, LogOut, ChevronRi
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
 
 export default function UserLayout() {
-    const { currentUser, logoutUser, isDemoMode } = useStore();
+    const { currentUser, logoutUser, isDemoMode, settings } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,6 +19,18 @@ export default function UserLayout() {
         setIsMenuOpen(false);
     }, [location.pathname]);
 
+    // Maintenance Mode Redirect
+    useEffect(() => {
+        if (settings?.maintenanceMode &&
+            currentUser?.role !== 'admin' &&
+            location.pathname !== '/maintenance' &&
+            location.pathname !== '/login' &&
+            location.pathname !== '/signup' &&
+            !location.pathname.startsWith('/admin')) {
+            navigate("/maintenance");
+        }
+    }, [settings, currentUser, location, navigate]);
+
     const handleLogout = () => {
         logoutUser();
         navigate("/login");
@@ -25,6 +38,7 @@ export default function UserLayout() {
 
     return (
         <div className="min-h-screen flex flex-col bg-background selection:bg-primary selection:text-white">
+            <AnnouncementBar />
             <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md shadow-sm">
                 <div className="container flex h-16 items-center justify-between mx-auto px-4">
                     <div className="flex items-center gap-4">

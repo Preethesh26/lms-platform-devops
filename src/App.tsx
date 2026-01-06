@@ -25,6 +25,7 @@ import Settings from "./pages/admin/Settings";
 import SupportInbox from "@/pages/admin/SupportInbox";
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
+import MaintenancePage from './pages/Maintenance';
 import NotFound from './pages/NotFound';
 
 // Layouts
@@ -40,6 +41,7 @@ function App() {
             <ThemeProvider defaultTheme="dark" storageKey="academypro-theme">
                 <Router>
                     <Routes>
+                        <Route path="/maintenance" element={<MaintenancePage />} />
                         {/* User Routes */}
                         <Route element={<UserLayout />}>
                             <Route path="/" element={<UserHomePage />} />

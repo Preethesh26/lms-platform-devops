@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
-import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI } from "./api";
+import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI, settingsAPI } from "./api";
 import { MOCK_COURSES, MOCK_USERS, MOCK_QUIZZES, MOCK_TICKETS, MOCK_TESTS } from "./mockData";
 
 export type Lesson = {
@@ -75,6 +75,7 @@ interface StoreContextType {
     registerUser: (userData: any) => Promise<void>;
     searchCourses: (query: string) => void;
     clearSearch: () => void;
+    settings: any;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -95,6 +96,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [quizzes, setQuizzes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [itemsFound, setItemsFound] = useState(true);
+    const [settings, setSettings] = useState<any>({});
 
 
     // Inactivity Timer Ref
@@ -178,8 +180,15 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 setCurrentUser(null);
             }
 
-            const coursesRes = await coursesAPI.getAll();
+            const [coursesRes, settingsRes] = await Promise.all([
+                coursesAPI.getAll(),
+                settingsAPI.getAll().catch(() => ({ data: { success: false, data: {} } }))
+            ]);
             let finalCourses = coursesRes.data.data || [];
+
+            if (settingsRes.data?.success) {
+                setSettings(settingsRes.data.data);
+            }
 
             // --- Mock Data Injection for Demo ---
             let isDemoUser = false;
@@ -479,7 +488,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             fetchQuizzes, createQuiz, submitQuiz,
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
-            unlockSession, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA
+            unlockSession, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
+            settings
         }}>
             {children}
         </StoreContext.Provider>
