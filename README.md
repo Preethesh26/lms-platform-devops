@@ -46,6 +46,12 @@ AcademyPro includes a powerful standalone test hosting system, ideal for recruit
 - **Content Management**: Advanced CRUD for courses, modules, lessons, and assignments.
 - **AI-Powered Tools**: Integrated AI for lesson summaries and quiz generation.
 - **Support System**: Full support ticket workflow with automated status update notifications.
+- **Account Resolver (Impersonation)**: High-privilege terminal for Admins and Super Admins to instantly synchronize a session with any student's account.
+  - Enables direct issue resolution without requiring user passwords.
+  - Role-based security: Admins can only resolve students; Super Admins have master access.
+- **Duplicate Data Prevention**: Intelligent backend validation to prevent accidental redundancy.
+  - Enforces uniqueness for enrollment IDs, emails, course titles, and test IDs.
+  - Real-time frontend toast notifications with specific error feedback.
 
 ### 🛡️ Enterprise Security (Admin Protection)
 AcademyPro implements military-grade security for administrative accounts:
