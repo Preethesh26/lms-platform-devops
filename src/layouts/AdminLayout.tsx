@@ -26,10 +26,21 @@ export default function AdminLayout() {
         }
     }, [currentUser, isInitialized, navigate, location.pathname]);
 
-    if (!isInitialized) return null;
+    if (!isInitialized) return (
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                <p className="text-slate-500 font-medium animate-pulse">Initializing AcademyPro...</p>
+            </div>
+        </div>
+    );
 
     // If not admin (and waiting for redirect), don't render content
-    if (!currentUser || currentUser.role !== 'admin') return null;
+    if (!currentUser || currentUser.role !== 'admin') return (
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+            <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+        </div>
+    );
 
     const currentPrefix = isDemoMode ? '/demo' : '/admin';
 

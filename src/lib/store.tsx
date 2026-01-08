@@ -103,11 +103,33 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
     // Activity Listener - For all real admins (not demo)
+    // Activity Listener - For all real admins (not demo)
     useEffect(() => {
+        // Initialize state from local storage
+        if (currentUser?.role === 'admin' && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
+            const lastActive = localStorage.getItem('admin_last_active');
+            if (lastActive) {
+                const timeDiff = Date.now() - parseInt(lastActive);
+                if (timeDiff > 10 * 60 * 1000) { // 10 minutes
+                    setIsLocked(true);
+                }
+            } else {
+                localStorage.setItem('admin_last_active', Date.now().toString());
+            }
+        }
+
         const resetTimer = () => {
             // Only lock if: user exists, is admin, not demo admin, not already locked, and not in demo mode
             if (!currentUser || currentUser.role !== 'admin' || isDemoMode || isLocked) return;
             if (currentUser.email === 'demo-admin@academypro.com') return;
+
+            // Debounce the storage update to max once per second
+            const now = Date.now();
+            const lastRecorded = parseInt(localStorage.getItem('admin_last_active') || '0');
+
+            if (now - lastRecorded > 1000) {
+                localStorage.setItem('admin_last_active', now.toString());
+            }
 
             if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             inactivityTimer.current = setTimeout(() => {
@@ -427,6 +449,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                     localStorage.setItem('userData', JSON.stringify(updatedUser));
                 }
                 await fetchData();
+                // Reset activity timer
+                localStorage.setItem('admin_last_active', Date.now().toString());
                 return true;
             }
             return false;
