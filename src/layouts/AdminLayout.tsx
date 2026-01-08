@@ -74,7 +74,7 @@ export default function AdminLayout() {
     ];
 
     return (
-        <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        <div className="h-screen flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
             <InactivityLock />
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
@@ -86,7 +86,7 @@ export default function AdminLayout() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 dark:bg-slate-900 text-white shadow-2xl transition-transform duration-300 md:relative md:translate-x-0 md:shadow-none md:z-auto flex flex-col
+                fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 dark:bg-slate-900 text-white shadow-2xl transition-transform duration-300 md:relative md:translate-x-0 md:shadow-none md:z-auto flex flex-col h-screen md:h-full
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 <div className="flex h-20 items-center px-8">

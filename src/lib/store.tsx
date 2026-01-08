@@ -46,11 +46,6 @@ interface StoreContextType {
     isLocked: boolean;
     tempToken: string | null;
     requires2FA: boolean;
-    unlockSession: (token: string) => void;
-    verify2FA: (token: string) => Promise<boolean>;
-    setup2FA: () => Promise<any>;
-    enable2FA: (token: string) => Promise<boolean>;
-    disable2FA: (password: string) => Promise<boolean>;
     setRequires2FA: (required: boolean, tempToken: string | null) => void;
     error: string | null;
     quizzes: any[];
@@ -68,6 +63,10 @@ interface StoreContextType {
     logoutUser: () => void;
     unlockSession: (token: string) => Promise<boolean>;
     masterUnlock: (email: string, token: string) => Promise<boolean>;
+    verify2FA: (token: string) => Promise<boolean>;
+    setup2FA: () => Promise<any>;
+    enable2FA: (token: string) => Promise<boolean>;
+    disable2FA: (password: string) => Promise<boolean>;
     fetchQuizzes: () => Promise<void>;
     createQuiz: (quizData: any) => Promise<any>;
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
