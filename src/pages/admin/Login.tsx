@@ -37,8 +37,8 @@ export default function AdminLogin() {
 
             const { token, user } = response.data;
 
-            // Check if user is admin
-            if (user.role !== 'admin') {
+            // Check if user is admin or superadmin
+            if (user.role !== 'admin' && user.role !== 'superadmin') {
                 setError("You don't have admin access.");
                 setLoading(false);
                 return;

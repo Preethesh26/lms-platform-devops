@@ -30,7 +30,7 @@ export type User = {
     name: string;
     enrollment: string;
     email: string;
-    role: "admin" | "user";
+    role: "admin" | "user" | "superadmin";
     enrolledCourses: string[];
     password?: string;
     needsPasswordReset?: boolean;
@@ -121,6 +121,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         const resetTimer = () => {
             // Only lock if: user exists, is admin, HAS 2FA ENABLED, not demo admin, not already locked, and not in demo mode
             if (!currentUser || currentUser.role !== 'admin' || !currentUser.twoFactorEnabled || isDemoMode || isLocked) return;
+            // Only lock if: user exists, is admin/superadmin, HAS 2FA ENABLED, not demo admin, not already locked, and not in demo mode
+            const isAdminOrSuperAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+            if (!currentUser || !isAdminOrSuperAdmin || !currentUser.twoFactorEnabled || isDemoMode || isLocked) return;
             if (currentUser.email === 'demo-admin@academypro.com') return;
 
             // Debounce the storage update to max once per second
@@ -137,8 +140,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             }, 10 * 60 * 1000); // 10 minutes
         };
 
-        // Set up listeners for all real admins with 2FA enabled
-        if (currentUser?.role === 'admin' && currentUser?.twoFactorEnabled && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
+        // Set up listeners for all real admins (including superadmin) with 2FA enabled
+        const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+        if (isAdmin && currentUser?.twoFactorEnabled && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
             window.addEventListener('mousemove', resetTimer);
             window.addEventListener('keypress', resetTimer);
             window.addEventListener('click', resetTimer);
@@ -154,7 +158,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             };
         }
-    }, [currentUser?.id, currentUser?.twoFactorEnabled, isLocked, isDemoMode]);
+    }, [currentUser?.id, currentUser?.twoFactorEnabled, currentUser?.role, isLocked, isDemoMode]);
 
     const fetchUsers = async () => {
         try {
@@ -257,8 +261,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
             setCourses(finalCourses);
 
-            if (userRole === 'admin' && !isDemoUser) {
-                console.log("Fetching admin users list...");
+            const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+            if (isAdmin && !isDemoUser) {
+                console.log("Fetching privileged users list...");
                 fetchUsers(); // Non-blocking
             }
 

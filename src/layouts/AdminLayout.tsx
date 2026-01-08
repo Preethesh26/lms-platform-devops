@@ -19,7 +19,8 @@ export default function AdminLayout() {
 
     useEffect(() => {
         if (isInitialized) {
-            if (!currentUser || currentUser.role !== 'admin') {
+            const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+            if (!currentUser || !isAdmin) {
                 const isDemoPath = location.pathname.startsWith('/demo/');
                 navigate(isDemoPath ? "/demo/login" : "/admin/login");
             }
@@ -35,8 +36,9 @@ export default function AdminLayout() {
         </div>
     );
 
-    // If not admin (and waiting for redirect), don't render content
-    if (!currentUser || currentUser.role !== 'admin') return (
+    // If not admin/superadmin (and waiting for redirect), don't render content
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+    if (!currentUser || !isAdmin) return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
             <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
         </div>
@@ -142,7 +144,9 @@ export default function AdminLayout() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-black truncate">{currentUser.name}</p>
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{currentUser.role}</p>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                                        {currentUser.role === 'superadmin' ? 'Super Admin' : currentUser.role}
+                                    </p>
                                 </div>
                                 <Button
                                     size="icon"
