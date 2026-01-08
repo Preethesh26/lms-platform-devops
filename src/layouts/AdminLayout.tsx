@@ -68,7 +68,7 @@ export default function AdminLayout() {
         { to: `${currentPrefix}/tests`, label: "Tests", icon: ClipboardList, category: "Management" },
         { to: `${currentPrefix}/support`, label: "Help Tickets", icon: MessageSquare, category: "Support" },
         { to: `${currentPrefix}/settings`, label: "Settings", icon: SettingsIcon, category: "System" },
-        ...(currentUser?.role === 'superadmin' ? [
+        ...(currentUser?.role === 'admin' || currentUser?.role === 'superadmin' ? [
             { to: `${currentPrefix}/account-resolver`, label: "Account Resolver", icon: UserSearch, category: "System" }
         ] : []),
     ];

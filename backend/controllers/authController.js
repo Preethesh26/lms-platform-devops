@@ -295,6 +295,34 @@ exports.impersonate = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        // --- Role-Based Security Restrictions ---
+
+        // Prevent impersonating yourself
+        if (user._id.toString() === req.user.id.toString()) {
+            return res.status(400).json({ success: false, message: 'You are already logged in as this user' });
+        }
+
+        // Admin-specific restrictions
+        if (req.user.role === 'admin') {
+            if (user.role !== 'user') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Admins are only authorized to resolve Student accounts. For Admin issues, please contact a Super Admin.'
+                });
+            }
+        }
+
+        // Super Admin restrictions
+        if (req.user.role === 'superadmin') {
+            // Prevent impersonating another super admin for security audit clarity
+            if (user.role === 'superadmin' && user._id.toString() !== req.user.id.toString()) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied: Cannot impersonate other Super Admin accounts.'
+                });
+            }
+        }
+
         // Generate a fresh session token for the target user
         const token = generateToken(user._id);
 

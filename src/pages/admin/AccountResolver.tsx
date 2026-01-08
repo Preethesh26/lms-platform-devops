@@ -10,9 +10,11 @@ import { toast } from "sonner";
 
 export default function AccountResolver() {
     const navigate = useNavigate();
-    const { impersonateUser } = useStore();
+    const { currentUser, impersonateUser } = useStore();
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    const isSuperAdmin = currentUser?.role === 'superadmin';
 
     const handleImpersonate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,13 +48,21 @@ export default function AccountResolver() {
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex flex-col gap-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 w-fit">
-                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Super Admin Privilege</span>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border w-fit ${isSuperAdmin
+                        ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600 dark:text-indigo-400'
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                    }`}>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                        {isSuperAdmin ? 'Super Admin Privilege' : 'Administrative Resource'}
+                    </span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight mt-2">Account Resolver</h1>
                 <p className="text-muted-foreground text-lg font-medium max-w-2xl">
-                    Direct access portal. Enter a user's Gmail to resolve their issues by accessing their profile directly without credentials.
+                    {isSuperAdmin
+                        ? "Direct access portal. Enter any user's Gmail to resolve issues by accessing their profile directly."
+                        : "Student support portal. Enter a student's Gmail to resolve their issues by accessing their profile directly."
+                    }
                 </p>
             </div>
 
