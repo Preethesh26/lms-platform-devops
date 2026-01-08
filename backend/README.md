@@ -35,9 +35,10 @@ Express.js REST API with MongoDB for the LMS Platform.
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
+- `POST /api/auth/register` - Register new user (User/Admin)
 - `POST /api/auth/login` - Login user
 - `GET /api/auth/me` - Get current user (requires auth)
+- `POST /api/auth/setup-2fa` - Initialize 2FA (Admin only)
 
 ### Courses
 - `GET /api/courses` - Get all courses
@@ -47,10 +48,10 @@ Express.js REST API with MongoDB for the LMS Platform.
 - `DELETE /api/courses/:id` - Delete course (admin only)
 
 ### Users
-- `GET /api/users` - Get all users (admin only)
+- `GET /api/users` - Get all users (Admin/SuperAdmin)
 - `GET /api/users/:id` - Get single user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (admin only)
+- `PUT /api/users/:id` - Update user (Admins can be edited ONLY by SuperAdmin)
+- `DELETE /api/users/:id` - Delete user (Admins can be deleted ONLY by SuperAdmin)
 - `POST /api/users/:id/enroll` - Enroll in course
 
 ## Creating Admin User
@@ -65,4 +66,10 @@ curl -X POST http://localhost:5000/api/auth/register \
     "password": "admin123",
     "role": "admin"
   }'
+```
+
+### Upgrading to SuperAdmin
+To promote an existing admin to Super Admin status:
+```bash
+node upgradeSuperAdmin.js [email]
 ```

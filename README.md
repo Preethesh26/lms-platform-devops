@@ -40,6 +40,8 @@ AcademyPro includes a powerful standalone test hosting system, ideal for recruit
 - **Real-time Analytics**: Admins can track invited vs. completed attempts and individual performance.
 
 ### 🔐 Admin Orchestration
+- **Tiered Administrative Hierarchy**: Implementation of a **Super Admin** role for master oversight and a standard **Admin** role for daily operations.
+- **Administrative RBAC**: Strict role-based access control where only Super Admins can manage, edit, or delete other administrator accounts.
 - **Strategic Insights**: Real-time analytics for revenue and student engagement using Recharts.
 - **Content Management**: Advanced CRUD for courses, modules, lessons, and assignments.
 - **AI-Powered Tools**: Integrated AI for lesson summaries and quiz generation.
@@ -51,10 +53,10 @@ AcademyPro implements military-grade security for administrative accounts:
   - QR code generation for easy setup
   - Mandatory verification during login for protected accounts
   - Secure disable flow with password confirmation
-- **Inactivity Auto-Lock**: Automatic session lock after 10 minutes of inactivity
+- **Inactivity Auto-Lock (Linked to 2FA)**: High-security accounts with 2FA enabled benefit from automatic session locking after 10 minutes of inactivity.
   - Non-destructive overlay preserves work context
   - OTP verification required to unlock
-  - Exempt for demo admin accounts
+  - Throttled activity tracking for performance optimization
 - **Password Security**: Bcrypt hashing with proper salt generation
 - **Session Management**: JWT-based authentication with secure token handling
 
@@ -128,6 +130,9 @@ The platform features a comprehensive notification system powered by **Brevo (fo
    # Create Demo Accounts
    node createDemoAdmin.js
    node createDemoStudent.js
+
+   # Admin Migrations
+   node upgradeSuperAdmin.js [email]
    ```
 
 ---
