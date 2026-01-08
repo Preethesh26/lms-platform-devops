@@ -103,10 +103,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const inactivityTimer = useRef<NodeJS.Timeout | null>(null);
 
     // Activity Listener - For all real admins (not demo)
-    // Activity Listener - For all real admins (not demo)
+    // Activity Listener - For all real admins (not demo) who have 2FA enabled
     useEffect(() => {
         // Initialize state from local storage
-        if (currentUser?.role === 'admin' && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
+        if (currentUser?.role === 'admin' && currentUser?.twoFactorEnabled && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
             const lastActive = localStorage.getItem('admin_last_active');
             if (lastActive) {
                 const timeDiff = Date.now() - parseInt(lastActive);
@@ -119,8 +119,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const resetTimer = () => {
-            // Only lock if: user exists, is admin, not demo admin, not already locked, and not in demo mode
-            if (!currentUser || currentUser.role !== 'admin' || isDemoMode || isLocked) return;
+            // Only lock if: user exists, is admin, HAS 2FA ENABLED, not demo admin, not already locked, and not in demo mode
+            if (!currentUser || currentUser.role !== 'admin' || !currentUser.twoFactorEnabled || isDemoMode || isLocked) return;
             if (currentUser.email === 'demo-admin@academypro.com') return;
 
             // Debounce the storage update to max once per second
@@ -137,8 +137,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             }, 10 * 60 * 1000); // 10 minutes
         };
 
-        // Set up listeners for all real admins
-        if (currentUser?.role === 'admin' && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
+        // Set up listeners for all real admins with 2FA enabled
+        if (currentUser?.role === 'admin' && currentUser?.twoFactorEnabled && currentUser?.email !== 'demo-admin@academypro.com' && !isDemoMode) {
             window.addEventListener('mousemove', resetTimer);
             window.addEventListener('keypress', resetTimer);
             window.addEventListener('click', resetTimer);
@@ -154,7 +154,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
             };
         }
-    }, [currentUser?.id, isLocked, isDemoMode]);
+    }, [currentUser?.id, currentUser?.twoFactorEnabled, isLocked, isDemoMode]);
 
     const fetchUsers = async () => {
         try {
