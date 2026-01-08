@@ -191,34 +191,48 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             let userRole = null;
 
             if (token) {
+                // Optimistic UI: Set user from localStorage first to allow rendering
+                const savedUser = localStorage.getItem('userData');
+                if (savedUser) {
+                    try {
+                        const parsedUser = JSON.parse(savedUser);
+                        setCurrentUser(parsedUser);
+                        userRole = parsedUser.role;
+
+                        // If we have saved data, initialize the UI early
+                        if (!isInitialized) {
+                            console.log("Optimistic initialization from localStorage...");
+                            setIsInitialized(true);
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse saved user data:', e);
+                    }
+                }
+
                 try {
-                    console.log("Fetching current user...");
+                    console.log("Verifying session with server...");
                     const userRes = await authAPI.getMe();
                     const userData = userRes.data.data;
                     setCurrentUser(userData);
                     localStorage.setItem('userData', JSON.stringify(userData));
                     userRole = userData.role;
                 } catch (error) {
-                    console.error('Failed to fetch current user:', error);
+                    console.error('Failed to verify session:', error);
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
                     setCurrentUser(null);
+
+                    // If verification fails, we STILL need to initialize so the UI can redirect to login
+                    if (!isInitialized) setIsInitialized(true);
                 }
             } else {
                 setCurrentUser(null);
-            }
-
-            // At this point, we know the user's auth status. 
-            // We can set isInitialized to true so the UI can decide whether to show the page or redirect.
-            if (!isInitialized) {
-                console.log("Core auth status known, initializing UI...");
-                setIsInitialized(true);
+                // No token? Initialize immediately so redirect can happen
+                if (!isInitialized) setIsInitialized(true);
             }
 
             // The rest can be fetched in parallel without blocking the main initialization 
-            // if we are already initialized. However, for FIRST load, we might want settings/courses.
-            // But to avoid the "Initializing..." hang, let's just proceed.
-
+            // if we are already initialized. 
             console.log("Fetching courses and settings...");
             const [coursesRes, settingsRes] = await Promise.all([
                 coursesAPI.getAll().catch(err => {
@@ -274,6 +288,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
 
     useEffect(() => {
+        // Failsafe: Force initialization after 5 seconds no matter what
+        const failsafeTimer = setTimeout(() => {
+            if (!isInitialized) {
+                console.warn("Failsafe: Initialization timed out, forcing UI start...");
+                setIsInitialized(true);
+            }
+        }, 5000);
+
         fetchData();
 
         // Automatic refresh every 30 seconds for all pages
@@ -289,6 +311,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
         window.addEventListener('focus', handleFocus);
         return () => {
+            clearTimeout(failsafeTimer);
             clearInterval(pollingInterval);
             window.removeEventListener('focus', handleFocus);
         };

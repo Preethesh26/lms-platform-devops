@@ -8,7 +8,7 @@ Check out the live website: **[https://academypro-liard.vercel.app/](https://aca
 - **Student Portal**: Explore the student experience instantly.
   - **Email**: `demo-student@academypro.com`
   - **Password**: `student123`
-  - **Enrollment**: `DEMO-2024-001`
+  - **Enrollment**: `DEMO-001`
 - **Administrative Access**: To protect system integrity, full admin credentials are not public.
 
 > [!IMPORTANT]

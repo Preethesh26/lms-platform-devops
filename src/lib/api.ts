@@ -69,7 +69,12 @@ api.interceptors.response.use(
             if (isAuthEndpoint && localStorage.getItem('token')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userData');
-                window.location.href = '/login';
+
+                // Smart Redirect: Use admin login if we are in admin/demo area
+                const isManagementArea = window.location.pathname.startsWith('/admin') ||
+                    window.location.pathname.startsWith('/demo');
+
+                window.location.href = isManagementArea ? '/admin/login' : '/login';
             }
         }
         return Promise.reject(error);
