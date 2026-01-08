@@ -17,6 +17,22 @@ export default function AdminLayout() {
         setIsSidebarOpen(false);
     }, [location.pathname]);
 
+    const currentPrefix = isDemoMode ? '/demo' : '/admin';
+
+    // Redirection Logic: Ensure user is on the correct prefix
+    useEffect(() => {
+        if (!isInitialized) return;
+        const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+        if (!currentUser || !isAdmin) return;
+
+        const path = location.pathname;
+        if (isDemoMode && path.startsWith('/admin/')) {
+            navigate(path.replace('/admin/', '/demo/'));
+        } else if (!isDemoMode && path.startsWith('/demo/')) {
+            navigate(path.replace('/demo/', '/admin/'));
+        }
+    }, [location.pathname, isDemoMode, navigate, isInitialized, currentUser]);
+
     useEffect(() => {
         if (isInitialized) {
             const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
@@ -43,18 +59,6 @@ export default function AdminLayout() {
             <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
         </div>
     );
-
-    const currentPrefix = isDemoMode ? '/demo' : '/admin';
-
-    // Redirection Logic: Ensure user is on the correct prefix
-    useEffect(() => {
-        const path = location.pathname;
-        if (isDemoMode && path.startsWith('/admin/')) {
-            navigate(path.replace('/admin/', '/demo/'));
-        } else if (!isDemoMode && path.startsWith('/demo/')) {
-            navigate(path.replace('/demo/', '/admin/'));
-        }
-    }, [location.pathname, isDemoMode, navigate]);
 
     const navItems = [
         { to: `${currentPrefix}/dashboard`, label: "Dashboard", icon: LayoutDashboard, category: "Analytics" },
