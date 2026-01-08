@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../lib/store';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash, Check, Save, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 const QuizEditor = () => {
     const navigate = useNavigate();
@@ -52,9 +53,10 @@ const QuizEditor = () => {
                 questions
             });
             navigate('/admin/courses');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to create quiz:', error);
-            alert('Failed to create quiz');
+            const msg = error.response?.data?.error || error.response?.data?.message || 'Failed to create quiz';
+            toast.error(msg);
         } finally {
             setIsSubmitting(false);
         }

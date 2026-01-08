@@ -32,6 +32,10 @@ exports.getCourse = async (req, res) => {
 // @access  Private/Admin
 exports.createCourse = async (req, res) => {
     try {
+        const titleExists = await Course.findOne({ title: req.body.title });
+        if (titleExists) {
+            return res.status(400).json({ success: false, message: 'A course with this title already exists.' });
+        }
         const course = await Course.create(req.body);
         res.status(201).json({ success: true, data: course });
     } catch (error) {
@@ -44,6 +48,13 @@ exports.createCourse = async (req, res) => {
 // @access  Private/Admin
 exports.updateCourse = async (req, res) => {
     try {
+        if (req.body.title) {
+            const titleExists = await Course.findOne({ title: req.body.title, _id: { $ne: req.params.id } });
+            if (titleExists) {
+                return res.status(400).json({ success: false, message: 'Another course with this title already exists.' });
+            }
+        }
+
         const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true

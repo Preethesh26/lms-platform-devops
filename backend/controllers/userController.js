@@ -56,6 +56,22 @@ exports.updateUser = async (req, res) => {
             req.body.password = await bcrypt.hash(req.body.password, salt);
         }
 
+        // Check if email already exists for another user
+        if (req.body.email && req.body.email !== originalUser.email) {
+            const emailExists = await User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.params.id } });
+            if (emailExists) {
+                return res.status(400).json({ success: false, message: 'Email already exists. Please use a different email.' });
+            }
+        }
+
+        // Check if enrollment already exists for another user
+        if (req.body.enrollment && req.body.enrollment !== originalUser.enrollment) {
+            const enrollmentExists = await User.findOne({ enrollment: req.body.enrollment, _id: { $ne: req.params.id } });
+            if (enrollmentExists) {
+                return res.status(400).json({ success: false, message: 'Enrollment number already exists.' });
+            }
+        }
+
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true

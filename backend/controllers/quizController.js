@@ -10,6 +10,10 @@ const Course = require('../models/Course');
 // @access  Private (Admin)
 exports.createQuiz = async (req, res) => {
     try {
+        const titleExists = await Quiz.findOne({ title: req.body.title, course: req.body.course });
+        if (titleExists) {
+            return res.status(400).json({ success: false, error: 'A quiz with this title already exists for this course.' });
+        }
         const quiz = await Quiz.create(req.body);
 
         // Automatically add quiz as a lesson to the course

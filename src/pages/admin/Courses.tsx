@@ -135,8 +135,9 @@ export default function AdminCoursesPage() {
             });
             setIsCreateOpen(false);
             toast.success("Masterclass created successfully!");
-        } catch (error) {
-            toast.error("Failed to create course. Check console for details.");
+        } catch (error: any) {
+            const msg = error.response?.data?.message || "Failed to create course. Check console for details.";
+            toast.error(msg);
         }
     };
 
@@ -157,8 +158,9 @@ export default function AdminCoursesPage() {
             });
             setEditingCourse(null);
             toast.success("Course details refined!");
-        } catch (error) {
-            toast.error("Failed to update course.");
+        } catch (error: any) {
+            const msg = error.response?.data?.message || "Failed to update course.";
+            toast.error(msg);
         }
     };
 

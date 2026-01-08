@@ -20,6 +20,10 @@ const generateTestPassword = () => {
 // @access  Private (Admin)
 exports.createTest = async (req, res) => {
     try {
+        const titleExists = await Test.findOne({ title: req.body.title });
+        if (titleExists) {
+            return res.status(400).json({ success: false, error: 'A test with this title already exists.' });
+        }
         const test = await Test.create({
             ...req.body,
             createdBy: req.user.id
@@ -109,6 +113,13 @@ exports.getTest = async (req, res) => {
 // @access  Private (Admin)
 exports.updateTest = async (req, res) => {
     try {
+        if (req.body.title) {
+            const titleExists = await Test.findOne({ title: req.body.title, _id: { $ne: req.params.id } });
+            if (titleExists) {
+                return res.status(400).json({ success: false, error: 'Another test with this title already exists.' });
+            }
+        }
+
         const test = await Test.findByIdAndUpdate(
             req.params.id,
             req.body,

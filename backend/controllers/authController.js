@@ -22,9 +22,17 @@ exports.register = async (req, res) => {
         let { name, email, password, enrollment, role } = req.body;
 
         // Check if user exists
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email: email.toLowerCase() });
         if (userExists) {
-            return res.status(400).json({ success: false, message: 'User already exists' });
+            return res.status(400).json({ success: false, message: 'Email already exists. Please use a different email.' });
+        }
+
+        // Check if enrollment exists (if provided)
+        if (enrollment) {
+            const enrollmentExists = await User.findOne({ enrollment });
+            if (enrollmentExists) {
+                return res.status(400).json({ success: false, message: 'Enrollment number already exists.' });
+            }
         }
 
         // Auto-generate enrollment number if not provided (for self-registration)

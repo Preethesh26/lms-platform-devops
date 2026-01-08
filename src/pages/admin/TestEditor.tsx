@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { testsAPI } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function TestEditor() {
     const navigate = useNavigate();
@@ -169,9 +170,10 @@ export default function TestEditor() {
             }
 
             navigate('/admin/tests');
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Failed to ${isEditMode ? 'update' : 'create'} test:`, error);
-            alert(`Failed to ${isEditMode ? 'update' : 'create'} test`);
+            const msg = error.response?.data?.error || error.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} test`;
+            toast.error(msg);
         } finally {
             setIsSubmitting(false);
         }
