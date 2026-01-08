@@ -66,6 +66,8 @@ interface StoreContextType {
     verifyPayment: (data: { transactionId: string }, courseId?: string) => Promise<any>;
     loginUser: (userData: User, token: string) => Promise<void>;
     logoutUser: () => void;
+    unlockSession: (token: string) => Promise<boolean>;
+    masterUnlock: (email: string, token: string) => Promise<boolean>;
     fetchQuizzes: () => Promise<void>;
     createQuiz: (quizData: any) => Promise<any>;
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
@@ -512,7 +514,23 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const unlockSession = async (otp: string) => {
-        await verify2FA(otp);
+        return await verify2FA(otp);
+    };
+
+    const masterUnlock = async (email: string, token: string) => {
+        try {
+            const res = await authAPI.masterUnlock({ email, token });
+            if (res.data.success) {
+                setIsLocked(false);
+                // Reset activity timer
+                localStorage.setItem('admin_last_active', Date.now().toString());
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Master unlock failed:', error);
+            return false;
+        }
     };
 
     const setup2FA = async () => {
@@ -563,7 +581,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             fetchQuizzes, createQuiz, submitQuiz, impersonateUser,
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
-            unlockSession, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
+            unlockSession, masterUnlock, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
             settings
         }}>
             {children}

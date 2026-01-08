@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, ShieldAlert } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Lock, ShieldAlert, KeyRound, ChevronRight, UserCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function InactivityLock() {
-    const { isLocked, unlockSession } = useStore();
+    const { isLocked, unlockSession, masterUnlock } = useStore();
     const [otp, setOtp] = useState("");
+    const [email, setEmail] = useState("");
+    const [isMasterMode, setIsMasterMode] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -19,10 +22,22 @@ export function InactivityLock() {
         setLoading(true);
 
         try {
-            await unlockSession(otp);
-            setOtp(""); // Clear OTP on success (state will unlock)
-        } catch (err) {
-            setError("Invalid code. Please try again.");
+            let success = false;
+            if (isMasterMode) {
+                success = await masterUnlock(email, otp);
+            } else {
+                success = await unlockSession(otp);
+            }
+
+            if (success) {
+                setOtp("");
+                setEmail("");
+                setIsMasterMode(false);
+            } else {
+                setError("Verification failed. Please check your credentials.");
+            }
+        } catch (err: any) {
+            setError(err.message || "An error occurred during verification.");
         } finally {
             setLoading(false);
         }
@@ -42,38 +57,87 @@ export function InactivityLock() {
                         Your session has been locked due to inactivity (10m). Please enter your 2FA code to resume.
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                     <form onSubmit={handleUnlock} className="space-y-4">
                         {error && (
-                            <div className="text-xs text-red-500 text-center font-medium bg-red-50 p-2 rounded">
+                            <div className="text-[10px] text-red-500 text-center font-bold uppercase tracking-widest bg-red-500/10 p-2.5 rounded-xl border border-red-500/20">
                                 {error}
                             </div>
                         )}
-                        <div className="space-y-2">
-                            <div className="relative">
-                                <ShieldAlert className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                                <Input
-                                    type="text"
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    placeholder="Enter 6-digit Code"
-                                    className="pl-10 text-center font-mono text-lg tracking-widest"
-                                    maxLength={6}
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    autoFocus
-                                    required
-                                />
+
+                        <div className="space-y-4">
+                            {isMasterMode && (
+                                <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                    <Label className="text-[10px] uppercase tracking-widest font-black opacity-60">Master Email</Label>
+                                    <div className="relative">
+                                        <UserCircle className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                                        <Input
+                                            type="email"
+                                            placeholder="superadmin@academypro.com"
+                                            className="pl-10 h-11 rounded-xl border-slate-200 dark:border-slate-800"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase tracking-widest font-black opacity-60">
+                                    {isMasterMode ? 'Master 2FA Code' : 'Your 2FA Code'}
+                                </Label>
+                                <div className="relative">
+                                    <ShieldAlert className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                                    <Input
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="000000"
+                                        className="pl-10 text-center font-mono text-lg tracking-[0.5em] h-11 rounded-xl border-slate-200 dark:border-slate-800 focus:ring-red-500"
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        autoFocus
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
+
                         <Button
                             type="submit"
-                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                            className="w-full h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-600/20 transition-all hover:scale-[1.02] active:scale-95"
                             disabled={loading}
                         >
-                            {loading ? "Unlocking..." : "Unlock Session"}
+                            {loading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                                    Verifying...
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    {isMasterMode ? <KeyRound className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                                    {isMasterMode ? "Master Unlock" : "Unlock Session"}
+                                </div>
+                            )}
                         </Button>
                     </form>
+
+                    <div className="pt-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 hover:text-red-500 hover:bg-red-500/5 h-8 rounded-lg group"
+                            onClick={() => {
+                                setIsMasterMode(!isMasterMode);
+                                setError("");
+                            }}
+                        >
+                            {isMasterMode ? "Back to standard unlock" : "Need Super Admin unlock?"}
+                            <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>

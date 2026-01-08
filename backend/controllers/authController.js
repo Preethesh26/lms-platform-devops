@@ -343,3 +343,41 @@ exports.impersonate = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Master Unlock (Super Admin can unlock any session)
+// @route   POST /api/auth/master-unlock
+// @access  Public (Self-contained verification)
+exports.masterUnlock = async (req, res) => {
+    try {
+        const { email, token } = req.body;
+
+        if (!email || !token) {
+            return res.status(400).json({ success: false, message: 'Please provide email and 2FA code' });
+        }
+
+        const superAdmin = await User.findOne({ email, role: 'superadmin' }).select('+twoFactorSecret');
+
+        if (!superAdmin) {
+            return res.status(403).json({ success: false, message: 'Unauthorized: Valid Super Admin email required' });
+        }
+
+        if (!superAdmin.twoFactorEnabled || !superAdmin.twoFactorSecret) {
+            return res.status(403).json({ success: false, message: 'Master unlock requires a Super Admin with 2FA enabled' });
+        }
+
+        // Verify the Super Admin's OTP
+        const isValid = authenticator.check(token, superAdmin.twoFactorSecret);
+
+        if (!isValid) {
+            return res.status(401).json({ success: false, message: 'Invalid Master OTP' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Session authorized by Master Unlock'
+        });
+    } catch (error) {
+        console.error('Master unlock error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
