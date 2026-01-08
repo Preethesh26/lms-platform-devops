@@ -37,6 +37,7 @@ export type User = {
     twoFactorEnabled?: boolean;
 };
 
+// Main State Management for the LMS
 interface StoreContextType {
     courses: Course[];
     users: User[];
