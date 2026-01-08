@@ -211,3 +211,64 @@ exports.getAllQuizzes = async (req, res) => {
         });
     }
 };
+// @desc    Update quiz
+// @route   PUT /api/quizzes/:id
+// @access  Private (Admin)
+exports.updateQuiz = async (req, res) => {
+    try {
+        let quiz = await Quiz.findById(req.params.id);
+
+        if (!quiz) {
+            return res.status(404).json({ success: false, error: 'Quiz not found' });
+        }
+
+        quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+
+        // Also update the lesson info in the course if the title changed
+        const course = await Course.findById(quiz.course);
+        if (course) {
+            const lessonIndex = course.lessons.findIndex(l => l.quizId?.toString() === quiz._id.toString());
+            if (lessonIndex !== -1) {
+                course.lessons[lessonIndex].title = quiz.title;
+                course.lessons[lessonIndex].duration = `${quiz.timeLimit > 0 ? quiz.timeLimit + ' min' : 'Untimed'} Quiz`;
+                await course.save();
+            }
+        }
+
+        res.status(200).json({ success: true, data: quiz });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+
+// @desc    Delete quiz
+// @route   DELETE /api/quizzes/:id
+// @access  Private (Admin)
+exports.deleteQuiz = async (req, res) => {
+    try {
+        const quiz = await Quiz.findById(req.params.id);
+
+        if (!quiz) {
+            return res.status(404).json({ success: false, error: 'Quiz not found' });
+        }
+
+        // Remove from course lessons first
+        const course = await Course.findById(quiz.course);
+        if (course) {
+            course.lessons = course.lessons.filter(l => l.quizId?.toString() === quiz._id.toString() ? false : true);
+            await course.save();
+        }
+
+        await quiz.deleteOne();
+        await QuizAttempt.deleteMany({ quiz: req.params.id });
+
+        res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ success: false, error: error.message });
+    }
+};

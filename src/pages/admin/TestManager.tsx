@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, FileText, Users, CheckCircle, Clock, Loader2, Edit } from 'lucide-react';
+import { Plus, FileText, Users, CheckCircle, Clock, Loader2, Edit, Trash2 } from 'lucide-react';
 import { testsAPI } from '@/lib/api';
 import { useStore } from '@/lib/store';
 import { MOCK_TESTS } from '@/lib/mockData';
+import { DeleteConfirmDialog } from '@/components/admin/DeleteConfirmDialog';
+import { toast } from 'sonner';
 export default function TestManager() {
     const { isDemoMode } = useStore();
     const [tests, setTests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchTests();
@@ -40,14 +44,18 @@ export default function TestManager() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this test?')) return;
-
+    const handleDelete = async () => {
+        if (!deleteId) return;
+        setIsDeleting(true);
         try {
-            await testsAPI.delete(id);
+            await testsAPI.delete(deleteId);
+            toast.success("Test deleted successfully");
             fetchTests();
-        } catch (error) {
-            console.error('Error deleting test:', error);
+            setDeleteId(null);
+        } catch (error: any) {
+            toast.error(error.message || "Failed to delete test");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -227,9 +235,10 @@ export default function TestManager() {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => handleDelete(test._id)}
+                                            onClick={() => setDeleteId(test._id)}
                                             className="rounded-xl font-bold text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                                         >
+                                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                                             Delete
                                         </Button>
                                     </div>
@@ -239,6 +248,15 @@ export default function TestManager() {
                     ))}
                 </div>
             )}
+
+            <DeleteConfirmDialog
+                isOpen={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={handleDelete}
+                loading={isDeleting}
+                title="Delete Test"
+                description="Are you sure you want to delete this standalone test? This will also remove all candidate results and invitations associated with it."
+            />
         </div>
     );
 }

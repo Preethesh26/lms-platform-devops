@@ -168,7 +168,10 @@ export default function AdminLogin() {
                                 type="button"
                                 variant="ghost"
                                 className="w-full text-xs text-muted-foreground"
-                                onClick={() => setStep('login')}
+                                onClick={() => {
+                                    setStep('login');
+                                    setRequires2FA(false, null);
+                                }}
                             >
                                 Back to Login
                             </Button>

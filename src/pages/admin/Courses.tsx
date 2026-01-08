@@ -18,6 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import { useStore, type Course } from "@/lib/store";
 import { uploadAPI } from "@/lib/api";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
+import { Trash2 } from "lucide-react";
 
 export default function AdminCoursesPage() {
     const navigate = useNavigate();
@@ -26,6 +28,8 @@ export default function AdminCoursesPage() {
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [managingCourse, setManagingCourse] = useState<Course | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Refs for thumbnail inputs
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -227,8 +231,23 @@ export default function AdminCoursesPage() {
         e.currentTarget.reset();
     };
 
+    const handleDeleteCourse = async () => {
+        if (!deleteId) return;
+        setIsDeleting(true);
+        try {
+            await deleteCourse(deleteId);
+            toast.success("Course deleted successfully");
+            setDeleteId(null);
+        } catch (error: any) {
+            toast.error(error.message || "Failed to delete course");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     const handleDeleteLesson = (lessonId: string) => {
         if (!managingCourse) return;
+        if (!confirm("Are you sure you want to delete this lesson?")) return;
         const updatedLessons = managingCourse.lessons.filter(l => l.id !== lessonId);
         updateCourse(managingCourse.id, { lessons: updatedLessons });
         setManagingCourse({ ...managingCourse, lessons: updatedLessons });
@@ -430,8 +449,9 @@ export default function AdminCoursesPage() {
                                     variant="ghost"
                                     size="sm"
                                     className="mt-4 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-bold transition-all"
-                                    onClick={() => deleteCourse(course.id)}
+                                    onClick={() => setDeleteId(course.id)}
                                 >
+                                    <Trash2 className="h-4 w-4 mr-1" />
                                     Remove
                                 </Button>
                             </CardContent>
@@ -643,6 +663,15 @@ export default function AdminCoursesPage() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            <DeleteConfirmDialog
+                isOpen={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={handleDeleteCourse}
+                loading={isDeleting}
+                title="Delete Course"
+                description="Are you sure you want to delete this course? This action is permanent and will remove all associated lessons and student progress."
+            />
         </div>
     );
 }

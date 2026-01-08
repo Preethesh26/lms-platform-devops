@@ -78,6 +78,7 @@ function App() {
                             <Route path="/admin/users/bulk-upload" element={<BulkUserUpload />} />
                             <Route path="/admin/quizzes" element={<QuizManager />} />
                             <Route path="/admin/quizzes/create" element={<QuizEditor />} />
+                            <Route path="/admin/quizzes/:id/edit" element={<QuizEditor />} />
                             <Route path="/admin/tests" element={<TestManager />} />
                             <Route path="/admin/tests/create" element={<TestEditor />} />
                             <Route path="/admin/tests/:id/edit" element={<TestEditor />} />
@@ -93,6 +94,7 @@ function App() {
                             <Route path="/demo/users/bulk-upload" element={<BulkUserUpload />} />
                             <Route path="/demo/quizzes" element={<QuizManager />} />
                             <Route path="/demo/quizzes/create" element={<QuizEditor />} />
+                            <Route path="/demo/quizzes/:id/edit" element={<QuizEditor />} />
                             <Route path="/demo/tests" element={<TestManager />} />
                             <Route path="/demo/tests/create" element={<TestEditor />} />
                             <Route path="/demo/tests/:id/edit" element={<TestEditor />} />

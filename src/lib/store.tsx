@@ -70,6 +70,8 @@ interface StoreContextType {
     disable2FA: (password: string) => Promise<boolean>;
     fetchQuizzes: () => Promise<void>;
     createQuiz: (quizData: any) => Promise<any>;
+    updateQuiz: (id: string, data: any) => Promise<any>;
+    deleteQuiz: (id: string) => Promise<void>;
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
     refetchData: () => Promise<void>;
     refetchUsers: () => Promise<void>;
@@ -79,6 +81,7 @@ interface StoreContextType {
     searchCourses: (query: string) => void;
     clearSearch: () => void;
     settings: any;
+    quizzesAPI: typeof quizzesAPI;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -477,6 +480,17 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         return res.data.data;
     };
 
+    const updateQuiz = async (id: string, data: any) => {
+        const res = await quizzesAPI.update(id, data);
+        await fetchData();
+        return res.data.data;
+    };
+
+    const deleteQuiz = async (id: string) => {
+        await quizzesAPI.delete(id);
+        await fetchData();
+    };
+
     const setRequires2FA = (required: boolean, token: string | null) => {
         setRequires2FAState(required);
         setTempToken(token);
@@ -578,11 +592,11 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             isLocked, tempToken, requires2FA, isLoading, itemsFound,
             addCourse, updateCourse, deleteCourse, addUser, updateUser, deleteUser,
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
-            fetchQuizzes, createQuiz, submitQuiz, impersonateUser,
+            fetchQuizzes, createQuiz, updateQuiz, deleteQuiz, submitQuiz, impersonateUser,
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
             unlockSession, masterUnlock, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
-            settings
+            settings, quizzesAPI
         }}>
             {children}
         </StoreContext.Provider>

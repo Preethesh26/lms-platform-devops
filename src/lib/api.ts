@@ -155,7 +155,9 @@ export const quizzesAPI = {
     getQuiz: (id: string) => api.get(`/quizzes/${id}`), // Student view
     getForEdit: (id: string) => api.get(`/quizzes/${id}/edit`), // Admin view
     submit: (id: string, answers: any[]) => api.post(`/quizzes/${id}/submit`, { answers }),
-    getAttempts: (id: string) => api.get(`/quizzes/${id}/attempts`)
+    getAttempts: (id: string) => api.get(`/quizzes/${id}/attempts`),
+    update: (id: string, data: any) => api.put(`/quizzes/${id}`, data),
+    delete: (id: string) => api.delete(`/quizzes/${id}`)
 };
 
 // Tests API (Standalone Test System)

@@ -7,7 +7,7 @@ import { Lock, ShieldAlert, KeyRound, ChevronRight, UserCircle } from "lucide-re
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function InactivityLock() {
-    const { isLocked, unlockSession, masterUnlock } = useStore();
+    const { isLocked, unlockSession, masterUnlock, logoutUser } = useStore();
     const [otp, setOtp] = useState("");
     const [email, setEmail] = useState("");
     const [isMasterMode, setIsMasterMode] = useState(false);
@@ -124,11 +124,11 @@ export function InactivityLock() {
                         </Button>
                     </form>
 
-                    <div className="pt-2">
+                    <div className="pt-2 flex flex-col gap-2">
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="w-full text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 hover:text-red-500 hover:bg-red-500/5 h-8 rounded-lg group"
+                            className="w-full text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 hover:text-red-500 hover:bg-red-50/5 h-8 rounded-lg group"
                             onClick={() => {
                                 setIsMasterMode(!isMasterMode);
                                 setError("");
@@ -136,6 +136,17 @@ export function InactivityLock() {
                         >
                             {isMasterMode ? "Back to standard unlock" : "Need Super Admin unlock?"}
                             <ChevronRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-[10px] uppercase tracking-[0.2em] font-black text-slate-400 hover:text-red-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-8 rounded-lg"
+                            onClick={() => {
+                                logoutUser();
+                                window.location.href = "/admin/login";
+                            }}
+                        >
+                            Log Out / Back to Login
                         </Button>
                     </div>
                 </CardContent>

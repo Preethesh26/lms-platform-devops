@@ -1,20 +1,53 @@
 import React, { useState } from 'react';
 import { useStore } from '../../lib/store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, Trash, Check, Save, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const QuizEditor = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const { courses, createQuiz } = useStore();
+    const { courses, createQuiz, updateQuiz, quizzesAPI, isDemoMode, quizzes } = useStore();
     const [title, setTitle] = useState('');
     const [selectedCourse, setSelectedCourse] = useState('');
     const [timeLimit, setTimeLimit] = useState(0);
     const [passingScore, setPassingScore] = useState(70);
-    const [questions, setQuestions] = useState([
+    const [questions, setQuestions] = useState<any[]>([
         { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }
     ]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loading, setLoading] = useState(!!id);
+
+    React.useEffect(() => {
+        if (id) {
+            fetchQuiz();
+        }
+    }, [id]);
+
+    const fetchQuiz = async () => {
+        try {
+            let quiz;
+            if (isDemoMode) {
+                quiz = quizzes.find((q: any) => q._id === id);
+            } else {
+                const res = await quizzesAPI.getForEdit(id!);
+                quiz = res.data.data;
+            }
+
+            if (!quiz) throw new Error('Quiz not found');
+
+            setTitle(quiz.title);
+            setSelectedCourse(quiz.course?._id || quiz.course);
+            setTimeLimit(quiz.timeLimit);
+            setPassingScore(quiz.passingScore);
+            setQuestions(quiz.questions);
+        } catch (error) {
+            console.error('Failed to fetch quiz:', error);
+            toast.error('Failed to load quiz data');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAddQuestion = () => {
         setQuestions([...questions, { questionText: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }]);
@@ -40,19 +73,27 @@ const QuizEditor = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedCourse) {
-            alert('Please select a course');
+            toast.error('Please select a course');
             return;
         }
         setIsSubmitting(true);
         try {
-            await createQuiz({
+            const quizData = {
                 title,
                 course: selectedCourse,
                 timeLimit,
                 passingScore,
                 questions
-            });
-            navigate('/admin/courses');
+            };
+
+            if (id) {
+                await updateQuiz(id, quizData);
+                toast.success('Quiz updated successfully');
+            } else {
+                await createQuiz(quizData);
+                toast.success('Quiz created successfully');
+            }
+            navigate(`${isDemoMode ? '/demo' : '/admin'}/quizzes`);
         } catch (error: any) {
             console.error('Failed to create quiz:', error);
             const msg = error.response?.data?.error || error.response?.data?.message || 'Failed to create quiz';
@@ -62,6 +103,14 @@ const QuizEditor = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             <button onClick={() => navigate(-1)} className="flex items-center text-gray-400 hover:text-white">
@@ -70,7 +119,7 @@ const QuizEditor = () => {
 
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    Create New Quiz
+                    {id ? 'Edit Quiz' : 'Create New Quiz'}
                 </h1>
             </div>
 
@@ -148,7 +197,7 @@ const QuizEditor = () => {
                                     />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {question.options.map((option, oIndex) => (
+                                    {question.options.map((option: string, oIndex: number) => (
                                         <div key={oIndex} className="flex items-center space-x-2">
                                             <input
                                                 type="radio"
