@@ -12,11 +12,11 @@ const router = express.Router();
 
 router.route('/')
     .get(getCourses)
-    .post(protect, authorize('admin'), createCourse);
+    .post(protect, authorize('admin', 'superadmin'), createCourse);
 
 router.route('/:id')
     .get(getCourse)
-    .put(protect, authorize('admin'), updateCourse)
-    .delete(protect, authorize('admin'), deleteCourse);
+    .put(protect, authorize('admin', 'superadmin'), updateCourse)
+    .delete(protect, authorize('admin', 'superadmin'), deleteCourse);
 
 module.exports = router;

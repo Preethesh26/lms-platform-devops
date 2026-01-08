@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/contact-admin', contactAdmin);
 
 // Admin only routes
-router.get('/', protect, authorize('admin'), getAllTickets);
-router.put('/:id', protect, authorize('admin'), updateTicketStatus);
+router.get('/', protect, authorize('admin', 'superadmin'), getAllTickets);
+router.put('/:id', protect, authorize('admin', 'superadmin'), updateTicketStatus);
 
 module.exports = router;

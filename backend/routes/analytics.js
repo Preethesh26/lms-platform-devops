@@ -6,7 +6,7 @@ const router = express.Router();
 
 // All analytics routes are protected and admin-only
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'superadmin'));
 
 router.get('/stats', getDashboardStats);
 router.get('/growth', getGrowthData);

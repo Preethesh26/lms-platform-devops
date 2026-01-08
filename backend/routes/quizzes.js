@@ -14,10 +14,10 @@ const router = express.Router();
 
 router.use(protect); // All routes are protected
 
-router.post('/', authorize('admin'), createQuiz);
-router.get('/', authorize('admin'), getAllQuizzes);
+router.post('/', authorize('admin', 'superadmin'), createQuiz);
+router.get('/', authorize('admin', 'superadmin'), getAllQuizzes);
 router.get('/:id', getQuiz); // Students get sanitized version
-router.get('/:id/edit', authorize('admin'), getQuizForEdit); // Admins get full version
+router.get('/:id/edit', authorize('admin', 'superadmin'), getQuizForEdit); // Admins get full version
 router.post('/:id/submit', submitQuiz);
 router.get('/:id/attempts', getQuizAttempts);
 

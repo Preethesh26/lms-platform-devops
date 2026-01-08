@@ -15,14 +15,14 @@ const router = express.Router();
 router.use(protect); // All routes require authentication
 
 router.route('/')
-    .get(authorize('admin'), getUsers);
+    .get(authorize('admin', 'superadmin'), getUsers);
 
-router.post('/bulk-upload', authorize('admin'), upload.single('file'), bulkCreateUsers);
+router.post('/bulk-upload', authorize('admin', 'superadmin'), upload.single('file'), bulkCreateUsers);
 
 router.route('/:id')
     .get(getUser)
     .put(updateUser)
-    .delete(authorize('admin'), deleteUser);
+    .delete(authorize('admin', 'superadmin'), deleteUser);
 
 router.post('/:id/enroll', enrollCourse);
 
