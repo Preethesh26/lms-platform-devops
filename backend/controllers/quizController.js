@@ -54,7 +54,7 @@ exports.getQuiz = async (req, res) => {
 
         // Remove correctOptionIndex from questions for security
         const quizForStudent = quiz.toObject();
-        if (req.user.role !== 'admin') {
+        if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
             quizForStudent.questions = quizForStudent.questions.map(q => {
                 const { correctOptionIndex, explanation, ...rest } = q;
                 return rest;

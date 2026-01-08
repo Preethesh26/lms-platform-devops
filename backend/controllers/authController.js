@@ -132,7 +132,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        if (user.role === 'admin' && user.email !== 'demo-admin@academypro.com' && user.twoFactorEnabled) {
+        if ((user.role === 'admin' || user.role === 'superadmin') && user.email !== 'demo-admin@academypro.com' && user.twoFactorEnabled) {
             return res.status(200).json({
                 success: true,
                 requires2FA: true,
