@@ -181,12 +181,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const fetchData = async () => {
+        console.log("Starting data synchronization...");
         try {
             const token = localStorage.getItem('token');
             let userRole = null;
 
             if (token) {
                 try {
+                    console.log("Fetching current user...");
                     const userRes = await authAPI.getMe();
                     const userData = userRes.data.data;
                     setCurrentUser(userData);
@@ -202,12 +204,30 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 setCurrentUser(null);
             }
 
-            const [coursesRes, settingsRes] = await Promise.all([
-                coursesAPI.getAll(),
-                settingsAPI.getAll().catch(() => ({ data: { success: false, data: {} } }))
-            ]);
-            let finalCourses = coursesRes.data.data || [];
+            // At this point, we know the user's auth status. 
+            // We can set isInitialized to true so the UI can decide whether to show the page or redirect.
+            if (!isInitialized) {
+                console.log("Core auth status known, initializing UI...");
+                setIsInitialized(true);
+            }
 
+            // The rest can be fetched in parallel without blocking the main initialization 
+            // if we are already initialized. However, for FIRST load, we might want settings/courses.
+            // But to avoid the "Initializing..." hang, let's just proceed.
+
+            console.log("Fetching courses and settings...");
+            const [coursesRes, settingsRes] = await Promise.all([
+                coursesAPI.getAll().catch(err => {
+                    console.error("Courses fetch failed:", err);
+                    return { data: { data: [] } };
+                }),
+                settingsAPI.getAll().catch(err => {
+                    console.error("Settings fetch failed:", err);
+                    return { data: { success: false, data: {} } };
+                })
+            ]);
+
+            let finalCourses = coursesRes.data.data || [];
             if (settingsRes.data?.success) {
                 setSettings(settingsRes.data.data);
             }
@@ -225,9 +245,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                         setUsers(MOCK_USERS as any);
                     }
                 }
-            } catch (e) {
-                // Ignore parsing errors or missing userData
-            }
+            } catch (e) { }
 
             if (isDemoUser || window.location.search.includes('demo=1') || window.location.pathname.startsWith('/demo/')) {
                 finalCourses = MOCK_COURSES;
@@ -240,34 +258,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             setCourses(finalCourses);
 
             if (userRole === 'admin' && !isDemoUser) {
-                await fetchUsers();
+                console.log("Fetching admin users list...");
+                fetchUsers(); // Non-blocking
             }
 
-            setIsInitialized(true);
         } catch (error) {
-            console.error('Error fetching data:', error);
-
-            // Fail-safe for demo mode even on network error
-            try {
-                const userDataString = localStorage.getItem('userData');
-                if (userDataString) {
-                    const userData = JSON.parse(userDataString);
-                    if (userData.email === 'demo-admin@academypro.com' || userData.email === 'demo-student@academypro.com') {
-                        setCourses(MOCK_COURSES as any);
-                        setIsDemoMode(true);
-                        if (userData.role === 'admin') {
-                            setUsers(MOCK_USERS as any);
-                        }
-                    } else {
-                        setIsDemoMode(false);
-                    }
-                }
-            } catch (e) {
-                // Ignore parsing errors
-                setIsDemoMode(false);
-            }
-
-            setIsInitialized(true);
+            console.error('Critical error in fetchData:', error);
+            if (!isInitialized) setIsInitialized(true);
         }
     };
 
