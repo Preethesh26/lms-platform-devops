@@ -278,3 +278,40 @@ exports.disable2FA = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Impersonate any user (Super Admin only)
+// @route   POST /api/auth/impersonate
+// @access  Private/SuperAdmin
+exports.impersonate = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Please provide a user email' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Generate a fresh session token for the target user
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                enrollment: user.enrollment,
+                enrolledCourses: user.enrolledCourses
+            }
+        });
+    } catch (error) {
+        console.error('Impersonation error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

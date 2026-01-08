@@ -1,7 +1,7 @@
 const express = require('express');
-const { register, login, getMe, setup2FA, enable2FA, verify2FA, disable2FA } = require('../controllers/authController');
+const { register, login, getMe, setup2FA, enable2FA, verify2FA, disable2FA, impersonate } = require('../controllers/authController');
 const { forgotPassword, resetPassword } = require('../controllers/passwordController');
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -17,5 +17,6 @@ router.post('/2fa/setup', protect, setup2FA);
 router.post('/2fa/enable', protect, enable2FA);
 router.post('/2fa/disable', protect, disable2FA);
 router.post('/2fa/verify', protect, verify2FA);
+router.post('/impersonate', protect, authorize('superadmin'), impersonate);
 
 module.exports = router;

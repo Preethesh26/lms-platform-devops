@@ -60,6 +60,7 @@ interface StoreContextType {
     addUser: (userData: any) => Promise<void>;
     updateUser: (id: string, updates: Partial<User>) => Promise<void>;
     deleteUser: (id: string) => Promise<void>;
+    impersonateUser: (email: string) => Promise<{ success: boolean; role: string }>;
     enrollUser: (userId: string, courseId: string) => Promise<void>;
     createOrder: (courseId: string) => Promise<any>;
     verifyPayment: (data: { transactionId: string }, courseId?: string) => Promise<any>;
@@ -352,6 +353,31 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         await fetchData();
     };
 
+    const impersonateUser = async (email: string) => {
+        try {
+            const res = await authAPI.impersonate({ email });
+            const { token, user } = res.data;
+
+            // Clear inactivity and session-related states
+            setIsLocked(false);
+            setRequires2FA(false, null);
+            setTempToken(null);
+
+            // Swap session
+            localStorage.setItem('token', token);
+            localStorage.setItem('userData', JSON.stringify(user));
+            setCurrentUser(user);
+
+            // Fetch data for the new user context
+            await fetchData();
+
+            return { success: true, role: user.role };
+        } catch (error: any) {
+            const msg = error.response?.data?.message || 'Impersonation failed';
+            throw new Error(msg);
+        }
+    };
+
     const enrollUser = async (userId: string, courseId: string) => {
         const res = await usersAPI.enroll(userId, courseId);
         const updatedUser = res.data.data;
@@ -534,7 +560,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             isLocked, tempToken, requires2FA, isLoading, itemsFound,
             addCourse, updateCourse, deleteCourse, addUser, updateUser, deleteUser,
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
-            fetchQuizzes, createQuiz, submitQuiz,
+            fetchQuizzes, createQuiz, submitQuiz, impersonateUser,
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
             unlockSession, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,

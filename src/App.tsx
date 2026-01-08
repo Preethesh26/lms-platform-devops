@@ -23,6 +23,7 @@ import TestEditor from './pages/admin/TestEditor';
 import TestInvitations from "./pages/admin/TestInvitations";
 import Settings from "./pages/admin/Settings";
 import SupportInbox from "@/pages/admin/SupportInbox";
+import AccountResolver from "./pages/admin/AccountResolver";
 import ResetPasswordPage from './pages/user/ResetPassword';
 import ContactAdminPage from './pages/user/ContactAdmin';
 import MaintenancePage from './pages/Maintenance';
@@ -83,6 +84,7 @@ function App() {
                             <Route path="/admin/tests/:id/invitations" element={<TestInvitations />} />
                             <Route path="/admin/settings" element={<Settings />} />
                             <Route path="/admin/support" element={<SupportInbox />} />
+                            <Route path="/admin/account-resolver" element={<AccountResolver />} />
 
                             {/* Demo Specific Routes */}
                             <Route path="/demo/dashboard" element={<AdminDashboard />} />

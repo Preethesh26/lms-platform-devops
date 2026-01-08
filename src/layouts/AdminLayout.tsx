@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { ClipboardList, Menu, X, Monitor, ChevronRight, LayoutDashboard, Database, GraduationCap, PenTool, Settings as SettingsIcon, MessageSquare, LogOut } from 'lucide-react';
+import { ClipboardList, Menu, X, Monitor, ChevronRight, LayoutDashboard, Database, GraduationCap, PenTool, Settings as SettingsIcon, MessageSquare, LogOut, UserSearch } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -68,6 +68,9 @@ export default function AdminLayout() {
         { to: `${currentPrefix}/tests`, label: "Tests", icon: ClipboardList, category: "Management" },
         { to: `${currentPrefix}/support`, label: "Help Tickets", icon: MessageSquare, category: "Support" },
         { to: `${currentPrefix}/settings`, label: "Settings", icon: SettingsIcon, category: "System" },
+        ...(currentUser?.role === 'superadmin' ? [
+            { to: `${currentPrefix}/account-resolver`, label: "Account Resolver", icon: UserSearch, category: "System" }
+        ] : []),
     ];
 
     return (
