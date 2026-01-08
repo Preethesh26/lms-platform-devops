@@ -39,6 +39,16 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
+        // Role-based restrictions: Only superadmin can modify an admin
+        if (originalUser.role === 'admin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Only Super Admin can modify an administrator account.' });
+        }
+
+        // Only superadmin can promote someone to admin or superadmin
+        if (req.body.role && (req.body.role === 'admin' || req.body.role === 'superadmin') && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Only Super Admin can assign admin or superadmin roles.' });
+        }
+
         // If password is being updated, hash it first
         if (req.body.password) {
             const bcrypt = require('bcryptjs');
@@ -94,10 +104,23 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
-        const user = await User.findByIdAndDelete(userId);
-        if (!user) {
+        const userToDelete = await User.findById(userId);
+
+        if (!userToDelete) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+
+        // Role-based restrictions: Only superadmin can delete an admin
+        if (userToDelete.role === 'admin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Only Super Admin can delete an administrator account.' });
+        }
+
+        // Prevent deleting oneself or another superadmin (optional but safer)
+        if (userToDelete.role === 'superadmin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Super Admin accounts cannot be deleted by regular admins.' });
+        }
+
+        await User.findByIdAndDelete(userId);
 
         // Sync to Google Sheets (non-blocking)
         deleteUserFromSheet(userId).catch(err => console.error('Sheet Delete Background Error:', err));

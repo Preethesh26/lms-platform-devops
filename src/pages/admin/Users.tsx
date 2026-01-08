@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminUsersPage() {
     const navigate = useNavigate();
-    const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers } = useStore();
+    const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers, currentUser } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
@@ -258,7 +258,13 @@ export default function AdminUsersPage() {
                                     <Tabs defaultValue="user" onValueChange={setSelectedRole} className="w-full">
                                         <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
                                             <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
-                                            <TabsTrigger value="admin" className="rounded-lg font-bold">Admin</TabsTrigger>
+                                            <TabsTrigger
+                                                value="admin"
+                                                className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                disabled={currentUser?.role !== 'superadmin'}
+                                            >
+                                                Admin {currentUser?.role !== 'superadmin' && " (Super Admin Only)"}
+                                            </TabsTrigger>
                                         </TabsList>
                                     </Tabs>
                                 </div>
@@ -410,21 +416,28 @@ export default function AdminUsersPage() {
                                             </TableCell>
                                             <TableCell className="text-muted-foreground font-medium text-sm">{user.email}</TableCell>
                                             <TableCell>
-                                                <Badge className="font-bold bg-orange-100 text-orange-700 hover:bg-orange-200 border-none shadow-none dark:bg-orange-900/30 dark:text-orange-400">
-                                                    Administrator
+                                                <Badge className={`font-bold border-none shadow-none ${user.role === 'superadmin'
+                                                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                                                    : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                                    }`}>
+                                                    {user.role === 'superadmin' ? 'Super Admin' : 'Administrator'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right pr-6">
                                                 <div className="flex justify-end gap-2">
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg" onClick={() => {
-                                                        setSelectedUser(user);
-                                                        setSelectedRole(user.role);
-                                                    }}>
-                                                        <Edit2 className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg" onClick={() => handleDeleteClick(user)}>
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                    {(currentUser?.role === 'superadmin' || user.id === currentUser?.id) && (
+                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg" onClick={() => {
+                                                            setSelectedUser(user);
+                                                            setSelectedRole(user.role);
+                                                        }}>
+                                                            <Edit2 className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                    {currentUser?.role === 'superadmin' && user.role !== 'superadmin' && (
+                                                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg" onClick={() => handleDeleteClick(user)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -479,6 +492,25 @@ export default function AdminUsersPage() {
                                 <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
                                 <Input name="enrollment" defaultValue={selectedUser?.enrollment} className="h-12 rounded-xl" />
                             </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Role</Label>
+                            <Tabs value={selectedRole} onValueChange={setSelectedRole} className="w-full">
+                                <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
+                                    <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
+                                    <TabsTrigger
+                                        value="admin"
+                                        className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        disabled={currentUser?.role !== 'superadmin' && selectedUser?.role !== 'admin'}
+                                    >
+                                        Admin
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                            {currentUser?.role !== 'superadmin' && (
+                                <p className="text-[10px] text-orange-500 font-medium px-1 italic">Role management is restricted to Super Admin.</p>
+                            )}
                         </div>
 
                         <div className="flex items-center space-x-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
@@ -562,6 +594,7 @@ export default function AdminUsersPage() {
 }
 
 function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, onDelete: () => void }) {
+    const { currentUser } = useStore();
     return (
         <Card className="group overflow-hidden rounded-[2.5rem] border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-1 bg-white dark:hover:border-primary/20 relative">
             <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -571,13 +604,13 @@ function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, 
             </div>
             <CardHeader className="p-8 pb-4">
                 <div className="flex items-start justify-between">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${user.role === 'admin'
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${user.role === 'admin' || user.role === 'superadmin'
                         ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-500'
                         : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'
                         }`}>
-                        {user.role === 'admin' ? <Shield className="w-7 h-7" /> : <Fingerprint className="w-7 h-7" />}
+                        {user.role === 'admin' || user.role === 'superadmin' ? <Shield className="w-7 h-7" /> : <Fingerprint className="w-7 h-7" />}
                     </div>
-                    <Badge variant={user.role === 'admin' ? "default" : "secondary"} className="rounded-xl font-bold h-8 px-4 text-[10px] tracking-widest uppercase">
+                    <Badge variant={user.role === 'admin' || user.role === 'superadmin' ? "default" : "secondary"} className={`rounded-xl font-bold h-8 px-4 text-[10px] tracking-widest uppercase ${user.role === 'superadmin' ? 'bg-indigo-600' : ''}`}>
                         {user.role}
                     </Badge>
                 </div>
@@ -604,12 +637,16 @@ function UserCard({ user, onEdit, onDelete }: { user: User, onEdit: () => void, 
                 </div>
             </CardContent>
             <CardFooter className="p-8 pt-0 flex gap-3 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                <Button variant="outline" size="sm" className="flex-1 rounded-xl h-11 font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white" onClick={onEdit}>
-                    Edit Profile
-                </Button>
-                <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onClick={onDelete}>
-                    <Trash2 className="h-5 w-5" />
-                </Button>
+                {(currentUser?.role === 'superadmin' || user.role === 'user' || user.id === currentUser?.id) && (
+                    <Button variant="outline" size="sm" className="flex-1 rounded-xl h-11 font-bold border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:text-white" onClick={onEdit}>
+                        Edit Profile
+                    </Button>
+                )}
+                {currentUser?.role === 'superadmin' && user.role !== 'superadmin' && (
+                    <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onClick={onDelete}>
+                        <Trash2 className="h-5 w-5" />
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     );
