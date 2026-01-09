@@ -8,8 +8,8 @@ const createAdmin = async () => {
     try {
         await connectDB();
 
-        const adminEmail = 'academypro.desk@gmail.com';
-        const adminPassword = 'admin123';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'admin1234';
 
         // Check if admin exists
         let admin = await User.findOne({ role: 'admin' });

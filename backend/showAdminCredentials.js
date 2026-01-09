@@ -15,7 +15,7 @@ const showAdminCredentials = async () => {
             console.log('=================================');
             console.log(`Email: ${admin.email}`);
             console.log(`Name: ${admin.name}`);
-            console.log(`Password: admin123 (just reset)`);
+            console.log(`Password: [As configured in environment variables]`);
             console.log('=================================\n');
         } else {
             console.log('No admin user found in database!');

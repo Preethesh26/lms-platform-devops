@@ -25,5 +25,5 @@ const upgradeToSuperAdmin = async (email) => {
 };
 
 // You can change the email here or pass it as an argument
-const emailToUpgrade = process.argv[2] || 'admin@academypro.com';
+const emailToUpgrade = process.argv[2] || 'user@example.com';
 upgradeToSuperAdmin(emailToUpgrade);

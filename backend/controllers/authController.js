@@ -81,8 +81,13 @@ exports.register = async (req, res) => {
 
         // Send notification to admin (non-blocking)
         try {
-            // Fallback to hardcoded email if env var is missing or undefined
-            const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'academypro.desk@gmail.com';
+            // Use environment variable for admin notifications
+            const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+
+            if (!adminEmail) {
+                console.log('DEBUG: Admin notification email not configured, skipping notification.');
+                return;
+            }
 
             console.log(`DEBUG: Using admin email: ${adminEmail}`);
             console.log(`DEBUG: Env var value was: ${process.env.ADMIN_NOTIFICATION_EMAIL}`);
