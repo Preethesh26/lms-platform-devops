@@ -158,22 +158,6 @@ The backend is hosted on **Render** as a Web Service.
 
 ---
 
-## 🔒 Code Protection & Privacy
-
-AcademyPro is built with industry-standard measures to protect intellectual property and ensure the project remains "Private" rather than Open Source:
-
-- **Private Repository**: Specifically configured as a Private GitHub repository to prevent public access.
-- **Backend Obfuscation**: Uses `javascript-obfuscator` to transform readable backend source code into complex, unreadable logic for production deployment.
-- **Frontend Minification**: Vite-based build process strips comments and compresses code, making frontend logic difficult to reverse-engineer.
-- **Secrets Management**: Sensitive keys (MongoDB, R2, etc.) are isolated in `.env` files and strictly ignored by Git.
-
-### **Building for Production**
-To generate an obfuscated production build of the backend:
-1. `cd backend`
-2. `npm run build:obfuscate`
-3. The protected code will be available in the `backend/dist` folder.
-
----
 
 ## 📄 License
 This project is licensed under the MIT License.
