@@ -10,7 +10,9 @@ import ReactPlayer from 'react-player';
 import QuizPlayer from "@/components/user/QuizPlayer";
 import { AIChatSidebar } from "@/components/user/AIChatSidebar";
 import { aiAPI } from "@/lib/api";
-import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2, ArrowLeft } from "lucide-react";
+import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2, ArrowLeft, Zap } from "lucide-react";
+import { toast } from "sonner";
+
 
 const ReactPlayerAny = ReactPlayer as any;
 
@@ -31,7 +33,8 @@ type ProgressState = {
 export default function CoursePlayerPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const { courses, isInitialized, currentUser, createOrder, verifyPayment } = useStore();
+    const { courses, isInitialized, currentUser, createOrder, verifyPayment, updateCurrentUser } = useStore();
+
     const [course, setCourse] = useState<Course | null>(null);
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
     const [isEnrolled, setIsEnrolled] = useState(false);
@@ -151,14 +154,32 @@ export default function CoursePlayerPage() {
         }));
 
         try {
-            await progressAPI.update({
+            const res = await progressAPI.update({
                 courseId: course.id,
                 lessonId: activeLesson.id,
                 completed: newCompletedStatus,
                 lastPosition: position,
                 totalDuration: getPlayerDuration()
             });
+
+            // Handle XP earned notification
+            if (res.data.xpEarned > 0) {
+                toast.success(`You earned ${res.data.xpEarned} XP!`, {
+                    description: "Lesson completed successfully.",
+                    icon: <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                });
+
+                // Update currentUser XP in state for immediate UI feedback
+                if (res.data.user) {
+                    updateCurrentUser({
+                        xp: res.data.user.xp,
+                        level: res.data.user.level
+                    });
+                }
+            }
+
         } catch (error) {
+
             console.error("Failed to save progress:", error);
             // Revert on failure
             setProgress((prev) => ({

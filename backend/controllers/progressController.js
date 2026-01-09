@@ -1,5 +1,8 @@
 const Progress = require('../models/Progress');
 const Course = require('../models/Course');
+const User = require('../models/User');
+const { calculateLevel } = require('../utils/gamificationUtils');
+
 
 // @desc    Update progress for a specific lesson
 // @route   POST /api/progress/update
@@ -11,6 +14,15 @@ exports.updateProgress = async (req, res) => {
         if (!courseId || !lessonId) {
             return res.status(400).json({ success: false, message: 'Please provide courseId and lessonId' });
         }
+
+        // Check if this is the first time completing this lesson to award XP
+        const existingProgress = await Progress.findOne({
+            user: req.user.id,
+            course: courseId,
+            lessonId: lessonId
+        });
+
+        const newlyCompleted = completed && (!existingProgress || !existingProgress.completed);
 
         // Upsert progress record
         const progress = await Progress.findOneAndUpdate(
@@ -27,10 +39,32 @@ exports.updateProgress = async (req, res) => {
             { new: true, upsert: true } // Create if not exists
         );
 
+        // Award XP if newly completed
+        let xpEarned = 0;
+        let updatedUser = null;
+
+        if (newlyCompleted) {
+            const user = await User.findById(req.user.id);
+            if (user) {
+                user.xp += 50; // 50 XP per lesson
+                user.level = calculateLevel(user.xp);
+                await user.save();
+                xpEarned = 50;
+                updatedUser = {
+                    xp: user.xp,
+                    level: user.level,
+                    streak: user.streak
+                };
+            }
+        }
+
         res.status(200).json({
             success: true,
-            data: progress
+            data: progress,
+            xpEarned,
+            user: updatedUser
         });
+
     } catch (error) {
         console.error('Error updating progress:', error);
         res.status(500).json({ success: false, message: 'Server Error' });

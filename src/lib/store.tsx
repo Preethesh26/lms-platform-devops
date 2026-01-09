@@ -35,7 +35,11 @@ export type User = {
     password?: string;
     needsPasswordReset?: boolean;
     twoFactorEnabled?: boolean;
+    xp: number;
+    streak: number;
+    level: number;
 };
+
 
 // Main State Management for the LMS
 interface StoreContextType {
@@ -78,11 +82,13 @@ interface StoreContextType {
     isLoading: boolean;
     itemsFound: boolean;
     registerUser: (userData: any) => Promise<void>;
+    updateCurrentUser: (updates: Partial<User>) => void;
     searchCourses: (query: string) => void;
     clearSearch: () => void;
     settings: any;
     quizzesAPI: typeof quizzesAPI;
 }
+
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
@@ -177,10 +183,24 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 if (userDataString) {
                     const userData = JSON.parse(userDataString);
                     if (userData.email === 'demo-admin@academypro.com') {
-                        setUsers(MOCK_USERS as any);
+                        setUsers(MOCK_USERS.map((user: any) => ({
+                            id: user.id || user._id,
+                            name: user.name,
+                            email: user.email,
+                            role: user.role,
+                            enrollment: user.enrollment,
+                            enrolledCourses: user.enrolledCourses,
+                            password: user.password,
+                            needsPasswordReset: user.needsPasswordReset || false,
+                            twoFactorEnabled: user.twoFactorEnabled || false,
+                            xp: user.xp || 0,
+                            streak: user.streak || 0,
+                            level: user.level || 1
+                        })) as any);
                         setError(null);
                         return;
                     }
+
                 }
             } catch (e) {
                 // Ignore parsing errors
@@ -582,7 +602,15 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         // Implementation placeholder if needed, or rely on filtered rendering
     };
 
+    const updateCurrentUser = (updates: Partial<User>) => {
+        if (!currentUser) return;
+        const updatedUser = { ...currentUser, ...updates };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('userData', JSON.stringify(updatedUser));
+    };
+
     const clearSearch = () => {
+
         // Implementation placeholder
     };
 
@@ -596,8 +624,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             refetchData: fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
             unlockSession, masterUnlock, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
+            updateCurrentUser,
             settings, quizzesAPI
         }}>
+
             {children}
         </StoreContext.Provider>
     );

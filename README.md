@@ -25,7 +25,7 @@ Check out the live website: **[https://academypro-liard.vercel.app/](https://aca
 ## 🚀 Key Features
 
 ### 👨‍🎓 Student Portal
-- **Intelligent Dashboard**: Track course progress, daily streaks, and completion rates.
+- **Intelligent Dashboard**: Track course progress and completion rates.
 - **Hybrid Video Player**: Smooth playback of both YouTube (Iframe API) and self-hosted videos with position memory.
 - **Global Data Sync**: Automatic background synchronization every 30 seconds ensures you never miss an update.
 - **Interactive Quizzes**: Take assessments directly within the course player.
@@ -54,7 +54,7 @@ AcademyPro includes a powerful standalone test hosting system, ideal for recruit
   - Real-time frontend toast notifications with specific error feedback.
 
 ### 🛡️ Enterprise Security (Admin Protection)
-AcademyPro implements military-grade security for administrative accounts:
+AcademyPro implements industry-standard security for administrative accounts:
 - **Two-Factor Authentication (2FA)**: TOTP-based authentication using Google Authenticator
   - QR code generation for easy setup
   - Mandatory verification during login for protected accounts
@@ -90,7 +90,7 @@ The platform features a comprehensive notification system powered by **Brevo (fo
 - **Backend**: Node.js, Express, MongoDB
 - **Security**: bcryptjs, otplib (TOTP), qrcode, JWT
 - **Email Service**: Brevo (Sendinblue API V3)
-- **DNS & Security**: Cloudflare (CDN, SSL, DDoS Protection)
+- **Object Storage**: Cloudflare R2 (S3-compatible, Zero Egress Fees)
 - **State Management**: React Context + Custom Hook pattern (Global Synchronization)
 - **Deployment**: Vercel (Frontend), Render (Backend)
 
@@ -153,7 +153,7 @@ The frontend is optimized for **Vercel**. It uses the Vite preset and connects t
 The backend is hosted on **Render** as a Web Service.
 - **Node Runtime**: Optimized for Render's environment.
 - **CORS Management**: Dynamically handles requests from the Vercel frontend.
-- **Security & DNS**: Route management and SSL termination via **Cloudflare**.
+- **Media & Storage**: Assets like thumbnails and course videos are served via **Cloudflare R2** for high performance and zero egress costs.
 - **Continuous Deployment**: Automatically redeploys on every push to the `main` branch.
 
 ---

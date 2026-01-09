@@ -80,8 +80,9 @@ export default function MyLearningPage() {
                 <div className="relative z-10 space-y-8 max-w-2xl">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-bold border border-white/20">
                         <Trophy className="h-4 w-4 text-yellow-400" />
-                        <span>Master Level 4 • 1,250 XP • 🚀 4 Day Streak</span>
+                        <span>Master Level {currentUser.level} • {currentUser.xp.toLocaleString()} XP • 🚀 {currentUser.streak} Day Streak</span>
                     </div>
+
                     <div className="space-y-4">
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
                             Hi, {currentUser.name}!
@@ -107,8 +108,9 @@ export default function MyLearningPage() {
                     { label: "Active Courses", value: enrolledCourses.length, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-500/10" },
                     { label: "Hours Learned", value: "24.5", icon: Clock, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-500/10" },
                     { label: "Completion Rate", value: `${overallProgress}%`, icon: TrendingUp, color: "text-green-500", bg: "bg-green-50 dark:bg-green-500/10" },
-                    { label: "Certificates", value: "2", icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-500/10" },
+                    { label: "Daily Streak", value: currentUser.streak, icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-500/10" },
                 ].map((stat, i) => (
+
                     <Card key={i} className="border border-border/50 dark:border-border/30 bg-muted/50 hover:bg-card transition-all hover:shadow-xl hover:-translate-y-1 group p-2 rounded-[2rem]">
                         <CardContent className="p-6 flex flex-col items-center text-center space-y-3">
                             <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform shadow-sm`}>
@@ -255,17 +257,19 @@ export default function MyLearningPage() {
                         </div>
                         <div className="space-y-1">
                             <h3 className="font-black text-white">Daily Streak</h3>
-                            <p className="text-xs text-white/90 font-bold">Learn 15 more mins to keep your 4-day streak alive!</p>
+                            <p className="text-xs text-white/90 font-bold">You've learned for {currentUser.streak} days in a row! Keep it up!</p>
                         </div>
                         <div className="flex items-center gap-1">
-                            {[1, 2, 3, 4].map(day => (
-                                <div key={day} className="h-6 w-6 rounded-md bg-white flex items-center justify-center text-[10px] font-bold text-amber-600 shadow-md">
-                                    {day}
+                            {[...Array(Math.min(currentUser.streak, 7))].map((_, i) => (
+                                <div key={i} className="h-6 w-6 rounded-md bg-white flex items-center justify-center text-[10px] font-bold text-amber-600 shadow-md">
+                                    {i + 1}
                                 </div>
                             ))}
-                            <div className="h-6 w-6 rounded-md border-2 border-dashed border-white/50" />
-                            <div className="h-6 w-6 rounded-md border-2 border-dashed border-white/20" />
+                            {[...Array(Math.max(0, 7 - currentUser.streak))].map((_, i) => (
+                                <div key={i} className="h-6 w-6 rounded-md border-2 border-dashed border-white/20" />
+                            ))}
                         </div>
+
                     </Card>
                 </div>
             </div>

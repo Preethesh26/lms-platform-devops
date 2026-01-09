@@ -2,6 +2,8 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const authenticator = require('otplib').authenticator;
 const qrcode = require('qrcode');
+const { updateStreak } = require('../utils/gamificationUtils');
+
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -105,9 +107,13 @@ exports.register = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                enrollment: user.enrollment
+                enrollment: user.enrollment,
+                xp: user.xp || 0,
+                streak: user.streak || 0,
+                level: user.level || 1
             }
         });
+
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -150,6 +156,11 @@ exports.login = async (req, res) => {
 
         const token = generateToken(user._id);
 
+        // Update streak on login
+        updateStreak(user);
+        await user.save();
+
+
         res.status(200).json({
             success: true,
             token,
@@ -159,9 +170,13 @@ exports.login = async (req, res) => {
                 role: user.role,
                 enrollment: user.enrollment,
                 enrolledCourses: user.enrolledCourses,
-                twoFactorEnabled: user.twoFactorEnabled
+                twoFactorEnabled: user.twoFactorEnabled,
+                xp: user.xp,
+                streak: user.streak,
+                level: user.level
             }
         });
+
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ success: false, message: error.message });
@@ -174,7 +189,13 @@ exports.login = async (req, res) => {
 exports.getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
+
+        // Update streak on every session check/refresh
+        updateStreak(user);
+        await user.save();
+
         res.status(200).json({ success: true, data: user });
+
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -248,9 +269,13 @@ exports.verify2FA = async (req, res) => {
                 role: user.role,
                 enrollment: user.enrollment,
                 enrolledCourses: user.enrolledCourses,
-                twoFactorEnabled: user.twoFactorEnabled
+                twoFactorEnabled: user.twoFactorEnabled,
+                xp: user.xp,
+                streak: user.streak,
+                level: user.level
             }
         });
+
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
