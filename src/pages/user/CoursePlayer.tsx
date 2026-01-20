@@ -289,20 +289,22 @@ export default function CoursePlayerPage() {
         } catch (error: any) {
             console.error('Certificate download error:', error);
 
-            // Handle Axios error for blob responses
+            // Critical: If responseType is blob, the error data is ALSO a Blob
             if (error.response?.data instanceof Blob) {
+                const blob = error.response.data;
                 const reader = new FileReader();
                 reader.onload = () => {
                     try {
-                        const errorData = JSON.parse(reader.result as string);
-                        toast.error(errorData.message || "Failed to download certificate. Check requirements.");
+                        const errorText = reader.result as string;
+                        const errorData = JSON.parse(errorText);
+                        toast.error(errorData.message || "Requirement not met for certificate.");
                     } catch (e) {
-                        toast.error("An error occurred during certificate generation.");
+                        toast.error("You must pass all quizzes before downloading the certificate.");
                     }
                 };
-                reader.readAsText(error.response.data);
+                reader.readAsText(blob);
             } else {
-                toast.error(error.response?.data?.message || "Failed to download certificate.");
+                toast.error(error.response?.data?.message || "Failed to download certificate. Check your progress.");
             }
         }
     };

@@ -4,6 +4,7 @@ import { MOCK_COURSES, MOCK_USERS, MOCK_QUIZZES, MOCK_TICKETS, MOCK_TESTS } from
 
 export type Lesson = {
     id: string;
+    _id?: string;
     title: string;
     videoUrl: string;
     duration: string;
@@ -349,6 +350,29 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateCourse = async (id: string, updates: Partial<Course>) => {
+        // Safety: If updating lessons, ensure we don't accidentally remove quizzes 
+        // if they are missing from the 'updates' but present in the current state
+        if (updates.lessons) {
+            const currentCourse = courses.find(c => c.id === id);
+            if (currentCourse) {
+                const currentQuizzes = currentCourse.lessons.filter(l => l.type === 'quiz');
+                const newLessons = [...updates.lessons];
+
+                // Add back any quizzes that were lost in the update
+                currentQuizzes.forEach(quiz => {
+                    const quizLessonId = quiz.quizId || quiz._id || quiz.id;
+                    const exists = newLessons.some(l =>
+                        (l.quizId && l.quizId.toString() === quizLessonId?.toString()) ||
+                        (l._id && l._id.toString() === quizLessonId?.toString()) ||
+                        (l.id && l.id.toString() === quizLessonId?.toString())
+                    );
+                    if (!exists) {
+                        newLessons.push(quiz);
+                    }
+                });
+                updates.lessons = newLessons;
+            }
+        }
         await coursesAPI.update(id, updates);
         await fetchData();
     };
@@ -491,8 +515,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     const createQuiz = async (quizData: any) => {
         const res = await quizzesAPI.createQuiz(quizData);
-        setQuizzes(prev => [...prev, res.data.data]);
-        return res.data.data;
+        // Force refetch to ensure course curriculum is updated with the new quiz
+        await fetchData();
+        return res.data;
     };
 
     const submitQuiz = async (quizId: string, answers: any[]) => {

@@ -35,7 +35,11 @@ router.get('/:courseId', async (req, res) => {
 
         // Check if all lessons are completed
         if (completedCount < totalLessons) {
-            return res.status(403).json({ success: false, message: 'You must complete all lessons before generating a certificate' });
+            return res.status(403).json({
+                success: false,
+                requirement: 'lessons_complete',
+                message: `You have only completed ${completedCount} out of ${totalLessons} lessons. Please complete all lessons to unlock your certificate.`
+            });
         }
 
         // --- Granular Quiz Pass Verification ---

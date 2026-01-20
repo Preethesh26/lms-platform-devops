@@ -20,14 +20,17 @@ exports.createQuiz = async (req, res) => {
         // Automatically add quiz as a lesson to the course
         const course = await Course.findById(req.body.course);
         if (course) {
+            const quizLessonId = Math.random().toString(36).substr(2, 9);
             course.lessons.push({
+                _id: quiz._id,
                 title: quiz.title,
-                videoUrl: 'QUIZ_PLACEHOLDER', // Placeholder, not used but schema might require string
+                videoUrl: 'QUIZ_PLACEHOLDER',
                 duration: `${quiz.timeLimit > 0 ? quiz.timeLimit + ' min' : 'Untimed'} Quiz`,
                 type: 'quiz',
                 quizId: quiz._id
             });
             await course.save();
+            console.log(`[QUIZ] Automatically added quiz "${quiz.title}" to curriculum of course "${course.title}"`);
         }
 
         res.status(201).json({
@@ -153,15 +156,27 @@ exports.submitQuiz = async (req, res) => {
 
         // If passed, automatically update progress for this quiz lesson
         if (passed) {
-            const course = await Course.findOne({ "lessons.quizId": quiz._id });
+            // Find course where this quiz is a lesson
+            const course = await Course.findOne({
+                $or: [
+                    { "lessons.quizId": quiz._id },
+                    { "lessons._id": quiz._id }
+                ]
+            });
+
             if (course) {
-                const lesson = course.lessons.find(l => l.quizId && l.quizId.toString() === quiz._id.toString());
+                const lesson = course.lessons.find(l =>
+                    (l.quizId && l.quizId.toString() === quiz._id.toString()) ||
+                    (l._id && l._id.toString() === quiz._id.toString())
+                );
+
                 if (lesson) {
+                    const lessonIdToUpdate = lesson._id || lesson.id;
                     await Progress.findOneAndUpdate(
                         {
                             user: req.user.id,
                             course: course._id,
-                            lessonId: lesson._id
+                            lessonId: lessonIdToUpdate
                         },
                         {
                             completed: true,
@@ -169,6 +184,7 @@ exports.submitQuiz = async (req, res) => {
                         },
                         { upsert: true }
                     );
+                    console.log(`[QUIZ] Auto-completed lesson "${lesson.title}" for user "${req.user.email}" in course "${course.title}"`);
                 }
             }
         }
