@@ -524,14 +524,12 @@ export default function CoursePlayerPage() {
                 <div className="lg:col-span-2 space-y-6">
                     {activeLesson?.type === 'quiz' ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <Card className="border-none shadow-2xl bg-gradient-to-br from-card via-card to-primary/5 rounded-[2rem] overflow-hidden">
-                                <QuizPlayer
-                                    quizId={activeLesson.quizId?.toString()}
-                                    onComplete={(score: number, passed: boolean) => {
-                                        console.log('Quiz completed:', score, passed);
-                                    }}
-                                />
-                            </Card>
+                            <QuizPlayer
+                                quizId={activeLesson.quizId?.toString()}
+                                onComplete={(score: number, passed: boolean) => {
+                                    console.log('Quiz completed:', score, passed);
+                                }}
+                            />
                         </div>
                     ) : (
                         <div className="aspect-video bg-black rounded-[2rem] overflow-hidden shadow-2xl border border-border relative group">
