@@ -742,42 +742,43 @@ export default function CoursePlayerPage() {
                             </DialogDescription>
                         </DialogHeader>
 
-                        {(() => {
-                            // Find the lesson to jump to (exact ID or fallback to first quiz)
-                            const lessonToJump = course.lessons.find(l => (l.id || (l as any)._id) === requirementData?.lessonId)
-                                || course.lessons.find(l => l.type === 'quiz');
+                        <div className="mt-8 space-y-3">
+                            {(() => {
+                                // Find the lesson to jump to (exact ID or fallback to first quiz)
+                                const lessonToJump = course.lessons.find(l => (l.id || (l as any)._id) === requirementData?.lessonId)
+                                    || course.lessons.find(l => l.type === 'quiz');
 
-                            if (lessonToJump) {
-                                return (
-                                    <Button
-                                        className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
-                                        onClick={() => {
-                                            handleLessonChange(lessonToJump);
-                                            setShowRequirementDialog(false);
-                                        }}
-                                    >
-                                        {lessonToJump.type === 'quiz' ? (
-                                            <><Sparkles className="w-5 h-5" /> Attempt Quiz Now</>
-                                        ) : (
-                                            <><PlayCircle className="w-5 h-5" /> Complete Lesson</>
-                                        )}
-                                    </Button>
-                                );
-                            }
-                            return null;
-                        })()}
+                                if (lessonToJump) {
+                                    return (
+                                        <Button
+                                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
+                                            onClick={() => {
+                                                handleLessonChange(lessonToJump);
+                                                setShowRequirementDialog(false);
+                                            }}
+                                        >
+                                            {lessonToJump.type === 'quiz' ? (
+                                                <><Sparkles className="w-5 h-5" /> Attempt Quiz Now</>
+                                            ) : (
+                                                <><PlayCircle className="w-5 h-5" /> Complete Lesson</>
+                                            )}
+                                        </Button>
+                                    );
+                                }
+                                return null;
+                            })()}
 
-                        <Button
-                            variant="outline"
-                            className="w-full h-12 border-2 font-black rounded-xl"
-                            onClick={() => setShowRequirementDialog(false)}
-                        >
-                            I'll do it later
-                        </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full h-12 border-2 font-black rounded-xl"
+                                onClick={() => setShowRequirementDialog(false)}
+                            >
+                                I'll do it later
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-        </div >
+                </DialogContent>
+            </Dialog>
+        </div>
     );
 }
