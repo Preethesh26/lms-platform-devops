@@ -31,7 +31,7 @@ type ProgressState = {
 export default function CoursePlayerPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const { courses, isInitialized, currentUser, createOrder, verifyPayment, updateCurrentUser } = useStore();
+    const { courses, isInitialized, currentUser, createOrder, verifyPayment, updateCurrentUser, fetchData } = useStore();
 
     const [course, setCourse] = useState<Course | null>(null);
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
@@ -309,6 +309,9 @@ export default function CoursePlayerPage() {
                             lessonId: errorData.lessonId
                         });
                         setShowRequirementDialog(true);
+
+                        // Refresh data to pick up any self-healed curriculum changes
+                        fetchData();
                     } catch (e) {
                         toast.error("Requirements not met. Please complete all lessons and quizzes.");
                     }
@@ -322,6 +325,8 @@ export default function CoursePlayerPage() {
                     lessonId: errorData?.lessonId
                 });
                 setShowRequirementDialog(true);
+                // Refresh data to pick up any self-healed curriculum changes
+                fetchData();
             }
         }
     };
@@ -747,23 +752,30 @@ export default function CoursePlayerPage() {
 
                         <div className="mt-8 space-y-3">
                             {(() => {
-                                // Find the lesson to jump to (exact ID or fallback to first quiz)
+                                // Aggressive Search: Find lesson by ID, or fallback to first quiz in course
                                 const lessonToJump = course.lessons.find(l => (l.id || (l as any)._id) === requirementData?.lessonId)
-                                    || course.lessons.find(l => l.type === 'quiz');
+                                    || course.lessons.find(l => l.type === 'quiz')
+                                    || course.lessons.find(l => l.title.toLowerCase().includes('quiz'))
+                                    || (requirementData?.type === 'quiz_pass' ? course.lessons.find(l => l.videoUrl === 'QUIZ_PLACEHOLDER') : null);
 
-                                if (lessonToJump) {
+                                if (lessonToJump || requirementData?.type === 'quiz_pass') {
                                     return (
                                         <Button
                                             className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
                                             onClick={() => {
-                                                handleLessonChange(lessonToJump);
+                                                if (lessonToJump) {
+                                                    handleLessonChange(lessonToJump);
+                                                } else {
+                                                    // Ultimate fallback: Just reload the whole course
+                                                    window.location.reload();
+                                                }
                                                 setShowRequirementDialog(false);
                                             }}
                                         >
-                                            {lessonToJump.type === 'quiz' ? (
+                                            {requirementData?.type === 'quiz_pass' ? (
                                                 <><Sparkles className="w-5 h-5" /> Attempt Quiz Now</>
                                             ) : (
-                                                <><PlayCircle className="w-5 h-5" /> Complete Lesson</>
+                                                <><PlayCircle className="w-5 h-5" /> Complete Requirement</>
                                             )}
                                         </Button>
                                     );

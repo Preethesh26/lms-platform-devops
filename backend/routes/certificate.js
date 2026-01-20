@@ -26,6 +26,31 @@ router.get('/:courseId', async (req, res) => {
         const course = await Course.findById(courseId);
         if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
+        // --- Self-Healing Curriculum ---
+        const quizzesForHealing = await Quiz.find({ course: courseId });
+        let updated = false;
+        for (const quiz of quizzesForHealing) {
+            const hasQuiz = course.lessons.some(l =>
+                (l.quizId && l.quizId.toString() === quiz._id.toString()) ||
+                (l.type === 'quiz' && l.title === quiz.title)
+            );
+            if (!hasQuiz) {
+                course.lessons.push({
+                    _id: quiz._id,
+                    title: quiz.title,
+                    videoUrl: 'QUIZ_PLACEHOLDER',
+                    duration: `${quiz.timeLimit > 0 ? quiz.timeLimit + ' min' : 'Untimed'} Quiz`,
+                    type: 'quiz',
+                    quizId: quiz._id
+                });
+                updated = true;
+            }
+        }
+        if (updated) {
+            await course.save();
+            console.log(`[SELF-HEALING] Certificate route restored quizzes for course: ${course.title}`);
+        }
+
         console.log(`[CERTIFICATE] Generating NEW PREMIUM certificate for user: ${user.name || user.email}, Course: ${course.title}`);
 
         const totalLessons = Array.isArray(course.lessons) ? course.lessons.length : 0;
