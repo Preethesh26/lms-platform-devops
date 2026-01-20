@@ -521,21 +521,22 @@ export default function CoursePlayerPage() {
             {/* Lessons Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Player Content */}
-                <div className="lg:col-span-2 space-y-4">
-                    <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-border relative group">
-                        {activeLesson ? (
-                            <div className="w-full h-full relative">
-                                {activeLesson.type === 'quiz' && activeLesson.quizId ? (
-                                    <div className="h-full overflow-y-auto">
-                                        <QuizPlayer
-                                            quizId={activeLesson.quizId.toString()}
-                                            onComplete={(score: number, passed: boolean) => {
-                                                console.log('Quiz completed:', score, passed);
-                                                // Automatic progress save is handled by backend on submit
-                                            }}
-                                        />
-                                    </div>
-                                ) : (
+                <div className="lg:col-span-2 space-y-6">
+                    {activeLesson?.type === 'quiz' ? (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Card className="border-none shadow-2xl bg-gradient-to-br from-card via-card to-primary/5 rounded-[2rem] overflow-hidden">
+                                <QuizPlayer
+                                    quizId={activeLesson.quizId?.toString()}
+                                    onComplete={(score: number, passed: boolean) => {
+                                        console.log('Quiz completed:', score, passed);
+                                    }}
+                                />
+                            </Card>
+                        </div>
+                    ) : (
+                        <div className="aspect-video bg-black rounded-[2rem] overflow-hidden shadow-2xl border border-border relative group">
+                            {activeLesson ? (
+                                <div className="w-full h-full relative">
                                     <>
                                         {/* Hybrid Player: YouTube needs Iframe/ReactPlayer, R2 Files need Native Player */}
                                         {(activeLesson.videoUrl?.includes('youtube.com') || activeLesson.videoUrl?.includes('youtu.be')) ? (
@@ -578,33 +579,33 @@ export default function CoursePlayerPage() {
                                             />
                                         )}
                                     </>
-                                )}
-                                {videoError && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-white z-10">
-                                        <div className="text-center p-4">
-                                            <p className="text-red-400 font-bold mb-2">Video Error</p>
-                                            <p className="text-sm">{videoError}</p>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="mt-4 text-black border-white/20 hover:bg-white/10 hover:text-white"
-                                                onClick={() => window.open(activeLesson?.videoUrl, '_blank')}
-                                            >
-                                                Open in New Tab
-                                            </Button>
+                                    {videoError && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/80 text-white z-10">
+                                            <div className="text-center p-4">
+                                                <p className="text-red-400 font-bold mb-2">Video Error</p>
+                                                <p className="text-sm">{videoError}</p>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="mt-4 text-black border-white/20 hover:bg-white/10 hover:text-white"
+                                                    onClick={() => window.open(activeLesson?.videoUrl, '_blank')}
+                                                >
+                                                    Open in New Tab
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center h-full text-foreground bg-muted">
-                                <div className="text-center">
-                                    <p className="text-lg font-black">No Lesson Selected</p>
-                                    <p className="text-sm font-bold">Select a lesson from the playlist to start watching.</p>
+                                    )}
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-foreground bg-muted">
+                                    <div className="text-center">
+                                        <p className="text-lg font-black">No Lesson Selected</p>
+                                        <p className="text-sm font-bold">Select a lesson from the playlist to start watching.</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
 
 

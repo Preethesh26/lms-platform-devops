@@ -139,23 +139,45 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, quizData, onComplete })
     // Result View
     if (result) {
         return (
-            <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center space-y-6">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${result.passed ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                    {result.passed ? <CheckCircle className="w-10 h-10" /> : <XCircle className="w-10 h-10" />}
+            <div className="bg-card border-none rounded-[2rem] p-10 text-center space-y-8 animate-in zoom-in duration-500">
+                <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto shadow-2xl ${result.passed ? 'bg-green-500 shadow-green-500/20' : 'bg-red-500 shadow-red-500/20'}`}>
+                    {result.passed ? <CheckCircle className="w-12 h-12 text-white" /> : <XCircle className="w-12 h-12 text-white" />}
                 </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">{result.passed ? 'Quiz Passed!' : 'Quiz Failed'}</h2>
-                    <p className="text-gray-400">
-                        You scored <span className="text-white font-bold">{result.score}</span> out of <span className="text-white font-bold">{result.maxScore}</span> ({result.percentage.toFixed(0)}%)
+
+                <div className="space-y-4">
+                    <h2 className="text-4xl font-black tracking-tight">
+                        {result.passed ? 'Fantastic Achievement!' : 'Keep Pushing!'}
+                    </h2>
+                    <p className="text-muted-foreground text-lg font-bold">
+                        You've reached the end of the assessment for <span className="text-foreground">{quiz.title}</span>.
                     </p>
                 </div>
 
-                <div className="flex justify-center gap-4">
+                <div className="bg-muted/50 rounded-3xl p-8 grid grid-cols-2 gap-4 border border-border/50">
+                    <div className="text-center p-4">
+                        <p className="text-3xl font-black text-primary">{result.score} / {result.maxScore}</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Total Score</p>
+                    </div>
+                    <div className="text-center p-4 border-l border-border/50">
+                        <p className="text-3xl font-black text-primary">{result.percentage.toFixed(0)}%</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Accuracy</p>
+                    </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                    {!result.passed && (
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-8 py-4 bg-primary text-white rounded-2xl font-black flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-xl shadow-primary/20"
+                        >
+                            <RotateCcw className="w-5 h-5" /> Retake Assessment
+                        </button>
+                    )}
                     <button
-                        onClick={() => window.location.reload()} // Quick restart
-                        className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium flex items-center gap-2"
+                        onClick={() => window.location.reload()} // Just to refresh state/close
+                        className="px-8 py-4 bg-muted hover:bg-muted/80 text-foreground rounded-2xl font-black transition-all"
                     >
-                        <RotateCcw className="w-4 h-4" /> Retake Quiz
+                        Back to Course
                     </button>
                 </div>
             </div>
@@ -166,77 +188,109 @@ const QuizPlayer: React.FC<QuizPlayerProps> = ({ quizId, quizData, onComplete })
     const currentQuestion = quiz.questions[currentQuestionIndex];
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-            {/* Header */}
-            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
-                <div>
-                    <h2 className="text-xl font-bold text-white">{quiz.title}</h2>
-                    <span className="text-sm text-gray-400">Question {currentQuestionIndex + 1} of {quiz.questions.length}</span>
-                </div>
-                {timeLeft !== null && (
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${timeLeft < 60 ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                        <Clock className="w-4 h-4" />
-                        <span className="font-mono">{formatTime(timeLeft)}</span>
+        <div className="w-full">
+            {/* Top Progress Bar */}
+            <div className="w-full bg-muted h-2 rounded-full overflow-hidden mb-8">
+                <div
+                    className="bg-primary h-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(var(--primary),0.5)]"
+                    style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
+                />
+            </div>
+
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {/* Header Info */}
+                <div className="flex justify-between items-center bg-muted/30 p-4 rounded-2xl border border-border/50">
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-0.5">Assessment Progress</span>
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-lg font-black">{quiz.title}</h2>
+                            <span className="text-xs font-bold px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                                {currentQuestionIndex + 1} / {quiz.questions.length}
+                            </span>
+                        </div>
                     </div>
-                )}
-            </div>
-
-            {/* Content */}
-            <div className="p-6 md:p-8 space-y-8">
-                <div className="text-lg text-white font-medium">
-                    {currentQuestion.questionText}
+                    {timeLeft !== null && (
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 font-black ${timeLeft < 60 ? 'bg-red-500/10 border-red-500/20 text-red-600 animate-pulse' : 'bg-primary/10 border-primary/20 text-primary'}`}>
+                            <Clock className="w-4 h-4" />
+                            <span className="font-mono text-lg">{formatTime(timeLeft)}</span>
+                        </div>
+                    )}
                 </div>
 
-                <div className="space-y-3">
-                    {currentQuestion.options.map((option: string, index: number) => (
-                        <button
-                            key={index}
-                            onClick={() => handleOptionSelect(index)}
-                            className={`w-full text-left p-4 rounded-xl border transition-all ${answers[currentQuestionIndex] === index
-                                ? 'border-purple-500 bg-purple-500/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]'
-                                : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:border-white/20'
-                                }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 ${answers[currentQuestionIndex] === index
-                                    ? 'border-purple-500 bg-purple-500'
-                                    : 'border-gray-500'
-                                    }`}>
-                                    {answers[currentQuestionIndex] === index && <div className="w-2 h-2 rounded-full bg-white" />}
-                                </div>
-                                <span>{option}</span>
-                            </div>
-                        </button>
-                    ))}
+                {/* Content */}
+                <div className="space-y-6">
+                    <div className="text-2xl font-black leading-tight tracking-tight">
+                        {currentQuestion.questionText}
+                    </div>
+
+                    <div className="grid gap-4">
+                        {currentQuestion.options.map((option: string, index: number) => {
+                            const isSelected = answers[currentQuestionIndex] === index;
+                            return (
+                                <button
+                                    key={index}
+                                    onClick={() => handleOptionSelect(index)}
+                                    className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-300 relative group overflow-hidden ${isSelected
+                                        ? 'border-primary bg-primary/5 shadow-xl shadow-primary/5'
+                                        : 'border-border bg-card hover:border-primary/30 hover:bg-muted/50'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-5 relative z-10">
+                                        <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 font-black text-sm transition-colors ${isSelected
+                                            ? 'bg-primary border-primary text-white'
+                                            : 'border-border bg-muted/50 text-muted-foreground group-hover:border-primary/50 group-hover:text-primary'
+                                            }`}>
+                                            {String.fromCharCode(65 + index)}
+                                        </div>
+                                        <span className={`text-lg font-bold ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>{option}</span>
+                                    </div>
+                                    {isSelected && (
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                                            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center animate-in zoom-in duration-300">
+                                                <div className="w-2 h-2 rounded-full bg-white" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
 
-            {/* Footer */}
-            <div className="p-6 border-t border-white/10 flex justify-between items-center bg-black/20">
-                <button
-                    onClick={handlePrev}
-                    disabled={currentQuestionIndex === 0}
-                    className="px-6 py-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Previous
-                </button>
+                {/* Footer Controls */}
+                <div className="flex justify-between items-center gap-4 pt-4">
+                    <button
+                        onClick={handlePrev}
+                        disabled={currentQuestionIndex === 0}
+                        className="px-8 py-4 text-sm font-black text-muted-foreground hover:text-foreground disabled:opacity-0 transition-all flex items-center gap-2"
+                    >
+                        Previous Question
+                    </button>
 
-                {currentQuestionIndex === quiz.questions.length - 1 ? (
-                    <button
-                        onClick={handleSubmit}
-                        disabled={submitting || (Object.keys(answers).length < quiz.questions.length)} // Require all answers? Maybe not.
-                        className="px-8 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                        {submitting ? 'Submitting...' : 'Submit Quiz'}
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleNext}
-                        className="px-8 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium"
-                    >
-                        Next Question
-                    </button>
-                )}
+                    <div className="flex-1 flex justify-end">
+                        {currentQuestionIndex === quiz.questions.length - 1 ? (
+                            <button
+                                onClick={handleSubmit}
+                                disabled={submitting || (Object.keys(answers).length < quiz.questions.length)}
+                                className="px-12 py-4 bg-primary text-white rounded-2xl font-black hover:scale-[1.02] transition-transform shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                            >
+                                {submitting ? (
+                                    <>Processing Result...</>
+                                ) : (
+                                    <><PlayCircle className="w-5 h-5" /> Submit Final Assessment</>
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleNext}
+                                disabled={answers[currentQuestionIndex] === undefined}
+                                className="px-10 py-4 bg-foreground text-background dark:bg-white dark:text-black rounded-2xl font-black hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Next Question
+                            </button>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

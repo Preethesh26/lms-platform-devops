@@ -79,6 +79,7 @@ interface StoreContextType {
     deleteQuiz: (id: string) => Promise<void>;
     submitQuiz: (quizId: string, answers: any[]) => Promise<any>;
     refetchData: () => Promise<void>;
+    fetchData: () => Promise<void>;
     refetchUsers: () => Promise<void>;
     isLoading: boolean;
     itemsFound: boolean;
@@ -655,6 +656,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             enrollUser, createOrder, verifyPayment, loginUser, logoutUser,
             fetchQuizzes, createQuiz, updateQuiz, deleteQuiz, submitQuiz, impersonateUser,
             refetchData: fetchData,
+            fetchData,
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
             unlockSession, masterUnlock, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
             updateCurrentUser,
