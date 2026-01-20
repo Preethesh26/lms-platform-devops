@@ -648,11 +648,16 @@ export default function AdminCoursesPage() {
                                                     {index + 1}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium">{lesson.title}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-medium">{lesson.title}</p>
+                                                        {lesson.type === 'quiz' && (
+                                                            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Quiz</span>
+                                                        )}
+                                                    </div>
                                                     <p className="text-xs text-muted-foreground">{lesson.duration}</p>
                                                 </div>
                                             </div>
-                                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteLesson(lesson.id)}>
+                                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteLesson(lesson.id || (lesson as any)._id)}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
                                             </Button>
                                         </div>

@@ -1,6 +1,7 @@
 const Quiz = require('../models/Quiz');
 const QuizAttempt = require('../models/QuizAttempt');
 const Course = require('../models/Course');
+const Progress = require('../models/Progress');
 
 // @desc    Create a new quiz
 // @route   POST /api/quizzes
@@ -149,6 +150,28 @@ exports.submitQuiz = async (req, res) => {
             passed,
             answers: processedAnswers
         });
+
+        // If passed, automatically update progress for this quiz lesson
+        if (passed) {
+            const course = await Course.findOne({ "lessons.quizId": quiz._id });
+            if (course) {
+                const lesson = course.lessons.find(l => l.quizId && l.quizId.toString() === quiz._id.toString());
+                if (lesson) {
+                    await Progress.findOneAndUpdate(
+                        {
+                            user: req.user.id,
+                            course: course._id,
+                            lessonId: lesson._id
+                        },
+                        {
+                            completed: true,
+                            lastPosition: 0
+                        },
+                        { upsert: true }
+                    );
+                }
+            }
+        }
 
         res.status(200).json({
             success: true,

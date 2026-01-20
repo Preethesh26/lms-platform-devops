@@ -16,6 +16,19 @@ exports.updateProgress = async (req, res) => {
         }
 
         // Check if this is the first time completing this lesson to award XP
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        const lesson = course.lessons.find(l => l._id.toString() === lessonId);
+        if (lesson && lesson.type === 'quiz' && completed) {
+            return res.status(403).json({
+                success: false,
+                message: 'Quiz lessons can only be completed by passing the quiz.'
+            });
+        }
+
         const existingProgress = await Progress.findOne({
             user: req.user.id,
             course: courseId,

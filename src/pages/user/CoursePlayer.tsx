@@ -130,15 +130,16 @@ export default function CoursePlayerPage() {
     const saveProgress = useCallback(async (completedOverride?: boolean, position: number = 0) => {
         if (!course || !activeLesson) return;
 
-        const currentStatus = progressRef.current[activeLesson.id]?.completed || false;
+        const lessonId = activeLesson.id || (activeLesson as any)._id;
+        const currentStatus = progressRef.current[lessonId]?.completed || false;
         // If override provided, use it. Else, keep existing status.
         const newCompletedStatus = completedOverride !== undefined ? completedOverride : currentStatus;
 
         // Optimistic UI Update
-        const previousProgress = progressRef.current[activeLesson.id];
+        const previousProgress = progressRef.current[lessonId];
         setProgress((prev) => ({
             ...prev,
-            [activeLesson.id]: {
+            [lessonId]: {
                 completed: newCompletedStatus,
                 lastPosition: position
             }
@@ -147,7 +148,7 @@ export default function CoursePlayerPage() {
         try {
             const res = await progressAPI.update({
                 courseId: course.id,
-                lessonId: activeLesson.id,
+                lessonId: lessonId,
                 completed: newCompletedStatus,
                 lastPosition: position,
                 totalDuration: getPlayerDuration()
@@ -175,7 +176,7 @@ export default function CoursePlayerPage() {
             // Revert on failure
             setProgress((prev) => ({
                 ...prev,
-                [activeLesson.id]: previousProgress
+                [lessonId]: previousProgress
             }));
         }
     }, [course, activeLesson]);
@@ -213,9 +214,11 @@ export default function CoursePlayerPage() {
 
     const handleReady = () => {
         setIsVideoReady(true);
+        if (!activeLesson) return;
         // Seek to saved position if exists and not completed
-        if (activeLesson && progress[activeLesson.id]?.lastPosition) {
-            const savedTime = progress[activeLesson.id].lastPosition;
+        const lessonId = activeLesson.id || (activeLesson as any)._id;
+        if (activeLesson && progress[lessonId]?.lastPosition) {
+            const savedTime = progress[lessonId].lastPosition;
             // Don't seek if we are at the very beginning (0-5s) to avoid seeking loops on restart
             if (savedTime > 5) {
                 if (playerRef.current && typeof playerRef.current.seekTo === 'function') {
@@ -488,7 +491,7 @@ export default function CoursePlayerPage() {
                                             quizId={activeLesson.quizId.toString()}
                                             onComplete={(score: number, passed: boolean) => {
                                                 console.log('Quiz completed:', score, passed);
-                                                saveProgress(passed, 0);
+                                                // Automatic progress save is handled by backend on submit
                                             }}
                                         />
                                     </div>
@@ -623,7 +626,7 @@ export default function CoursePlayerPage() {
                             </div>
 
                             {/* Certificate Button */}
-                            {(Object.values(progress).filter(p => p.completed).length === course.lessons.length) && course.lessons.length > 0 && (
+                            {course.lessons.length > 0 && course.lessons.every(lesson => progress[lesson.id || (lesson as any)._id]?.completed) && (
                                 <Button
                                     onClick={handleDownloadCertificate}
                                     className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white gap-2 animate-pulse"
@@ -641,8 +644,9 @@ export default function CoursePlayerPage() {
                             ) : (
                                 <div className="divide-y">
                                     {course.lessons.map((lesson, index) => {
-                                        const isCompleted = progress[lesson.id]?.completed;
-                                        const isActive = activeLesson?.id === lesson.id;
+                                        const lessonId = lesson.id || (lesson as any)._id;
+                                        const isCompleted = progress[lessonId]?.completed;
+                                        const isActive = (activeLesson?.id || (activeLesson as any)?._id) === lessonId;
 
                                         return (
                                             <button
