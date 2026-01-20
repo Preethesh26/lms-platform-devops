@@ -297,14 +297,40 @@ export default function CoursePlayerPage() {
                     try {
                         const text = reader.result as string;
                         const errorData = JSON.parse(text);
-                        toast.error(errorData.message || "Requirements not met for certificate.");
+
+                        if (errorData.lessonId) {
+                            toast.error(errorData.message || "Requirements not met.", {
+                                action: {
+                                    label: "Go to Quiz",
+                                    onClick: () => {
+                                        const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === errorData.lessonId);
+                                        if (missingLesson) handleLessonChange(missingLesson);
+                                    }
+                                }
+                            });
+                        } else {
+                            toast.error(errorData.message || "Requirements not met for certificate.");
+                        }
                     } catch (e) {
                         toast.error("You must pass all course quizzes to download this certificate.");
                     }
                 };
                 reader.readAsText(blob);
             } else {
-                toast.error(error.response?.data?.message || "Failed to download certificate. Check your progress.");
+                const errorData = error.response?.data;
+                if (errorData?.lessonId) {
+                    toast.error(errorData.message, {
+                        action: {
+                            label: "Go to Quiz",
+                            onClick: () => {
+                                const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === errorData.lessonId);
+                                if (missingLesson) handleLessonChange(missingLesson);
+                            }
+                        }
+                    });
+                } else {
+                    toast.error(errorData?.message || "Failed to download certificate. Check your progress.");
+                }
             }
         }
     };
