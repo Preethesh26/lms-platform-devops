@@ -46,6 +46,8 @@ export default function CoursePlayerPage() {
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [videoError, setVideoError] = useState<string | null>(null);
+    const [maxTimeWatched, setMaxTimeWatched] = useState(0); // Tracks furthest point watched in current video
+    const lastTimeRef = useRef(0); // Used to detect seeking
 
     // Requirement Dialog State
     const [showRequirementDialog, setShowRequirementDialog] = useState(false);
@@ -193,10 +195,15 @@ export default function CoursePlayerPage() {
 
     // Handle Lesson Change
     const handleLessonChange = (lesson: Lesson) => {
+        const lessonId = lesson.id || (lesson as any)._id;
+        const savedTime = progress[lessonId]?.lastPosition || 0;
+
         setActiveLesson(lesson);
         setIsVideoReady(false);
         setIsPlaying(false);
         setVideoError(null);
+        setMaxTimeWatched(savedTime); // Allow seeking up to where they left off
+        lastTimeRef.current = savedTime;
 
         // Auto-scroll to top so the user sees the new lesson/quiz
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -563,6 +570,29 @@ export default function CoursePlayerPage() {
                                                 onCanPlay={handleReady}
                                                 onTimeUpdate={(e) => {
                                                     const video = e.currentTarget;
+                                                    const currentTime = video.currentTime;
+                                                    const lessonId = activeLesson.id || (activeLesson as any)._id;
+                                                    const isAlreadyCompleted = progress[lessonId]?.completed;
+
+                                                    // --- Seek Restriction Logic ---
+                                                    // If not already completed, prevent forward seeking
+                                                    if (!isAlreadyCompleted) {
+                                                        // Detect seeking (large jump forward)
+                                                        if (currentTime > lastTimeRef.current + 2) {
+                                                            // If seeking beyond max watched point, snap back
+                                                            if (currentTime > maxTimeWatched + 1) {
+                                                                video.currentTime = maxTimeWatched;
+                                                                return; // Don't process further for this tick
+                                                            }
+                                                        }
+
+                                                        // Update max point watched
+                                                        if (currentTime > maxTimeWatched) {
+                                                            setMaxTimeWatched(currentTime);
+                                                        }
+                                                    }
+                                                    lastTimeRef.current = currentTime;
+
                                                     handleProgress({
                                                         playedSeconds: video.currentTime,
                                                         played: video.duration > 0 ? video.currentTime / video.duration : 0,
@@ -664,14 +694,14 @@ export default function CoursePlayerPage() {
                                 ></div>
                             </div>
 
-                            {/* Certificate Button - Changed criteria to 'all lessons complete' instead of 'all content complete' */}
+                            {/* Certificate Button - HIDDEN until strictly finished */}
                             {course.lessons.length > 0 && course.lessons.filter(l => l.type !== 'quiz').every(lesson => progress[lesson.id || (lesson as any)._id]?.completed) && (
                                 <Button
                                     onClick={handleDownloadCertificate}
-                                    className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white gap-2 animate-pulse"
+                                    className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white gap-2 border-2 border-yellow-400 shadow-[0_0_20px_rgba(202,138,4,0.3)] animate-in fade-in zoom-in duration-500"
                                 >
                                     <Award className="w-4 h-4" />
-                                    Download Certificate
+                                    Download Course Certificate
                                 </Button>
                             )}
                         </div>
