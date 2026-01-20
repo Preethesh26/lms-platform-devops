@@ -47,10 +47,13 @@ export default function CoursePlayerPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [videoError, setVideoError] = useState<string | null>(null);
 
-    // Keep progressRef in sync
-    useEffect(() => {
-        progressRef.current = progress;
-    }, [progress]);
+    // Requirement Dialog State
+    const [showRequirementDialog, setShowRequirementDialog] = useState(false);
+    const [requirementData, setRequirementData] = useState<{
+        type: 'lessons_complete' | 'quiz_pass';
+        message: string;
+        lessonId?: string;
+    } | null>(null);
 
     // Fetch Course & Enrollment Logic
     useEffect(() => {
@@ -277,7 +280,6 @@ export default function CoursePlayerPage() {
         if (!course) return;
         try {
             const res = await certificateAPI.download(course.id);
-            // Create blob link to download
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -289,7 +291,7 @@ export default function CoursePlayerPage() {
         } catch (error: any) {
             console.error('Certificate download error:', error);
 
-            // Robust Blob error handling
+            // Handle Blob error parsing for Dialog
             if (error.response?.data instanceof Blob || error.response?.data?.type) {
                 const blob = error.response.data instanceof Blob ? error.response.data : new Blob([JSON.stringify(error.response.data)]);
                 const reader = new FileReader();
@@ -298,39 +300,25 @@ export default function CoursePlayerPage() {
                         const text = reader.result as string;
                         const errorData = JSON.parse(text);
 
-                        if (errorData.lessonId) {
-                            toast.error(errorData.message || "Requirements not met.", {
-                                action: {
-                                    label: "Go to Quiz",
-                                    onClick: () => {
-                                        const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === errorData.lessonId);
-                                        if (missingLesson) handleLessonChange(missingLesson);
-                                    }
-                                }
-                            });
-                        } else {
-                            toast.error(errorData.message || "Requirements not met for certificate.");
-                        }
+                        setRequirementData({
+                            type: errorData.requirement || 'quiz_pass',
+                            message: errorData.message || "Requirement not met for certificate.",
+                            lessonId: errorData.lessonId
+                        });
+                        setShowRequirementDialog(true);
                     } catch (e) {
-                        toast.error("You must pass all course quizzes to download this certificate.");
+                        toast.error("Requirements not met. Please complete all lessons and quizzes.");
                     }
                 };
                 reader.readAsText(blob);
             } else {
                 const errorData = error.response?.data;
-                if (errorData?.lessonId) {
-                    toast.error(errorData.message, {
-                        action: {
-                            label: "Go to Quiz",
-                            onClick: () => {
-                                const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === errorData.lessonId);
-                                if (missingLesson) handleLessonChange(missingLesson);
-                            }
-                        }
-                    });
-                } else {
-                    toast.error(errorData?.message || "Failed to download certificate. Check your progress.");
-                }
+                setRequirementData({
+                    type: errorData?.requirement || 'quiz_pass',
+                    message: errorData?.message || "Failed to download certificate. Check your progress.",
+                    lessonId: errorData?.lessonId
+                });
+                setShowRequirementDialog(true);
             }
         }
     };
@@ -522,9 +510,9 @@ export default function CoursePlayerPage() {
                     </div>
                 </div>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-300">
-                {/* Video Player Section (Left Column) */}
+            {/* Lessons Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Player Content */}
                 <div className="lg:col-span-2 space-y-4">
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-border relative group">
                         {activeLesson ? (
@@ -734,6 +722,51 @@ export default function CoursePlayerPage() {
                     </Card>
                 </div>
             </div>
+
+            {/* Requirement Dialog */}
+            <Dialog open={showRequirementDialog} onOpenChange={setShowRequirementDialog}>
+                <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="bg-gradient-to-br from-yellow-500/10 via-background to-background p-6">
+                        <div className="w-16 h-16 bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                            <Lock className="w-8 h-8 text-yellow-600" />
+                        </div>
+
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black text-center mb-2">Requirement Unmet</DialogTitle>
+                            <DialogDescription className="text-center text-foreground/80 font-bold leading-relaxed">
+                                {requirementData?.message}
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="mt-8 space-y-3">
+                            {requirementData?.lessonId && (
+                                <Button
+                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
+                                    onClick={() => {
+                                        const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === requirementData.lessonId);
+                                        if (missingLesson) handleLessonChange(missingLesson);
+                                        setShowRequirementDialog(false);
+                                    }}
+                                >
+                                    {requirementData.type === 'quiz_pass' ? (
+                                        <><Sparkles className="w-5 h-5" /> Take Quiz Now</>
+                                    ) : (
+                                        <><PlayCircle className="w-5 h-5" /> Go to Lesson</>
+                                    )}
+                                </Button>
+                            )}
+
+                            <Button
+                                variant="outline"
+                                className="w-full h-12 border-2 font-black rounded-xl"
+                                onClick={() => setShowRequirementDialog(false)}
+                            >
+                                I'll do it later
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

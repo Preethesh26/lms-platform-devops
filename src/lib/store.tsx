@@ -302,14 +302,22 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
             setCourses(finalCourses);
 
+            // Separate privileged data fetching
             const isAdmin = userRole === 'admin' || userRole === 'superadmin';
             if (isAdmin && !isDemoUser) {
-                console.log("Fetching privileged users list...");
-                fetchUsers(); // Non-blocking
+                // Fetch users in background, don't block initialization
+                fetchUsers().catch(err => console.error("Background fetchUsers failed:", err));
+            }
+
+            // Mark as initialized as soon as critical data is ready
+            if (!isInitialized) {
+                console.log("Global initialization complete.");
+                setIsInitialized(true);
             }
 
         } catch (error) {
             console.error('Critical error in fetchData:', error);
+            // Ensure we at least show the UI even on total failure
             if (!isInitialized) setIsInitialized(true);
         }
     };
