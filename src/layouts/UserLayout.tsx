@@ -76,14 +76,14 @@ export default function UserLayout() {
                                 <div className="hidden lg:flex flex-col items-end mr-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Certified Learner</span>
                                     <span className="text-xs font-bold text-foreground truncate max-w-[120px]">
-                                        {currentUser.name.split(' ')[0]}
+                                        {currentUser.name?.split(' ')[0] || currentUser.email.split('@')[0]}
                                     </span>
                                 </div>
                                 <Button size="sm" variant="outline" onClick={handleLogout} className="border-2 font-bold h-9 rounded-xl hidden sm:flex">
                                     Sign Out
                                 </Button>
                                 <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold md:hidden">
-                                    {currentUser.name[0]}
+                                    {(currentUser.name || currentUser.email)[0]}
                                 </div>
                             </div>
                         ) : (
@@ -122,10 +122,10 @@ export default function UserLayout() {
                                 <div className="mt-4 pt-4 border-t border-border space-y-2">
                                     <div className="flex items-center gap-3 p-4">
                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                                            {currentUser.name[0]}
+                                            {(currentUser.name || currentUser.email)[0]}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-sm">{currentUser.name}</span>
+                                            <span className="font-bold text-sm">{currentUser.name || currentUser.email}</span>
                                             <span className="text-xs text-muted-foreground">{currentUser.email}</span>
                                         </div>
                                     </div>

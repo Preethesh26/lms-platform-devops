@@ -9,7 +9,7 @@ import { supportAPI } from "@/lib/api";
 
 export default function ContactAdmin() {
     const { currentUser } = useStore();
-    const [name, setName] = useState(currentUser?.email?.split('@')[0] || "");
+    const [name, setName] = useState(currentUser?.name || currentUser?.email?.split('@')[0] || "");
     const [email, setEmail] = useState(currentUser?.email || "");
     const [message, setMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");

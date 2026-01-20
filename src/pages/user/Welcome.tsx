@@ -64,7 +64,7 @@ export default function WelcomePage() {
                         </div>
                         <div className="space-y-1.5 md:space-y-2">
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary dark:text-white px-2">
-                                Welcome, {currentUser?.name.split(' ')[0]}!
+                                Welcome, {currentUser?.name?.split(' ')[0] || currentUser?.email?.split('@')[0] || 'Learner'}!
                             </h1>
                             <p className="text-base md:text-xl text-foreground font-bold italic opacity-80 px-4">
                                 {overallProgress !== null && overallProgress > 0
