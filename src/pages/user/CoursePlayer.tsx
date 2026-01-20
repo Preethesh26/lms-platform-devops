@@ -647,18 +647,18 @@ export default function CoursePlayerPage() {
                         <div className="p-4 border-b bg-muted">
                             <h3 className="font-black text-lg">Course Content</h3>
                             <p className="text-xs text-foreground font-bold mt-1">
-                                {Object.values(progress).filter(p => p.completed).length} / {course.lessons.length} Completed
+                                {course.lessons.filter(l => l.type !== 'quiz').filter(lesson => progress[lesson.id || (lesson as any)._id]?.completed).length} / {course.lessons.filter(l => l.type !== 'quiz').length} Lessons Completed
                             </p>
                             {/* Progress Bar */}
                             <div className="w-full bg-secondary h-3 rounded-full mt-3 overflow-hidden shadow-inner">
                                 <div
                                     className="bg-primary h-full rounded-full transition-all duration-300 shadow-md"
-                                    style={{ width: `${(Object.values(progress).filter(p => p.completed).length / course.lessons.length) * 100}%` }}
+                                    style={{ width: `${(course.lessons.filter(l => l.type !== 'quiz').filter(lesson => progress[lesson.id || (lesson as any)._id]?.completed).length / Math.max(1, course.lessons.filter(l => l.type !== 'quiz').length)) * 100}%` }}
                                 ></div>
                             </div>
 
-                            {/* Certificate Button */}
-                            {course.lessons.length > 0 && course.lessons.every(lesson => progress[lesson.id || (lesson as any)._id]?.completed) && (
+                            {/* Certificate Button - Changed criteria to 'all lessons complete' instead of 'all content complete' */}
+                            {course.lessons.length > 0 && course.lessons.filter(l => l.type !== 'quiz').every(lesson => progress[lesson.id || (lesson as any)._id]?.completed) && (
                                 <Button
                                     onClick={handleDownloadCertificate}
                                     className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white gap-2 animate-pulse"
@@ -675,47 +675,49 @@ export default function CoursePlayerPage() {
                                 </div>
                             ) : (
                                 <div className="divide-y">
-                                    {course.lessons.map((lesson, index) => {
-                                        const lessonId = lesson.id || (lesson as any)._id;
-                                        const isCompleted = progress[lessonId]?.completed;
-                                        const isActive = (activeLesson?.id || (activeLesson as any)?._id) === lessonId;
+                                    {course.lessons
+                                        .filter(lesson => lesson.type !== 'quiz') // Hide quizzes from main curriculum
+                                        .map((lesson, index) => {
+                                            const lessonId = lesson.id || (lesson as any)._id;
+                                            const isCompleted = progress[lessonId]?.completed;
+                                            const isActive = (activeLesson?.id || (activeLesson as any)?._id) === lessonId;
 
-                                        return (
-                                            <button
-                                                key={lesson.id}
-                                                onClick={() => handleLessonChange(lesson)}
-                                                className={cn(
-                                                    "w-full text-left p-4 hover:bg-muted font-bold transition-all flex gap-3 group relative",
-                                                    isActive ? "bg-primary text-white" : ""
-                                                )}
-                                            >
-                                                <div className={cn(
-                                                    "flex items-center justify-center w-7 h-7 rounded-full text-xs font-black shrink-0 transition-colors shadow-sm",
-                                                    isCompleted ? "bg-green-600 text-white" : (isActive ? "bg-white text-primary" : "bg-muted-foreground text-white")
-                                                )}>
-                                                    {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <p className={cn(
-                                                        "text-sm font-black truncate",
-                                                        isActive ? "text-white" : "text-foreground",
-                                                        isCompleted && !isActive && "text-muted-foreground line-through decoration-slate-400"
+                                            return (
+                                                <button
+                                                    key={lesson.id}
+                                                    onClick={() => handleLessonChange(lesson)}
+                                                    className={cn(
+                                                        "w-full text-left p-4 hover:bg-muted font-bold transition-all flex gap-3 group relative",
+                                                        isActive ? "bg-primary text-white" : ""
+                                                    )}
+                                                >
+                                                    <div className={cn(
+                                                        "flex items-center justify-center w-7 h-7 rounded-full text-xs font-black shrink-0 transition-colors shadow-sm",
+                                                        isCompleted ? "bg-green-600 text-white" : (isActive ? "bg-white text-primary" : "bg-muted-foreground text-white")
                                                     )}>
-                                                        {lesson.title}
-                                                    </p>
-                                                    <p className={cn(
-                                                        "text-[10px] font-bold mt-0.5",
-                                                        isActive ? "text-white/90" : "text-muted-foreground"
-                                                    )}>{lesson.duration}</p>
-                                                </div>
-                                                {isActive && (
-                                                    <div className="ml-auto self-center">
-                                                        <PlayCircle className="w-5 h-5 text-white animate-pulse" />
+                                                        {isCompleted ? <CheckCircle className="w-4 h-4" /> : index + 1}
                                                     </div>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className={cn(
+                                                            "text-sm font-black truncate",
+                                                            isActive ? "text-white" : "text-foreground",
+                                                            isCompleted && !isActive && "text-muted-foreground line-through decoration-slate-400"
+                                                        )}>
+                                                            {lesson.title}
+                                                        </p>
+                                                        <p className={cn(
+                                                            "text-[10px] font-bold mt-0.5",
+                                                            isActive ? "text-white/90" : "text-muted-foreground"
+                                                        )}>{lesson.duration}</p>
+                                                    </div>
+                                                    {isActive && (
+                                                        <div className="ml-auto self-center">
+                                                            <PlayCircle className="w-5 h-5 text-white animate-pulse" />
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
                                 </div>
                             )}
                         </CardContent>
@@ -732,41 +734,50 @@ export default function CoursePlayerPage() {
                         </div>
 
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black text-center mb-2">Requirement Unmet</DialogTitle>
+                            <DialogTitle className="text-2xl font-black text-center mb-2">
+                                {requirementData?.type === 'quiz_pass' ? 'Final Assessment Needed' : 'Requirement Unmet'}
+                            </DialogTitle>
                             <DialogDescription className="text-center text-foreground/80 font-bold leading-relaxed">
                                 {requirementData?.message}
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="mt-8 space-y-3">
-                            {requirementData?.lessonId && (
-                                <Button
-                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
-                                    onClick={() => {
-                                        const missingLesson = course.lessons.find(l => (l.id || (l as any)._id) === requirementData.lessonId);
-                                        if (missingLesson) handleLessonChange(missingLesson);
-                                        setShowRequirementDialog(false);
-                                    }}
-                                >
-                                    {requirementData.type === 'quiz_pass' ? (
-                                        <><Sparkles className="w-5 h-5" /> Take Quiz Now</>
-                                    ) : (
-                                        <><PlayCircle className="w-5 h-5" /> Go to Lesson</>
-                                    )}
-                                </Button>
-                            )}
+                        {(() => {
+                            // Find the lesson to jump to (exact ID or fallback to first quiz)
+                            const lessonToJump = course.lessons.find(l => (l.id || (l as any)._id) === requirementData?.lessonId)
+                                || course.lessons.find(l => l.type === 'quiz');
 
-                            <Button
-                                variant="outline"
-                                className="w-full h-12 border-2 font-black rounded-xl"
-                                onClick={() => setShowRequirementDialog(false)}
-                            >
-                                I'll do it later
-                            </Button>
-                        </div>
+                            if (lessonToJump) {
+                                return (
+                                    <Button
+                                        className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-black rounded-xl shadow-lg gap-2 text-base transition-all hover:scale-[1.02]"
+                                        onClick={() => {
+                                            handleLessonChange(lessonToJump);
+                                            setShowRequirementDialog(false);
+                                        }}
+                                    >
+                                        {lessonToJump.type === 'quiz' ? (
+                                            <><Sparkles className="w-5 h-5" /> Attempt Quiz Now</>
+                                        ) : (
+                                            <><PlayCircle className="w-5 h-5" /> Complete Lesson</>
+                                        )}
+                                    </Button>
+                                );
+                            }
+                            return null;
+                        })()}
+
+                        <Button
+                            variant="outline"
+                            className="w-full h-12 border-2 font-black rounded-xl"
+                            onClick={() => setShowRequirementDialog(false)}
+                        >
+                            I'll do it later
+                        </Button>
                     </div>
-                </DialogContent>
-            </Dialog>
-        </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+        </div >
     );
 }
