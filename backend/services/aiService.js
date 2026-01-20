@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
  * Get response from Gemini based on lesson context
  */
 exports.getChatResponse = async (transcript, question) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
   const prompt = `
     You are an AI learning assistant for an LMS platform. 
@@ -29,7 +29,7 @@ exports.getChatResponse = async (transcript, question) => {
  * Generate a summary of a lesson transcript
  */
 exports.generateSummary = async (transcript) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
   const prompt = `
     Summarize the following lesson transcript into a concise bullet-point summary.
@@ -54,7 +54,7 @@ exports.generatePracticeQuiz = async (topic, struggleAreas = "") => {
   }
 
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-1.5-flash-latest",
     generationConfig: { responseMimeType: "application/json" }
   });
 
