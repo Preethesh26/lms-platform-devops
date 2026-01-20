@@ -197,6 +197,9 @@ export default function CoursePlayerPage() {
         setIsVideoReady(false);
         setIsPlaying(false);
         setVideoError(null);
+
+        // Auto-scroll to top so the user sees the new lesson/quiz
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Player Events
