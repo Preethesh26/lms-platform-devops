@@ -48,6 +48,11 @@ exports.generateSummary = async (transcript) => {
  * Generate a practice quiz based on topic or lesson content
  */
 exports.generatePracticeQuiz = async (topic, struggleAreas = "") => {
+  if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key_here') {
+    console.error("CRITICAL: GEMINI_API_KEY is not set correctly.");
+    throw new Error("AI service is not configured. Please add the GEMINI_API_KEY to environment variables.");
+  }
+
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     generationConfig: { responseMimeType: "application/json" }

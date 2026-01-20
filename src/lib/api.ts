@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 // Create axios instance
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 10000,
+    timeout: 30000, // Increased to 30s for AI stability
     headers: {
         'Content-Type': 'application/json'
     }
@@ -196,11 +196,11 @@ export const certificateAPI = {
 // AI API
 export const aiAPI = {
     chat: (data: { courseId: string; lessonId: string; question: string }) =>
-        api.post('/ai/chat', data),
+        api.post('/ai/chat', data, { timeout: 60000 }),
     summarize: (data: { courseId: string; lessonId: string }) =>
-        api.post('/ai/summarize', data),
+        api.post('/ai/summarize', data, { timeout: 60000 }),
     generateQuiz: (data: { topic: string; struggleAreas?: string }) =>
-        api.post('/ai/generate-quiz', data)
+        api.post('/ai/generate-quiz', data, { timeout: 60000 })
 };
 
 // Upload API
