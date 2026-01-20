@@ -654,18 +654,32 @@ export default function CoursePlayerPage() {
                                     {progress[activeLesson.id]?.completed ? " Completed" : " In Progress"}
                                 </p>
                             </div>
-                            <Button
-                                size="lg"
-                                className="font-bold rounded-xl shadow-lg"
-                                variant={progress[activeLesson.id]?.completed ? "outline" : "default"}
-                                onClick={() => saveProgress(!progress[activeLesson.id]?.completed, getPlayerTime())}
-                            >
-                                {progress[activeLesson.id]?.completed ? (
-                                    <><CheckCircle className="mr-2 h-5 w-5 text-green-600" /> Completed</>
-                                ) : (
-                                    "Mark as Complete"
-                                )}
-                            </Button>
+                            {activeLesson.type === 'quiz' ? (
+                                <div className="text-right">
+                                    {progress[activeLesson.id]?.completed ? (
+                                        <div className="flex items-center gap-2 text-green-600 font-black bg-green-50 px-4 py-2 rounded-xl border border-green-200">
+                                            <CheckCircle className="h-5 w-5" /> Quiz Passed
+                                        </div>
+                                    ) : (
+                                        <div className="text-xs font-bold text-muted-foreground italic max-w-[200px]">
+                                            Pass this quiz to complete the lesson and unlock your certificate.
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <Button
+                                    size="lg"
+                                    className="font-bold rounded-xl shadow-lg"
+                                    variant={progress[activeLesson.id]?.completed ? "outline" : "default"}
+                                    onClick={() => saveProgress(!progress[activeLesson.id]?.completed, getPlayerTime())}
+                                >
+                                    {progress[activeLesson.id]?.completed ? (
+                                        <><CheckCircle className="mr-2 h-5 w-5 text-green-600" /> Completed</>
+                                    ) : (
+                                        "Mark as Complete"
+                                    )}
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>

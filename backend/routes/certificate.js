@@ -1,6 +1,8 @@
 const express = require('express');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
+const Quiz = require('../models/Quiz');
+const QuizAttempt = require('../models/QuizAttempt');
 const { protect } = require('../middleware/auth');
 let PDFDocument;
 try {
@@ -31,8 +33,34 @@ router.get('/:courseId', async (req, res) => {
 
         const completedCount = await Progress.countDocuments({ user: user._id, course: courseId, completed: true });
 
+        // Check if all lessons are completed
         if (completedCount < totalLessons) {
-            return res.status(403).json({ success: false, message: 'Course not yet completed' });
+            return res.status(403).json({ success: false, message: 'You must complete all lessons before generating a certificate' });
+        }
+
+        // --- Granular Quiz Pass Verification ---
+        // Find all quizzes that belong to this course
+        const allQuizzes = await Quiz.find({ course: courseId });
+
+        if (allQuizzes.length > 0) {
+            const quizIds = allQuizzes.map(q => q._id);
+
+            // For each quiz, check if the user has at least one passed attempt
+            for (const quizId of quizIds) {
+                const hasPassed = await QuizAttempt.findOne({
+                    user: user._id,
+                    quiz: quizId,
+                    passed: true
+                });
+
+                if (!hasPassed) {
+                    const quiz = allQuizzes.find(q => q._id.toString() === quizId.toString());
+                    return res.status(403).json({
+                        success: false,
+                        message: `Requirement: You must pass the quiz "${quiz.title}" with a score of ${quiz.passingScore}% or higher.`
+                    });
+                }
+            }
         }
 
         // --- Certificate Design Constants ---
