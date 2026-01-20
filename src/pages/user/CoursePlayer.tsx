@@ -611,6 +611,41 @@ export default function CoursePlayerPage() {
                     </div>
 
                     {activeLesson && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900 font-bold shadow-sm hover:shadow-md transition-all"
+                                onClick={handleGenerateSummary}
+                                disabled={summaryLoading || !activeLesson.transcript}
+                                title={!activeLesson.transcript ? "Transcript required for summary" : ""}
+                            >
+                                {summaryLoading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-2 h-3.5 w-3.5" />}
+                                Summarize Lesson
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900 font-bold shadow-sm hover:shadow-md transition-all"
+                                onClick={() => setShowAISidebar(true)}
+                            >
+                                <Bot className="mr-2 h-3.5 w-3.5" />
+                                Ask AI Tutor
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900 font-bold shadow-sm hover:shadow-md transition-all"
+                                onClick={handleGeneratePracticeQuiz}
+                                disabled={aiQuizLoading}
+                            >
+                                {aiQuizLoading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Zap className="mr-2 h-3.5 w-3.5" />}
+                                Practice Quiz
+                            </Button>
+                        </div>
+                    )}
+
+                    {activeLesson && (
                         <div className="p-4 rounded-lg bg-card border-2 shadow-xl flex justify-between items-center">
                             <div>
                                 <h2 className="text-xl font-black">{activeLesson.title}</h2>
