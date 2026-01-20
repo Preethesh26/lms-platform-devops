@@ -285,9 +285,25 @@ export default function CoursePlayerPage() {
             document.body.appendChild(link);
             link.click();
             link.remove();
-        } catch (error) {
-            console.error("Failed to download certificate:", error);
-            alert("Failed to download certificate. Please ensure all lessons are completed.");
+            toast.success("Certificate generated successfully!");
+        } catch (error: any) {
+            console.error('Certificate download error:', error);
+
+            // Handle Axios error for blob responses
+            if (error.response?.data instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const errorData = JSON.parse(reader.result as string);
+                        toast.error(errorData.message || "Failed to download certificate. Check requirements.");
+                    } catch (e) {
+                        toast.error("An error occurred during certificate generation.");
+                    }
+                };
+                reader.readAsText(error.response.data);
+            } else {
+                toast.error(error.response?.data?.message || "Failed to download certificate.");
+            }
         }
     };
 

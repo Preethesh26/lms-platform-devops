@@ -57,7 +57,8 @@ router.get('/:courseId', async (req, res) => {
                     const quiz = allQuizzes.find(q => q._id.toString() === quizId.toString());
                     return res.status(403).json({
                         success: false,
-                        message: `Requirement: You must pass the quiz "${quiz.title}" with a score of ${quiz.passingScore}% or higher.`
+                        requirement: 'quiz_pass',
+                        message: `Requirement Unmet: You must pass the quiz "${quiz.title}" with a score of ${quiz.passingScore}% or higher to unlock this certificate.`
                     });
                 }
             }
