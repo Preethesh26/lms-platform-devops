@@ -69,6 +69,10 @@ exports.generateAIQuiz = async (req, res, next) => {
             data: quiz
         });
     } catch (error) {
-        next(error);
+        console.error('AI Quiz Generation Controller Error:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to generate AI quiz. Please try again later.'
+        });
     }
 };
