@@ -8,9 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { cn } from "@/lib/utils";
 import ReactPlayer from 'react-player';
 import QuizPlayer from "@/components/user/QuizPlayer";
-import { AIChatSidebar } from "@/components/user/AIChatSidebar";
-import { aiAPI } from "@/lib/api";
-import { CheckCircle, PlayCircle, Lock, Award, Download, Bot, Sparkles, FileText, Loader2, ArrowLeft, Zap } from "lucide-react";
+import { CheckCircle, PlayCircle, Lock, Award, Download, FileText, Loader2, ArrowLeft, Zap, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -48,13 +46,6 @@ export default function CoursePlayerPage() {
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [videoError, setVideoError] = useState<string | null>(null);
-    const [showAISidebar, setShowAISidebar] = useState(false);
-    const [summaryLoading, setSummaryLoading] = useState(false);
-    const [lessonSummary, setLessonSummary] = useState<string | null>(null);
-    const [showSummaryDialog, setShowSummaryDialog] = useState(false);
-    const [aiQuizData, setAiQuizData] = useState<any>(null);
-    const [aiQuizLoading, setAiQuizLoading] = useState(false);
-    const [showAiQuizDialog, setShowAiQuizDialog] = useState(false);
 
     // Keep progressRef in sync
     useEffect(() => {
@@ -202,44 +193,6 @@ export default function CoursePlayerPage() {
         setIsVideoReady(false);
         setIsPlaying(false);
         setVideoError(null);
-        setLessonSummary(null); // Clear summary when changing lesson
-    };
-
-    const handleGenerateSummary = async () => {
-        if (!course || !activeLesson || !activeLesson.transcript) return;
-
-        setSummaryLoading(true);
-        try {
-            const res = await aiAPI.summarize({ courseId: course.id, lessonId: activeLesson.id });
-            setLessonSummary(res.data.data);
-            setShowSummaryDialog(true);
-        } catch (error) {
-            console.error("Failed to generate summary:", error);
-        } finally {
-            setSummaryLoading(false);
-        }
-    };
-
-    const handleGeneratePracticeQuiz = async () => {
-        if (!course || !activeLesson) return;
-
-        setAiQuizLoading(true);
-        try {
-            const res = await aiAPI.generateQuiz({
-                topic: activeLesson.title,
-                struggleAreas: "General concepts from this lesson"
-            });
-            setAiQuizData({
-                title: `Practice Quiz: ${activeLesson.title}`,
-                questions: res.data.data,
-                passingScore: 70
-            });
-            setShowAiQuizDialog(true);
-        } catch (error) {
-            console.error("Failed to generate AI quiz:", error);
-        } finally {
-            setAiQuizLoading(false);
-        }
     };
 
     // Player Events
@@ -523,9 +476,9 @@ export default function CoursePlayerPage() {
                 </div>
             </div>
 
-            <div className={`grid grid-cols-1 ${showAISidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6 transition-all duration-300`}>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-300">
                 {/* Video Player Section (Left Column) */}
-                <div className={`${showAISidebar ? 'lg:col-span-2' : 'lg:col-span-2'} space-y-4`}>
+                <div className="lg:col-span-2 space-y-4">
                     <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-border relative group">
                         {activeLesson ? (
                             <div className="w-full h-full relative">
@@ -610,40 +563,7 @@ export default function CoursePlayerPage() {
                         )}
                     </div>
 
-                    {activeLesson && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900 font-bold shadow-sm hover:shadow-md transition-all"
-                                onClick={handleGenerateSummary}
-                                disabled={summaryLoading || !activeLesson.transcript}
-                                title={!activeLesson.transcript ? "Transcript required for summary" : ""}
-                            >
-                                {summaryLoading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-2 h-3.5 w-3.5" />}
-                                Summarize Lesson
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900 font-bold shadow-sm hover:shadow-md transition-all"
-                                onClick={() => setShowAISidebar(true)}
-                            >
-                                <Bot className="mr-2 h-3.5 w-3.5" />
-                                Ask AI Tutor
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900 font-bold shadow-sm hover:shadow-md transition-all"
-                                onClick={handleGeneratePracticeQuiz}
-                                disabled={aiQuizLoading}
-                            >
-                                {aiQuizLoading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Zap className="mr-2 h-3.5 w-3.5" />}
-                                Practice Quiz
-                            </Button>
-                        </div>
-                    )}
+
 
                     {activeLesson && (
                         <div className="p-4 rounded-lg bg-card border-2 shadow-xl flex justify-between items-center">
@@ -684,17 +604,7 @@ export default function CoursePlayerPage() {
                     )}
                 </div>
 
-                {/* AI Sidebar Area */}
-                {showAISidebar && activeLesson && (
-                    <div className="lg:col-span-1 h-[600px] animate-in slide-in-from-right duration-300">
-                        <AIChatSidebar
-                            courseId={course.id}
-                            lessonId={activeLesson.id}
-                            lessonTitle={activeLesson.title}
-                            onClose={() => setShowAISidebar(false)}
-                        />
-                    </div>
-                )}
+
 
                 {/* Playlist Section */}
                 <div className="lg:col-span-1">
@@ -776,56 +686,6 @@ export default function CoursePlayerPage() {
                     </Card>
                 </div>
             </div>
-
-            {/* AI Summary Dialog */}
-            <Dialog open={showSummaryDialog} onOpenChange={setShowSummaryDialog}>
-                <DialogContent className="sm:max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-amber-500" />
-                            Lesson Summary: {activeLesson?.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            AI-generated key points and takeaways from this lesson.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="mt-4 p-6 bg-muted/30 rounded-xl border prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto whitespace-pre-wrap">
-                        {lessonSummary}
-                    </div>
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="outline" onClick={() => setShowSummaryDialog(false)}>Close</Button>
-                        <Button onClick={() => setShowAISidebar(true)}>Ask Questions</Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* AI Practice Quiz Dialog */}
-            <Dialog open={showAiQuizDialog} onOpenChange={setShowAiQuizDialog}>
-                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Bot className="w-5 h-5 text-primary" />
-                            AI Practice Quiz: {activeLesson?.title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            Test your knowledge with these AI-generated questions based on the lesson.
-                        </DialogDescription>
-                    </DialogHeader>
-                    {aiQuizData && (
-                        <div className="mt-4">
-                            <QuizPlayer
-                                quizData={aiQuizData}
-                                onComplete={(score, passed) => {
-                                    console.log('AI Practice Quiz score:', score, passed);
-                                }}
-                            />
-                        </div>
-                    )}
-                    <div className="flex justify-end mt-4">
-                        <Button variant="outline" onClick={() => setShowAiQuizDialog(false)}>Finish Practice</Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
