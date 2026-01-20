@@ -1,4 +1,5 @@
 const Course = require('../models/Course');
+const Quiz = require('../models/Quiz');
 
 // @desc    Get all courses
 // @route   GET /api/courses
@@ -21,6 +22,36 @@ exports.getCourse = async (req, res) => {
         if (!course) {
             return res.status(404).json({ success: false, message: 'Course not found' });
         }
+
+        // --- Self-Healing Curriculum ---
+        // Find all quizzes associated with this course
+        const quizzes = await Quiz.find({ course: course._id });
+        let updated = false;
+
+        for (const quiz of quizzes) {
+            const hasQuiz = course.lessons.some(l =>
+                (l.quizId && l.quizId.toString() === quiz._id.toString()) ||
+                (l.type === 'quiz' && l.title === quiz.title)
+            );
+
+            if (!hasQuiz) {
+                course.lessons.push({
+                    _id: quiz._id,
+                    title: quiz.title,
+                    videoUrl: 'QUIZ_PLACEHOLDER',
+                    duration: `${quiz.timeLimit > 0 ? quiz.timeLimit + ' min' : 'Untimed'} Quiz`,
+                    type: 'quiz',
+                    quizId: quiz._id
+                });
+                updated = true;
+            }
+        }
+
+        if (updated) {
+            await course.save();
+            console.log(`[SELF-HEALING] Restored quizzes to curriculum for course: ${course.title}`);
+        }
+
         res.status(200).json({ success: true, data: course });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

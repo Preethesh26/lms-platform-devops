@@ -289,17 +289,17 @@ export default function CoursePlayerPage() {
         } catch (error: any) {
             console.error('Certificate download error:', error);
 
-            // Critical: If responseType is blob, the error data is ALSO a Blob
-            if (error.response?.data instanceof Blob) {
-                const blob = error.response.data;
+            // Robust Blob error handling
+            if (error.response?.data instanceof Blob || error.response?.data?.type) {
+                const blob = error.response.data instanceof Blob ? error.response.data : new Blob([JSON.stringify(error.response.data)]);
                 const reader = new FileReader();
                 reader.onload = () => {
                     try {
-                        const errorText = reader.result as string;
-                        const errorData = JSON.parse(errorText);
-                        toast.error(errorData.message || "Requirement not met for certificate.");
+                        const text = reader.result as string;
+                        const errorData = JSON.parse(text);
+                        toast.error(errorData.message || "Requirements not met for certificate.");
                     } catch (e) {
-                        toast.error("You must pass all quizzes before downloading the certificate.");
+                        toast.error("You must pass all course quizzes to download this certificate.");
                     }
                 };
                 reader.readAsText(blob);
