@@ -73,9 +73,13 @@ exports.updateUser = async (req, res) => {
             return res.status(403).json({ success: false, message: 'Only Super Admin can modify an administrator account.' });
         }
 
-        // Only superadmin can promote someone to admin or superadmin
-        if (req.body.role && (req.body.role === 'admin' || req.body.role === 'superadmin') && req.user.role !== 'superadmin') {
-            return res.status(403).json({ success: false, message: 'Only Super Admin can assign admin or superadmin roles.' });
+        // --- STRICT ROLE LOCK ---
+        // Prevent REGULAR ADMINS from changing anyone's role (not to admin, not to student, nothing).
+        // Only Super Admin can touch the 'role' field.
+        if (req.body.role && req.body.role !== originalUser.role) {
+            if (req.user.role !== 'superadmin') {
+                return res.status(403).json({ success: false, message: 'Access Denied: Only Super Admin can change user roles.' });
+            }
         }
 
         // If password is being updated, hash it first
@@ -268,7 +272,9 @@ exports.bulkCreateUsers = async (req, res) => {
                         name: row.name.trim(),
                         email: row.email.trim().toLowerCase(),
                         enrollment: row.enrollment?.trim() || null,
-                        role: row.role?.trim() || 'user',
+                        // STRICT RBAC: If uploader is not Super Admin, force role to 'user'
+                        // This prevents admins from secretly creating other admins via CSV
+                        role: req.user.role === 'superadmin' ? (row.role?.trim() || 'user') : 'user',
                         password: row.password?.trim() || Math.random().toString(36).slice(-8)
                     });
                 })
