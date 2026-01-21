@@ -3,7 +3,7 @@
 AcademyPro is a modern, high-performance Learning Management System (LMS) designed for a premium student experience and powerful administrative control. This project was built to understand how a complex, full-stack application works from the ground up, integrating front-end state management, back-end API logic, and automated services.
 
 ### 🌐 Live Demo & Inquiries
-Check out the live website: **[https://academypro-liard.vercel.app/](https://academypro-liard.vercel.app/)**
+Check out the live website: **[https://academypro-official.vercel.app/](https://academypro-official.vercel.app/)**
 
 - **Student Portal**: Explore the student experience instantly.
   - **Email**: `demo-student@academypro.com`
@@ -18,6 +18,7 @@ Check out the live website: **[https://academypro-liard.vercel.app/](https://aca
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+<!-- Staging Verification (Phase 2): Verified on 2026-01-21 -->
 ![Tech](https://img.shields.io/badge/stack-React%2019%20%7C%20Vite%20%7C%20Node.js-blue)
 
 ---
