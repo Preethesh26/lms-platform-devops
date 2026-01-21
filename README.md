@@ -142,6 +142,9 @@ The platform features a comprehensive notification system powered by **Brevo (fo
    node upgradeSuperAdmin.js [email]
    ```
 
+4. **Testing & Workflow**
+   For a detailed walkthrough on how to test changes locally before pushing to production, see the **[Testing & Development Flow Guide](file:///Users/apple/Desktop/Preethesh/lms-platform/docs/TESTING_FLOW.md)**. To set up a live testing environment (Staging), follow the **[Staging Setup Guide](file:///Users/apple/Desktop/Preethesh/lms-platform/docs/STAGING_SETUP.md)**. For a step-by-step master plan of the entire process, refer to the **[Unified Workflow Guide](file:///Users/apple/Desktop/Preethesh/lms-platform/docs/WORKFLOW_GUIDE.md)**.
+
 ---
 
 ## 🌐 Deployment Logic
