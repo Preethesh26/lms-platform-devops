@@ -1,6 +1,6 @@
 const express = require('express');
 const { updateProgress, getCourseProgress, getAllUserProgress, adminUpdateCourseProgress } = require('../controllers/progressController');
-const { protect, admin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router.use(protect); // All progress routes require login
 
 router.post('/update', updateProgress);
 router.get('/all', getAllUserProgress);
-router.post('/admin/update-course', admin, adminUpdateCourseProgress);
+router.post('/admin/update-course', authorize('admin', 'superadmin'), adminUpdateCourseProgress);
 router.get('/:courseId', getCourseProgress);
 
 module.exports = router;
