@@ -1,3 +1,4 @@
+const express = require('express');
 const { updateProgress, getCourseProgress, getAllUserProgress, adminUpdateCourseProgress } = require('../controllers/progressController');
 const { protect, admin } = require('../middleware/auth');
 
