@@ -26,20 +26,9 @@ const app = express();
 // Middleware
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
-
-        // Normalize comparison (remove trailing slash if present)
-        const normalize = (url) => url ? url.replace(/\/$/, '') : '';
-        const incoming = normalize(origin);
-        const allowed = normalize(allowedOrigin);
-
-        if (!origin || incoming === allowed) {
-            // Explicitly send the allowedOrigin (not 'true') to ensure header is always present
-            callback(null, allowedOrigin);
-        } else {
-            console.log(`[CORS] Blocked. Origin: ${origin} | Expected: ${allowedOrigin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
+        // PERMISSIVE DEBUGGING: Allow any origin
+        console.log(`[CORS DEBUG] Allowing origin: ${origin}`);
+        callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
