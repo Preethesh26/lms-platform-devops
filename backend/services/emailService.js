@@ -320,6 +320,50 @@ const sendTicketStatusUpdateEmail = async (to, userName, ticketSubject, newStatu
     }
 };
 
+// Send security alert email to Super Admin
+const sendSecurityAlertEmail = async (adminEmail, changeType, targetUser, performedBy, details) => {
+    if (!apiInstance) {
+        console.error('Brevo API not initialized');
+        return { success: false, error: 'Email service not configured' };
+    }
+
+    try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+        sendSmtpEmail.sender = { name: 'LMS Security', email: process.env.EMAIL_SENDER_ADDRESS || 'noreply@example.com' };
+        sendSmtpEmail.to = [{ email: adminEmail }];
+        sendSmtpEmail.subject = `🚨 Security Alert: ${changeType}`;
+        sendSmtpEmail.htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 2px solid #dc3545; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #dc3545; padding: 20px; color: white;">
+                    <h2 style="margin: 0;">Security Alert</h2>
+                    <p style="margin: 5px 0 0 0;">Critical account modification detected</p>
+                </div>
+                <div style="padding: 30px;">
+                    <p><strong>Event:</strong> ${changeType}</p>
+                    <p><strong>Target User:</strong> ${targetUser.name} (${targetUser.email})</p>
+                    <p><strong>Performed By:</strong> ${performedBy.name} (${performedBy.role})</p>
+                    
+                    <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h4 style="margin-top: 0; color: #856404;">Change Details:</h4>
+                        <ul style="margin-bottom: 0;">
+                            ${details.map(d => `<li>${d}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <p style="font-size: 14px; color: #666;">Time: ${new Date().toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+
+        const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Security email error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 module.exports = {
     sendPasswordResetEmail,
     sendContactAdminEmail,
@@ -327,6 +371,7 @@ module.exports = {
     sendProfileUpdateEmail,
     sendAdminNewUserNotification,
     sendTestInvitationEmail,
-    sendTicketStatusUpdateEmail
+    sendTicketStatusUpdateEmail,
+    sendSecurityAlertEmail
 };
 

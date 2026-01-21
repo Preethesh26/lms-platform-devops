@@ -101,6 +101,19 @@ exports.updateUser = async (req, res) => {
             }
         }
 
+        // --- SECURITY MONITORING ---
+        // Detect sensitive changes before executing update
+        const securityChanges = [];
+        if (req.body.role && req.body.role !== originalUser.role) {
+            securityChanges.push(`Role changed from '${originalUser.role}' to '${req.body.role}'`);
+        }
+        if (req.body.password) {
+            securityChanges.push('Password was reset/changed');
+        }
+        if (req.body.email && req.body.email !== originalUser.email) {
+            securityChanges.push(`Email changed from '${originalUser.email}' to '${req.body.email}'`);
+        }
+
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
@@ -110,11 +123,11 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Send email notification about profile update (non-blocking)
+        // 1. Send Student Notification (Profile Update)
         try {
-            const { sendProfileUpdateEmail } = require('../services/emailService');
+            const { sendProfileUpdateEmail, sendSecurityAlertEmail } = require('../services/emailService');
 
-            // Determine what changed
+            // Determine what changed for user context
             const changes = {};
             if (req.body.name && req.body.name !== originalUser.name) changes.name = true;
             if (req.body.email && req.body.email !== originalUser.email) changes.email = req.body.email;
@@ -122,16 +135,30 @@ exports.updateUser = async (req, res) => {
             if (req.body.password) changes.password = true;
             if (req.body.enrollment && req.body.enrollment !== originalUser.enrollment) changes.enrollment = req.body.enrollment;
 
-            // Only send email if there are actual changes
+            // Send notification to the user
             if (Object.keys(changes).length > 0) {
-                // Use the new email if it was changed, otherwise use the original
                 const emailTo = changes.email || originalUser.email;
                 await sendProfileUpdateEmail(emailTo, user.name, changes);
                 console.log(`Profile update email sent to ${emailTo}`);
             }
+
+            // 2. Send Super Admin Security Alert (If Critical Changes)
+            if (securityChanges.length > 0) {
+                const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+                if (adminEmail) {
+                    await sendSecurityAlertEmail(
+                        adminEmail,
+                        'Sensitive Account Modification',
+                        { name: user.name, email: user.email }, // Target
+                        { name: req.user.name || 'Admin', role: req.user.role }, // Performer
+                        securityChanges // Details
+                    );
+                    console.log(`🚨 Security Alert sent to ${adminEmail}`);
+                }
+            }
+
         } catch (emailError) {
-            console.error('Failed to send profile update email:', emailError);
-            // Don't fail the update if email fails
+            console.error('Failed to send notification emails:', emailError);
         }
 
         // Sync to Google Sheets (non-blocking)
