@@ -25,7 +25,17 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+        console.log(`[CORS] Incoming Origin: ${origin} | Allowed: ${allowedOrigin}`);
+
+        if (!origin || origin === allowedOrigin) {
+            callback(null, true);
+        } else {
+            console.log(`[CORS] Blocked by policy!`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
