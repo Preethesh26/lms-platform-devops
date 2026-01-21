@@ -58,9 +58,9 @@ export default function AdminDashboardPage() {
 
     const getGreeting = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return "Good morning";
-        if (hour < 18) return "Good afternoon";
-        return "Good evening";
+        if (hour < 12) return "Good Morning";
+        if (hour < 18) return "Good Afternoon";
+        return "Good Evening";
     };
 
     return (
@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
                         Admin Dashboard
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                        {getGreeting()}, <span className="text-primary">{currentUser?.name?.split(' ')[0] || 'Admin'}</span>.
+                        {getGreeting()}, <span className="text-primary">{currentUser?.name?.split('  ') || 'Admin'}</span>.
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base max-w-2xl">
                         Here's a strategic overview of your platform's growth and student engagement for today.
