@@ -37,7 +37,7 @@ This guide outlines the professional process for building, testing, and deployin
     git push origin staging
     ```
 3.  **The Test**:
-    *   Open your **Vercel Staging URL** (e.g., `https://academypro-git-staging-preetheshs-projects-5a0825cd.vercel.app`).
+    *   Open your **Vercel Staging URL** (e.g., `lms-platform-git-staging...`).
     *   Verify that everything works on a real server.
     *   Check for "Server-only" errors (like Render timeout or database connection issues).
 
