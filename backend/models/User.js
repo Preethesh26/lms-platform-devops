@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    downloadedCertificates: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
     createdAt: {
         type: Date,
         default: Date.now

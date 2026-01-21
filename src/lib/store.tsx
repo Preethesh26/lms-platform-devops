@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
-import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI, settingsAPI } from "./api";
+import { coursesAPI, usersAPI, authAPI, paymentAPI, quizzesAPI, settingsAPI, progressAPI } from "./api";
 import { MOCK_COURSES, MOCK_USERS, MOCK_QUIZZES, MOCK_TICKETS, MOCK_TESTS } from "./mockData";
 
 export type Lesson = {
@@ -89,6 +89,8 @@ interface StoreContextType {
     clearSearch: () => void;
     settings: any;
     quizzesAPI: typeof quizzesAPI;
+    fetchUserDetails: (id: string) => Promise<any>;
+    adminUpdateProgress: (userId: string, courseId: string, action: 'complete' | 'reset') => Promise<void>;
 }
 
 
@@ -643,8 +645,27 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('userData', JSON.stringify(updatedUser));
     };
 
-    const clearSearch = () => {
+    const adminUpdateProgress = async (userId: string, courseId: string, action: 'complete' | 'reset') => {
+        try {
+            await progressAPI.adminUpdateProgress({ userId, courseId, action });
+            await fetchData();
+        } catch (error: any) {
+            console.error("Failed to update course progress:", error);
+            throw error;
+        }
+    };
 
+    const fetchUserDetails = async (id: string) => {
+        try {
+            const res = await usersAPI.getOne(id);
+            return res.data.data;
+        } catch (error: any) {
+            console.error("Failed to fetch user details:", error);
+            throw error;
+        }
+    };
+
+    const clearSearch = () => {
         // Implementation placeholder
     };
 
@@ -660,7 +681,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             refetchUsers: fetchUsers, registerUser, searchCourses, clearSearch,
             unlockSession, masterUnlock, verify2FA, setup2FA, enable2FA, disable2FA, setRequires2FA,
             updateCurrentUser,
-            settings, quizzesAPI
+            settings, quizzesAPI, fetchUserDetails, adminUpdateProgress
         }}>
 
             {children}

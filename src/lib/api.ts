@@ -145,7 +145,9 @@ export const progressAPI = {
     update: (data: { courseId: string; lessonId: string; completed?: boolean; lastPosition?: number; totalDuration?: number }) =>
         api.post('/progress/update', data),
     getCourseProgress: (courseId: string) => api.get(`/progress/${courseId}`),
-    getAllProgress: () => api.get('/progress/all')
+    getAllProgress: () => api.get('/progress/all'),
+    adminUpdateProgress: (data: { userId: string; courseId: string; action: 'complete' | 'reset' }) =>
+        api.post('/progress/admin/update-course', data)
 };
 
 // Quizzes API

@@ -271,6 +271,15 @@ router.get('/:courseId', async (req, res) => {
 
         doc.restore();
 
+        // --- Record Download ---
+        if (!user.downloadedCertificates.includes(courseId)) {
+            const User = require('../models/User');
+            await User.findByIdAndUpdate(user._id, {
+                $addToSet: { downloadedCertificates: courseId }
+            });
+            console.log(`[CERTIFICATE] Recorded download for user: ${user.email}, Course: ${course.title}`);
+        }
+
         doc.end();
 
     } catch (err) {

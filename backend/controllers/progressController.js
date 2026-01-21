@@ -123,3 +123,55 @@ exports.getAllUserProgress = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+// @desc    Admin: Update/Reset progress for all lessons in a course for a specific user
+// @route   POST /api/progress/admin/update-course
+// @access  Private/Admin
+exports.adminUpdateCourseProgress = async (req, res) => {
+    try {
+        const { userId, courseId, action } = req.body; // action: 'complete' | 'reset'
+
+        if (!userId || !courseId || !action) {
+            return res.status(400).json({ success: false, message: 'Please provide userId, courseId, and action' });
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        if (action === 'reset') {
+            await Progress.deleteMany({ user: userId, course: courseId });
+            return res.status(200).json({ success: true, message: 'Course progress reset successfully' });
+        }
+
+        if (action === 'complete') {
+            const lessons = course.lessons || [];
+
+            // Mark all video lessons as completed. 
+            // Note: Quizzes are usually separate, but for 'admin override complete', we mark everything as done.
+            for (const lesson of lessons) {
+                await Progress.findOneAndUpdate(
+                    {
+                        user: userId,
+                        course: courseId,
+                        lessonId: lesson._id
+                    },
+                    {
+                        completed: true,
+                        lastPosition: 0,
+                        totalDuration: 0
+                    },
+                    { new: true, upsert: true }
+                );
+            }
+
+            return res.status(200).json({ success: true, message: 'Course marked as completed successfully' });
+        }
+
+        res.status(400).json({ success: false, message: 'Invalid action' });
+
+    } catch (error) {
+        console.error('Error in adminUpdateCourseProgress:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};

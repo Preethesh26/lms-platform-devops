@@ -18,11 +18,40 @@ exports.getUsers = async (req, res) => {
 // @access  Private/Admin
 exports.getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select('-password').populate('enrolledCourses');
+        const user = await User.findById(req.params.id)
+            .select('-password')
+            .populate('enrolledCourses')
+            .populate('downloadedCertificates');
+
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        res.status(200).json({ success: true, data: user });
+
+        // Aggregate progress for each enrolled course
+        const Progress = require('../models/Progress');
+        const userData = user.toObject();
+
+        const progressStats = await Promise.all(user.enrolledCourses.map(async (course) => {
+            const completedLessons = await Progress.countDocuments({
+                user: user._id,
+                course: course._id,
+                completed: true
+            });
+            const totalLessons = course.lessons?.length || 0;
+            const percentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+            return {
+                courseId: course._id,
+                courseTitle: course.title,
+                completedLessons,
+                totalLessons,
+                percentage,
+                isCertificateDownloaded: user.downloadedCertificates.some(cert => cert._id.toString() === course._id.toString())
+            };
+        }));
+
+        userData.progressStats = progressStats;
+        res.status(200).json({ success: true, data: userData });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

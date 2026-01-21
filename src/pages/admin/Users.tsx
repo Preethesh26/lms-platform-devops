@@ -30,7 +30,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminUsersPage() {
     const navigate = useNavigate();
-    const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers, currentUser } = useStore();
+    const { users, courses, addUser, updateUser, deleteUser, isInitialized, error: fetchError, refetchUsers, currentUser, adminUpdateProgress, fetchUserDetails } = useStore();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
@@ -114,6 +114,28 @@ export default function AdminUsersPage() {
 
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
     const [deleteConfirmation, setDeleteConfirmation] = useState("");
+
+    const [detailedUser, setDetailedUser] = useState<any>(null);
+    const [isFetchingDetails, setIsFetchingDetails] = useState(false);
+
+
+    const handleEditClick = async (user: User) => {
+        setSelectedUser(user);
+        setSelectedRole(user.role);
+        setSelectedEnrollments(user.enrolledCourses || []);
+
+        if (user.role === 'user') {
+            setIsFetchingDetails(true);
+            try {
+                const details = await fetchUserDetails(user.id);
+                setDetailedUser(details);
+            } catch (err) {
+                console.error("Failed to load user details", err);
+            } finally {
+                setIsFetchingDetails(false);
+            }
+        }
+    };
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -327,6 +349,7 @@ export default function AdminUsersPage() {
                                     setSelectedUser(user);
                                     setSelectedRole(user.role);
                                     setSelectedEnrollments(user.enrolledCourses || []);
+                                    handleEditClick(user);
                                 }} onDelete={() => handleDeleteClick(user)} />
                             ))}
                         </div>
@@ -366,6 +389,7 @@ export default function AdminUsersPage() {
                                                         setSelectedUser(user);
                                                         setSelectedRole(user.role);
                                                         setSelectedEnrollments(user.enrolledCourses || []);
+                                                        handleEditClick(user);
                                                     }}>
                                                         <Edit2 className="h-4 w-4" />
                                                     </Button>
@@ -460,89 +484,197 @@ export default function AdminUsersPage() {
                         </DialogHeader>
                     </div>
                     <form onSubmit={handleUpdate} className="p-8 space-y-5">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Name</Label>
-                            <Input name="name" defaultValue={selectedUser?.name} className="h-12 rounded-xl" required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Email</Label>
-                            <Input name="email" type="email" defaultValue={selectedUser?.email} className="h-12 rounded-xl" required />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2 text-primary">
-                                <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Password</Label>
-                                <div className="relative">
-                                    <Input
-                                        name="password"
-                                        type={showGeneratedPassword ? "text" : "password"}
-                                        className="h-12 rounded-xl border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white pr-10"
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                                        onClick={() => setShowGeneratedPassword(!showGeneratedPassword)}
-                                    >
-                                        {showGeneratedPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-                                    </Button>
+                        <Tabs defaultValue="basic" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl mb-6">
+                                <TabsTrigger value="basic" className="rounded-lg font-bold">Basic Details</TabsTrigger>
+                                <TabsTrigger value="advanced" className="rounded-lg font-bold">Advanced Settings</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="basic" className="space-y-5 mt-0">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Name</Label>
+                                    <Input name="name" defaultValue={selectedUser?.name} className="h-12 rounded-xl" required />
                                 </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
-                                <Input name="enrollment" defaultValue={selectedUser?.enrollment} className="h-12 rounded-xl" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Role</Label>
-                            <Tabs value={selectedRole} onValueChange={setSelectedRole} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
-                                    <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
-                                    <TabsTrigger
-                                        value="admin"
-                                        className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        disabled={currentUser?.role !== 'superadmin' && selectedUser?.role !== 'admin'}
-                                    >
-                                        Admin
-                                    </TabsTrigger>
-                                </TabsList>
-                            </Tabs>
-                            {currentUser?.role !== 'superadmin' && (
-                                <p className="text-[10px] text-orange-500 font-medium px-1 italic">Role management is restricted to Super Admin.</p>
-                            )}
-                        </div>
-
-                        <div className="flex items-center space-x-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-                            <Checkbox id="needsPasswordReset" name="needsPasswordReset" defaultChecked={selectedUser?.needsPasswordReset} />
-                            <label
-                                htmlFor="needsPasswordReset"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-indigo-900"
-                            >
-                                Require password reset on next login
-                            </label>
-                        </div>
-
-                        {selectedUser?.role === 'user' && (
-                            <div className="space-y-3">
-                                <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Enrolled Courses</Label>
-                                <div className="p-4 bg-muted/30 rounded-2xl border border-border/50 max-h-[160px] overflow-auto space-y-2">
-                                    {courses.map(course => (
-                                        <div key={course.id} className="flex items-center space-x-3">
-                                            <Checkbox
-                                                id={`c-${course.id}`}
-                                                checked={selectedEnrollments.includes(course.id)}
-                                                onCheckedChange={(checked: boolean | "indeterminate") => {
-                                                    if (checked === true) setSelectedEnrollments([...selectedEnrollments, course.id]);
-                                                    else setSelectedEnrollments(selectedEnrollments.filter(id => id !== course.id));
-                                                }}
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Email</Label>
+                                    <Input name="email" type="email" defaultValue={selectedUser?.email} className="h-12 rounded-xl" required />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2 text-primary">
+                                        <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Password</Label>
+                                        <div className="relative">
+                                            <Input
+                                                name="password"
+                                                type={showGeneratedPassword ? "text" : "password"}
+                                                className="h-12 rounded-xl border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white pr-10"
                                             />
-                                            <label htmlFor={`c-${course.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{course.title}</label>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                onClick={() => setShowGeneratedPassword(!showGeneratedPassword)}
+                                            >
+                                                {showGeneratedPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                            </Button>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
+                                        <Input name="enrollment" defaultValue={selectedUser?.enrollment} className="h-12 rounded-xl" />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Role</Label>
+                                    <Tabs value={selectedRole} onValueChange={setSelectedRole} className="w-full">
+                                        <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 rounded-xl">
+                                            <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
+                                            <TabsTrigger
+                                                value="admin"
+                                                className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                disabled={currentUser?.role !== 'superadmin' && selectedUser?.role !== 'admin'}
+                                            >
+                                                Admin
+                                            </TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
+                                </div>
+
+                                <div className="flex items-center space-x-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
+                                    <Checkbox id="needsPasswordReset" name="needsPasswordReset" defaultChecked={selectedUser?.needsPasswordReset} />
+                                    <label
+                                        htmlFor="needsPasswordReset"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-indigo-900"
+                                    >
+                                        Require password reset on next login
+                                    </label>
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="advanced" className="space-y-6 mt-0">
+                                {selectedUser?.role === 'user' ? (
+                                    <div className="space-y-6">
+                                        <div className="space-y-3">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Student Progress & Oversight</Label>
+                                            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {isFetchingDetails ? (
+                                                    <div className="p-12 flex flex-col items-center gap-3">
+                                                        <Loader2 className="w-8 h-8 animate-spin text-primary opacity-20" />
+                                                        <p className="text-xs font-bold text-muted-foreground animate-pulse">Synchronizing metrics...</p>
+                                                    </div>
+                                                ) : courses.filter(c => selectedEnrollments.includes(c.id)).length === 0 ? (
+                                                    <div className="p-8 text-center bg-muted/20 rounded-2xl border border-dashed text-muted-foreground text-sm">
+                                                        No courses enrolled for this student.
+                                                    </div>
+                                                ) : (
+                                                    courses.filter(c => selectedEnrollments.includes(c.id)).map(course => {
+                                                        const stats = detailedUser?.progressStats?.find((s: any) => s.courseId === course.id);
+                                                        const isCertified = detailedUser?.downloadedCertificates?.some((c: any) => c === course.id || c?._id === course.id);
+
+                                                        return (
+                                                            <div key={course.id} className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-indigo-100 dark:border-slate-800 shadow-sm space-y-3">
+                                                                <div className="flex justify-between items-start">
+                                                                    <div className="max-w-[70%]">
+                                                                        <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">{course.title}</h4>
+                                                                        <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase tracking-wider">Lesson Progress</p>
+                                                                    </div>
+                                                                    {isCertified && (
+                                                                        <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-200 h-5 text-[9px] font-black tracking-[0.1em] uppercase">
+                                                                            Certified
+                                                                        </Badge>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="space-y-1.5 pb-2">
+                                                                    <div className="flex justify-between text-[10px] font-black text-slate-500 dark:text-slate-400">
+                                                                        <span className="opacity-60">{stats ? `${stats.completedLessons}/${stats.totalLessons} LESSONS` : 'ENROLLED'}</span>
+                                                                        <span className="text-primary font-mono">{stats?.percentage || 0}%</span>
+                                                                    </div>
+                                                                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                                                        <div
+                                                                            className="bg-primary h-full transition-all duration-1000 shadow-[0_0_10px_rgba(var(--primary),0.3)]"
+                                                                            style={{ width: `${stats?.percentage || 0}%` }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex items-center gap-2 pt-1 border-t border-slate-50 dark:border-slate-800/50">
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        className="h-7 text-[9px] font-black uppercase rounded-lg border-primary/20 hover:bg-primary/5 text-primary tracking-wider flex-1"
+                                                                        onClick={async () => {
+                                                                            if (!selectedUser) return;
+                                                                            try {
+                                                                                await adminUpdateProgress(selectedUser.id, course.id, 'complete');
+                                                                                const details = await fetchUserDetails(selectedUser.id);
+                                                                                setDetailedUser(details);
+                                                                                toast.success("Course marked as completed");
+                                                                            } catch (err) {
+                                                                                toast.error("Failed to update progress");
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        Force Complete
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        className="h-7 text-[9px] font-black uppercase rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 tracking-wider flex-1"
+                                                                        onClick={async () => {
+                                                                            if (!selectedUser) return;
+                                                                            try {
+                                                                                await adminUpdateProgress(selectedUser.id, course.id, 'reset');
+                                                                                const details = await fetchUserDetails(selectedUser.id);
+                                                                                setDetailedUser(details);
+                                                                                toast.success("Course progress reset");
+                                                                            } catch (err) {
+                                                                                toast.error("Failed to reset progress");
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        Reset Progress
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Course Enrollment Control</Label>
+                                            <div className="p-4 bg-muted/30 rounded-2xl border border-border/50 max-h-[160px] overflow-auto space-y-2">
+                                                {courses.map(course => (
+                                                    <div key={course.id} className="flex items-center space-x-3">
+                                                        <Checkbox
+                                                            id={`c-${course.id}`}
+                                                            checked={selectedEnrollments.includes(course.id)}
+                                                            onCheckedChange={(checked: boolean | "indeterminate") => {
+                                                                if (checked === true) setSelectedEnrollments([...selectedEnrollments, course.id]);
+                                                                else setSelectedEnrollments(selectedEnrollments.filter(id => id !== course.id));
+                                                            }}
+                                                        />
+                                                        <label htmlFor={`c-${course.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{course.title}</label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-12 text-center space-y-4">
+                                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                                            <Shield className="w-8 h-8 text-slate-400" />
+                                        </div>
+                                        <p className="text-sm text-muted-foreground font-medium">Advanced student settings are not available for administrator accounts.</p>
+                                    </div>
+                                )}
+                            </TabsContent>
+                        </Tabs>
 
                         <DialogFooter className="pt-4">
                             <Button type="submit" disabled={loading} className="h-12 w-full rounded-xl font-bold">
