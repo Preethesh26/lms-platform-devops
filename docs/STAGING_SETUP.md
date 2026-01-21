@@ -41,7 +41,8 @@ git push -u origin staging
 6.  **Environment Variables**:
     *   `MONGODB_URI`: Paste your **Staging** MongoDB string.
     *   `JWT_SECRET`: Use a different secret than production.
-    *   `FRONTEND_URL`: Leave empty for now (we will add this in Step 4).
+    *   `FRONTEND_URL`: Paste your **Vercel Staging URL** (e.g., `https://lms-platform-git-staging...`).
+    *   `VITE_API_URL`: (Optional) If you have frontend build steps in backend.
     *   `R2_BUCKET_NAME`: `lms-platform-staging` (Keep test files separate!).
 7.  Click **"Create Web Service"**.
 8.  Wait for deployment and copy the **Service URL** (e.g., `https://backend-staging.onrender.com`).
