@@ -33,11 +33,21 @@ app.use(cors({
         const incoming = normalize(origin);
         const allowed = normalize(allowedOrigin);
 
-        if (!origin || incoming === allowed) {
-            // Explicitly send the allowedOrigin (not 'true') to ensure header is always present
-            callback(null, allowedOrigin);
+        // Allow: 
+        // 1. Exact match with FRONTEND_URL
+        // 2. Localhost (for development)
+        // 3. Any Vercel Preview URL (.vercel.app)
+        const isAllowed =
+            !origin ||
+            incoming === allowed ||
+            (incoming && incoming.endsWith('.vercel.app'));
+
+        if (isAllowed) {
+            // If it's a Vercel preview, echo back the origin so the browser accepts it
+            const responseOrigin = (incoming && incoming.endsWith('.vercel.app')) ? origin : allowedOrigin;
+            callback(null, responseOrigin);
         } else {
-            console.log(`[CORS] Blocked. Origin: ${origin} | Expected: ${allowedOrigin}`);
+            console.log(`[CORS] Blocked. Origin: ${origin} | Expected: ${allowedOrigin} or *.vercel.app`);
             callback(new Error('Not allowed by CORS'));
         }
     },
