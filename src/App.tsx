@@ -39,7 +39,7 @@ import { StoreProvider } from './lib/store';
 function App() {
     return (
         <StoreProvider>
-            <ThemeProvider defaultTheme="dark" storageKey="academypro-theme">
+            <ThemeProvider defaultTheme="light" storageKey="academypro-theme">
                 <Router>
                     <Routes>
                         <Route path="/maintenance" element={<MaintenancePage />} />
