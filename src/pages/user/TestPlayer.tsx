@@ -16,6 +16,7 @@ export default function TestPlayer() {
     const [submitting, setSubmitting] = useState(false);
     const [warningCount, setWarningCount] = useState(0);
     const [showWarning, setShowWarning] = useState(false);
+    const [suspiciousEvents, setSuspiciousEvents] = useState<Array<{ eventType: string; occurredAt: string; meta?: any }>>([]);
 
     useEffect(() => {
         fetchTest();
@@ -42,16 +43,28 @@ export default function TestPlayer() {
 
         const handleVisibilityChange = () => {
             if (document.hidden) {
-                triggerWarning();
+                triggerWarning('visibility_hidden', { hidden: true });
             }
         };
 
         const handleBlur = () => {
-            triggerWarning();
+            triggerWarning('window_blur');
         };
 
-        const triggerWarning = () => {
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement) {
+                triggerWarning('fullscreen_exit');
+            }
+        };
+
+        const handleCopy = () => triggerWarning('copy_attempt');
+        const handlePaste = () => triggerWarning('paste_attempt');
+        const handleContextMenu = () => triggerWarning('context_menu_open');
+
+        const triggerWarning = (eventType = 'tab_switch', meta = {}) => {
             if (submitting) return;
+
+            setSuspiciousEvents(prev => [...prev, { eventType, occurredAt: new Date().toISOString(), meta }]);
 
             setWarningCount(prev => {
                 const newCount = prev + 1;
@@ -70,10 +83,18 @@ export default function TestPlayer() {
 
         window.addEventListener('blur', handleBlur);
         document.addEventListener('visibilitychange', handleVisibilityChange);
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('copy', handleCopy);
+        document.addEventListener('paste', handlePaste);
+        document.addEventListener('contextmenu', handleContextMenu);
 
         return () => {
             window.removeEventListener('blur', handleBlur);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('copy', handleCopy);
+            document.removeEventListener('paste', handlePaste);
+            document.removeEventListener('contextmenu', handleContextMenu);
         };
     }, [test, submitting]);
 
@@ -132,7 +153,10 @@ export default function TestPlayer() {
         try {
             // Get test token if it exists
             const testToken = localStorage.getItem(`test_token_${slug}`);
-            await testsAPI.submit(test._id, formattedAnswers, testToken || undefined);
+            await testsAPI.submit(test._id, formattedAnswers, testToken || undefined, {
+                warningsCount: warningCount,
+                events: suspiciousEvents
+            });
 
             // Clean up localStorage (don't remove token yet, needed for result view)
             // localStorage.removeItem(`test_token_${slug}`); // Keep token to view result
