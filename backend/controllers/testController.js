@@ -282,7 +282,7 @@ exports.submitTest = async (req, res) => {
             });
         }
 
-        const userAnswers = req.body.answers; // Array of { questionIndex, selectedOptionIndex }
+        const { answers: userAnswers, proctoring } = req.body; // Array of { questionIndex, selectedOptionIndex }
         let score = 0;
         const processedAnswers = [];
 
@@ -309,7 +309,19 @@ exports.submitTest = async (req, res) => {
             maxScore: test.questions.length,
             percentage,
             passed,
-            answers: processedAnswers
+            answers: processedAnswers,
+            proctoring: {
+                warningsCount: Number(proctoring?.warningsCount) || 0,
+                suspiciousEvents: Array.isArray(proctoring?.events)
+                    ? proctoring.events
+                        .filter(event => event && event.eventType)
+                        .map(event => ({
+                            eventType: event.eventType,
+                            occurredAt: event.occurredAt || new Date(),
+                            meta: event.meta || {}
+                        }))
+                    : []
+            }
         };
 
         if (req.user) {

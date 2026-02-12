@@ -18,6 +18,8 @@ These documents outline the technical approach for major features:
 - **[user_details_plan.md](./user_details_plan.md)** - User profile details
 - **[user_grid_plan.md](./user_grid_plan.md)** - User management grid
 
+- **[project_documentation.md](./project_documentation.md)** - Developer-focused architecture and onboarding overview
+
 ## Walkthroughs
 
 Step-by-step guides for completed features:
