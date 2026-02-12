@@ -60,6 +60,25 @@ const testAttemptSchema = new mongoose.Schema({
     resultEmailSent: {
         type: Boolean,
         default: false
+    },
+    proctoring: {
+        warningsCount: {
+            type: Number,
+            default: 0
+        },
+        suspiciousEvents: [{
+            eventType: {
+                type: String,
+                enum: ['tab_switch', 'window_blur', 'visibility_hidden', 'fullscreen_exit', 'copy_attempt', 'paste_attempt', 'context_menu_open']
+            },
+            occurredAt: {
+                type: Date,
+                default: Date.now
+            },
+            meta: {
+                type: mongoose.Schema.Types.Mixed
+            }
+        }]
     }
 }, {
     timestamps: true

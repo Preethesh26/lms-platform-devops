@@ -63,7 +63,7 @@ interface StoreContextType {
     deleteUser: (id: string) => Promise<void>;
     impersonateUser: (email: string) => Promise<{ success: boolean; role: string }>;
     enrollUser: (userId: string, courseId: string) => Promise<void>;
-    createOrder: (courseId: string) => Promise<any>;
+    createOrder: (data: { courseId: string; couponCode?: string; planType?: 'one_time' | 'subscription'; billingCycle?: 'one_time' | 'monthly' | 'quarterly' | 'yearly' }) => Promise<any>;
     verifyPayment: (data: { transactionId: string }, courseId?: string) => Promise<any>;
     loginUser: (userData: User, token: string) => Promise<void>;
     logoutUser: () => void;
@@ -450,7 +450,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         setCourses(coursesRes.data.data || []);
     };
 
-    const createOrder = async (courseId: string) => {
+    const createOrder = async (data: { courseId: string; couponCode?: string; planType?: 'one_time' | 'subscription'; billingCycle?: 'one_time' | 'monthly' | 'quarterly' | 'yearly' }) => {
         if (isDemoMode && currentUser?.email === 'demo-student@academypro.com') {
             return {
                 order: {
@@ -460,7 +460,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 }
             };
         }
-        const res = await paymentAPI.createOrder(courseId);
+        const res = await paymentAPI.createOrder(data);
         return res.data;
     };
 

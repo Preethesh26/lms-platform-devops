@@ -39,6 +39,10 @@ export default function CoursePlayerPage() {
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const [processingStep, setProcessingStep] = useState<'idle' | 'processing' | 'success'>('idle');
+    const [couponCode, setCouponCode] = useState('');
+    const [selectedPlan, setSelectedPlan] = useState<'one_time' | 'subscription'>('one_time');
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
+    const [pricingPreview, setPricingPreview] = useState<{ baseAmount: number; discountAmount: number; finalAmount: number } | null>(null);
     const [progress, setProgress] = useState<ProgressState>({});
     const playerRef = useRef<any>(null); // Type 'any' to avoid LegacyRef mismatch issues
     const progressUpdateTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -255,7 +259,20 @@ export default function CoursePlayerPage() {
             setPaymentLoading(true);
 
             // 1. Create Order (Mock)
-            const orderData = await createOrder(course.id);
+            const orderData = await createOrder({
+                courseId: course.id,
+                couponCode: couponCode.trim() || undefined,
+                planType: selectedPlan,
+                billingCycle: selectedPlan === 'subscription' ? billingCycle : 'one_time'
+            });
+
+            if (orderData?.pricing) {
+                setPricingPreview({
+                    baseAmount: orderData.pricing.baseAmount,
+                    discountAmount: orderData.pricing.discountAmount,
+                    finalAmount: orderData.pricing.finalAmount
+                });
+            }
 
             // Simulate network delay for realism
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -282,7 +299,7 @@ export default function CoursePlayerPage() {
             setProcessingStep('idle');
             setPaymentLoading(false);
             setShowPaymentDialog(false);
-            // Show error in the UI instead of alert
+            toast.error((error as any)?.response?.data?.error || 'Payment failed. Please try again.');
         }
     };
 
@@ -489,8 +506,35 @@ export default function CoursePlayerPage() {
 
                         {processingStep === 'idle' && (
                             <div className="flex flex-col gap-2">
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Button variant={selectedPlan === 'one_time' ? 'default' : 'outline'} onClick={() => setSelectedPlan('one_time')} disabled={paymentLoading}>One-time</Button>
+                                        <Button variant={selectedPlan === 'subscription' ? 'default' : 'outline'} onClick={() => setSelectedPlan('subscription')} disabled={paymentLoading}>Subscription</Button>
+                                    </div>
+                                    {selectedPlan === 'subscription' && (
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <Button variant={billingCycle === 'monthly' ? 'default' : 'outline'} onClick={() => setBillingCycle('monthly')} disabled={paymentLoading}>Monthly</Button>
+                                            <Button variant={billingCycle === 'quarterly' ? 'default' : 'outline'} onClick={() => setBillingCycle('quarterly')} disabled={paymentLoading}>Quarterly</Button>
+                                            <Button variant={billingCycle === 'yearly' ? 'default' : 'outline'} onClick={() => setBillingCycle('yearly')} disabled={paymentLoading}>Yearly</Button>
+                                        </div>
+                                    )}
+                                    <input
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        placeholder="Coupon code (e.g. SAVE10)"
+                                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        disabled={paymentLoading}
+                                    />
+                                    {pricingPreview && (
+                                        <div className="rounded-md border p-3 text-sm space-y-1">
+                                            <div className="flex justify-between"><span>Base</span><span>₹{pricingPreview.baseAmount}</span></div>
+                                            <div className="flex justify-between text-green-600"><span>Discount</span><span>-₹{pricingPreview.discountAmount}</span></div>
+                                            <div className="flex justify-between font-bold"><span>Total</span><span>₹{pricingPreview.finalAmount}</span></div>
+                                        </div>
+                                    )}
+                                </div>
                                 <Button size="lg" className="w-full font-bold" onClick={processMockPayment} disabled={paymentLoading}>
-                                    Confirm Payment of ₹{course.price}
+                                    Confirm Payment of ₹{pricingPreview?.finalAmount ?? course.price}
                                 </Button>
                                 <Button variant="ghost" className="w-full" onClick={() => setShowPaymentDialog(false)} disabled={paymentLoading}>
                                     Cancel
