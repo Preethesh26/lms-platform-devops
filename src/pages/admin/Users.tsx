@@ -118,11 +118,24 @@ export default function AdminUsersPage() {
     const [detailedUser, setDetailedUser] = useState<any>(null);
     const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
+    const normalizeCourseIds = (courseIds: any[] = []) => {
+        return Array.from(new Set(
+            courseIds
+                .map((courseId) => {
+                    if (!courseId) return null;
+                    if (typeof courseId === 'string') return courseId;
+                    if (typeof courseId === 'object') return courseId.id || courseId._id || null;
+                    return String(courseId);
+                })
+                .filter(Boolean)
+        )) as string[];
+    };
+
 
     const handleEditClick = async (user: User) => {
         setSelectedUser(user);
         setSelectedRole(user.role);
-        setSelectedEnrollments(user.enrolledCourses || []);
+        setSelectedEnrollments(normalizeCourseIds(user.enrolledCourses || []));
 
         if (user.role === 'user') {
             setIsFetchingDetails(true);
@@ -151,7 +164,7 @@ export default function AdminUsersPage() {
                 role: selectedRole as "admin" | "user",
                 enrollment: formData.get("enrollment") as string,
                 password: (formData.get("password") as string) || undefined,
-                enrolledCourses: selectedEnrollments,
+                enrolledCourses: normalizeCourseIds(selectedEnrollments),
                 needsPasswordReset: resetRequired
             });
             setSelectedUser(null);
@@ -655,8 +668,12 @@ export default function AdminUsersPage() {
                                                             id={`c-${course.id}`}
                                                             checked={selectedEnrollments.includes(course.id)}
                                                             onCheckedChange={(checked: boolean | "indeterminate") => {
-                                                                if (checked === true) setSelectedEnrollments([...selectedEnrollments, course.id]);
-                                                                else setSelectedEnrollments(selectedEnrollments.filter(id => id !== course.id));
+                                                                setSelectedEnrollments((prev) => {
+                                                                    if (checked === true) {
+                                                                        return Array.from(new Set([...prev, course.id]));
+                                                                    }
+                                                                    return prev.filter(id => id !== course.id);
+                                                                });
                                                             }}
                                                         />
                                                         <label htmlFor={`c-${course.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{course.title}</label>

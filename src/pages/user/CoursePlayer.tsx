@@ -31,7 +31,7 @@ type ProgressState = {
 export default function CoursePlayerPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const { courses, isInitialized, currentUser, createOrder, verifyPayment, updateCurrentUser, fetchData } = useStore();
+    const { courses, isInitialized, currentUser, createOrder, verifyPayment, enrollUser, updateCurrentUser, fetchData } = useStore();
 
     const [course, setCourse] = useState<Course | null>(null);
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
@@ -80,10 +80,11 @@ export default function CoursePlayerPage() {
             const foundCourse = courses.find((c) => c.id === params.courseId);
 
             if (foundCourse) {
+                const currentCourseId = foundCourse.id;
                 setCourse(foundCourse);
 
                 // Check enrollment
-                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
+                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === currentCourseId.toString()) || currentUser.role === 'admin';
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
@@ -93,7 +94,7 @@ export default function CoursePlayerPage() {
                     }
 
                     // Fetch existing progress
-                    fetchProgress(foundCourse.id);
+                    fetchProgress(currentCourseId);
                 }
             } else {
                 navigate("/my-learning");
@@ -282,16 +283,27 @@ export default function CoursePlayerPage() {
                 transactionId: orderData.order.id
             }, course.id);
 
+            // Fallback enrollment sync to avoid stale enrollment state on UI
+            if (currentUser?.id) {
+                try {
+                    await enrollUser(currentUser.id, course.id);
+                } catch (syncError: any) {
+                    // Ignore if already enrolled; surface other errors
+                    if (!String(syncError?.response?.data?.message || syncError?.message || '').toLowerCase().includes('already enrolled')) {
+                        console.error('Enrollment sync warning:', syncError);
+                    }
+                }
+            }
+
             setProcessingStep('success');
 
-            // Wait to show success checkmark, then redirect to My Learning
+            const courseId = course.id;
+            // Wait to show success checkmark, then redirect into enrolled course
             setTimeout(() => {
                 setShowPaymentDialog(false);
                 setIsEnrolled(true);
                 setPaymentLoading(false);
-
-                // Redirect to My Learning page
-                navigate("/my-learning");
+                navigate(`/courses/${courseId}`);
             }, 2000); // Show success for 2 seconds
 
         } catch (error) {
@@ -383,7 +395,7 @@ export default function CoursePlayerPage() {
 
                         <div className="flex items-center gap-4">
                             <div className="text-4xl font-extrabold text-primary">
-                                {course.price > 0 ? `₹${course.price}` : "Free"}
+                                ₹{course.price}
                             </div>
                             {course.price > 0 && (
                                 <span className="text-sm text-muted-foreground font-medium line-through opacity-60 italic">Standard: ₹{course.price + 1000}</span>
@@ -397,7 +409,7 @@ export default function CoursePlayerPage() {
                                 onClick={handlePayment}
                                 disabled={paymentLoading}
                             >
-                                {paymentLoading ? "Setting up Access..." : course.price > 0 ? "Unlock Full Access" : "Enroll for Free"}
+                                {paymentLoading ? "Setting up Access..." : "Unlock Full Access"}
                             </Button>
                             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4 font-bold flex items-center gap-2 opacity-70">
                                 <Sparkles className="h-3 w-3 text-yellow-500" /> Instant activation upon enrollment
