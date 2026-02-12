@@ -135,7 +135,7 @@ export const supportAPI = {
 
 // Payment API
 export const paymentAPI = {
-    createOrder: (courseId: string) => api.post('/payment/create-order', { courseId }),
+    createOrder: (data: { courseId: string; couponCode?: string; planType?: 'one_time' | 'subscription'; billingCycle?: 'one_time' | 'monthly' | 'quarterly' | 'yearly' }) => api.post('/payment/create-order', data),
     verifyPayment: (data: { transactionId: string }) =>
         api.post('/payment/verify', data)
 };
@@ -178,8 +178,8 @@ export const testsAPI = {
     authenticate: (slug: string, email: string, accessPassword?: string) =>
         api.post(`/tests/${slug}/authenticate`, { email, password: accessPassword }),
     getBySlug: (slug: string) => api.get(`/tests/access/${slug}`),
-    submit: (id: string, answers: any[], token?: string) =>
-        api.post(`/tests/${id}/submit`, { answers }, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+    submit: (id: string, answers: any[], token?: string, proctoring?: { warningsCount: number; events: any[] }) =>
+        api.post(`/tests/${id}/submit`, { answers, proctoring }, token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
     getResult: (id: string, token?: string) =>
         api.get(`/tests/${id}/result`, token ? { headers: { Authorization: `Bearer ${token}` } } : {})
 };

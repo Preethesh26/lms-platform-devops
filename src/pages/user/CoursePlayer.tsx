@@ -31,7 +31,7 @@ type ProgressState = {
 export default function CoursePlayerPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const { courses, isInitialized, currentUser, createOrder, verifyPayment, updateCurrentUser, fetchData } = useStore();
+    const { courses, isInitialized, currentUser, createOrder, verifyPayment, enrollUser, updateCurrentUser, fetchData } = useStore();
 
     const [course, setCourse] = useState<Course | null>(null);
     const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
@@ -39,6 +39,10 @@ export default function CoursePlayerPage() {
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [showPaymentDialog, setShowPaymentDialog] = useState(false);
     const [processingStep, setProcessingStep] = useState<'idle' | 'processing' | 'success'>('idle');
+    const [couponCode, setCouponCode] = useState('');
+    const [selectedPlan, setSelectedPlan] = useState<'one_time' | 'subscription'>('one_time');
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
+    const [pricingPreview, setPricingPreview] = useState<{ baseAmount: number; discountAmount: number; finalAmount: number } | null>(null);
     const [progress, setProgress] = useState<ProgressState>({});
     const playerRef = useRef<any>(null); // Type 'any' to avoid LegacyRef mismatch issues
     const progressUpdateTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -76,10 +80,11 @@ export default function CoursePlayerPage() {
             const foundCourse = courses.find((c) => c.id === params.courseId);
 
             if (foundCourse) {
+                const currentCourseId = foundCourse.id;
                 setCourse(foundCourse);
 
                 // Check enrollment
-                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === foundCourse.id.toString()) || currentUser.role === 'admin';
+                const enrolled = currentUser.enrolledCourses?.some(id => id && id.toString() === currentCourseId.toString()) || currentUser.role === 'admin';
                 setIsEnrolled(enrolled);
 
                 if (enrolled && foundCourse.lessons.length > 0) {
@@ -89,7 +94,7 @@ export default function CoursePlayerPage() {
                     }
 
                     // Fetch existing progress
-                    fetchProgress(foundCourse.id);
+                    fetchProgress(currentCourseId);
                 }
             } else {
                 navigate("/my-learning");
@@ -255,7 +260,20 @@ export default function CoursePlayerPage() {
             setPaymentLoading(true);
 
             // 1. Create Order (Mock)
-            const orderData = await createOrder(course.id);
+            const orderData = await createOrder({
+                courseId: course.id,
+                couponCode: couponCode.trim() || undefined,
+                planType: selectedPlan,
+                billingCycle: selectedPlan === 'subscription' ? billingCycle : 'one_time'
+            });
+
+            if (orderData?.pricing) {
+                setPricingPreview({
+                    baseAmount: orderData.pricing.baseAmount,
+                    discountAmount: orderData.pricing.discountAmount,
+                    finalAmount: orderData.pricing.finalAmount
+                });
+            }
 
             // Simulate network delay for realism
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -265,16 +283,27 @@ export default function CoursePlayerPage() {
                 transactionId: orderData.order.id
             }, course.id);
 
+            // Fallback enrollment sync to avoid stale enrollment state on UI
+            if (currentUser?.id) {
+                try {
+                    await enrollUser(currentUser.id, course.id);
+                } catch (syncError: any) {
+                    // Ignore if already enrolled; surface other errors
+                    if (!String(syncError?.response?.data?.message || syncError?.message || '').toLowerCase().includes('already enrolled')) {
+                        console.error('Enrollment sync warning:', syncError);
+                    }
+                }
+            }
+
             setProcessingStep('success');
 
-            // Wait to show success checkmark, then redirect to My Learning
+            const courseId = course.id;
+            // Wait to show success checkmark, then redirect into enrolled course
             setTimeout(() => {
                 setShowPaymentDialog(false);
                 setIsEnrolled(true);
                 setPaymentLoading(false);
-
-                // Redirect to My Learning page
-                navigate("/my-learning");
+                navigate(`/courses/${courseId}`);
             }, 2000); // Show success for 2 seconds
 
         } catch (error) {
@@ -282,7 +311,7 @@ export default function CoursePlayerPage() {
             setProcessingStep('idle');
             setPaymentLoading(false);
             setShowPaymentDialog(false);
-            // Show error in the UI instead of alert
+            toast.error((error as any)?.response?.data?.error || 'Payment failed. Please try again.');
         }
     };
 
@@ -366,7 +395,7 @@ export default function CoursePlayerPage() {
 
                         <div className="flex items-center gap-4">
                             <div className="text-4xl font-extrabold text-primary">
-                                {course.price > 0 ? `₹${course.price}` : "Free"}
+                                ₹{course.price}
                             </div>
                             {course.price > 0 && (
                                 <span className="text-sm text-muted-foreground font-medium line-through opacity-60 italic">Standard: ₹{course.price + 1000}</span>
@@ -380,7 +409,7 @@ export default function CoursePlayerPage() {
                                 onClick={handlePayment}
                                 disabled={paymentLoading}
                             >
-                                {paymentLoading ? "Setting up Access..." : course.price > 0 ? "Unlock Full Access" : "Enroll for Free"}
+                                {paymentLoading ? "Setting up Access..." : "Unlock Full Access"}
                             </Button>
                             <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4 font-bold flex items-center gap-2 opacity-70">
                                 <Sparkles className="h-3 w-3 text-yellow-500" /> Instant activation upon enrollment
@@ -489,8 +518,35 @@ export default function CoursePlayerPage() {
 
                         {processingStep === 'idle' && (
                             <div className="flex flex-col gap-2">
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Button variant={selectedPlan === 'one_time' ? 'default' : 'outline'} onClick={() => setSelectedPlan('one_time')} disabled={paymentLoading}>One-time</Button>
+                                        <Button variant={selectedPlan === 'subscription' ? 'default' : 'outline'} onClick={() => setSelectedPlan('subscription')} disabled={paymentLoading}>Subscription</Button>
+                                    </div>
+                                    {selectedPlan === 'subscription' && (
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <Button variant={billingCycle === 'monthly' ? 'default' : 'outline'} onClick={() => setBillingCycle('monthly')} disabled={paymentLoading}>Monthly</Button>
+                                            <Button variant={billingCycle === 'quarterly' ? 'default' : 'outline'} onClick={() => setBillingCycle('quarterly')} disabled={paymentLoading}>Quarterly</Button>
+                                            <Button variant={billingCycle === 'yearly' ? 'default' : 'outline'} onClick={() => setBillingCycle('yearly')} disabled={paymentLoading}>Yearly</Button>
+                                        </div>
+                                    )}
+                                    <input
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        placeholder="Coupon code (e.g. SAVE10)"
+                                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        disabled={paymentLoading}
+                                    />
+                                    {pricingPreview && (
+                                        <div className="rounded-md border p-3 text-sm space-y-1">
+                                            <div className="flex justify-between"><span>Base</span><span>₹{pricingPreview.baseAmount}</span></div>
+                                            <div className="flex justify-between text-green-600"><span>Discount</span><span>-₹{pricingPreview.discountAmount}</span></div>
+                                            <div className="flex justify-between font-bold"><span>Total</span><span>₹{pricingPreview.finalAmount}</span></div>
+                                        </div>
+                                    )}
+                                </div>
                                 <Button size="lg" className="w-full font-bold" onClick={processMockPayment} disabled={paymentLoading}>
-                                    Confirm Payment of ₹{course.price}
+                                    Confirm Payment of ₹{pricingPreview?.finalAmount ?? course.price}
                                 </Button>
                                 <Button variant="ghost" className="w-full" onClick={() => setShowPaymentDialog(false)} disabled={paymentLoading}>
                                     Cancel
