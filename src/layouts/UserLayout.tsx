@@ -92,7 +92,7 @@ export default function UserLayout() {
                             </Link>
                         )}
                         {/* Theme Toggle - Always Visible */}
-                        <ThemeToggle />
+                        {/* <ThemeToggle /> */}
                     </div>
                 </div>
 
