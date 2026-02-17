@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Sparkles, Upload, Loader2 } from "lucide-react";
+import { Plus, Sparkles, Upload, Loader2, Search, SlidersHorizontal, CalendarDays, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
@@ -30,6 +30,8 @@ export default function AdminCoursesPage() {
     const [uploading, setUploading] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortAscending, setSortAscending] = useState(true);
 
     // Refs for thumbnail inputs
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -255,17 +257,28 @@ export default function AdminCoursesPage() {
 
     if (!isInitialized) return null;
 
+    const filteredCourses = courses
+        .filter((course) => course.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => {
+            const value = a.title.localeCompare(b.title);
+            return sortAscending ? value : -value;
+        });
+
+    const featuredCourses = courses.filter((course) => course.isFeatured).length;
+    const regularCourses = courses.length - featuredCourses;
+    const totalLessons = courses.reduce((acc, course) => acc + (course.lessons?.length || 0), 0);
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div className="space-y-1">
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">Course Vault</h1>
-                    <p className="text-muted-foreground font-medium">Manage and refine your educational assets with ease.</p>
+                    <h1 className="text-3xl font-extrabold tracking-tight">Courses</h1>
+                    <p className="text-muted-foreground font-medium">Welcome to your course dashboard</p>
                 </div>
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-12 px-6 rounded-xl font-bold w-full lg:w-auto bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                            <Plus className="mr-2 h-4 w-4" /> Create Masterclass
+                        <Button className="h-11 px-6 rounded-xl font-bold w-full lg:w-auto bg-emerald-950 text-white hover:bg-emerald-900">
+                            <Plus className="mr-2 h-4 w-4" /> Create
                         </Button>
                     </DialogTrigger>
                     <DialogContent key={isCreateOpen ? 'create' : 'closed'} className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto rounded-[2.5rem] border-2 border-indigo-500/20 dark:border-indigo-500/50 shadow-2xl p-0">
@@ -374,8 +387,59 @@ export default function AdminCoursesPage() {
                 </Dialog>
             </div>
 
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                <div className="relative max-w-xl w-full">
+                    <Search className="h-4 w-4 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2" />
+                    <Input
+                        value={searchQuery}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                        placeholder="Search by title"
+                        className="h-11 pl-10 rounded-xl"
+                    />
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={() => setSortAscending((prev) => !prev)}>
+                        <ArrowUpDown className="w-4 h-4 mr-2" />
+                        {sortAscending ? "A-Z" : "Z-A"}
+                    </Button>
+                    <Button type="button" variant="outline" className="h-11 rounded-xl">
+                        <SlidersHorizontal className="w-4 h-4 mr-2" /> Filters
+                    </Button>
+                    <Button type="button" variant="outline" className="h-11 rounded-xl">
+                        <CalendarDays className="w-4 h-4 mr-2" /> Published date
+                    </Button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <Card className="rounded-2xl border bg-muted/20">
+                    <CardContent className="py-5 text-center">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{courses.length}</p>
+                        <p className="text-sm text-muted-foreground">Total Course</p>
+                    </CardContent>
+                </Card>
+                <Card className="rounded-2xl border bg-muted/20">
+                    <CardContent className="py-5 text-center">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{featuredCourses}</p>
+                        <p className="text-sm text-muted-foreground">Featured Course</p>
+                    </CardContent>
+                </Card>
+                <Card className="rounded-2xl border bg-muted/20">
+                    <CardContent className="py-5 text-center">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{regularCourses}</p>
+                        <p className="text-sm text-muted-foreground">Regular Course</p>
+                    </CardContent>
+                </Card>
+                <Card className="rounded-2xl border bg-muted/20">
+                    <CardContent className="py-5 text-center">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white">{totalLessons}</p>
+                        <p className="text-sm text-muted-foreground">Total Lessons</p>
+                    </CardContent>
+                </Card>
+            </div>
+
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {courses.length === 0 ? (
+                {filteredCourses.length === 0 ? (
                     <Card className="col-span-full py-20 text-center border-dashed border-2 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 rounded-[2.5rem]">
                         <CardContent className="space-y-4">
                             <div className="w-20 h-20 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
@@ -388,7 +452,7 @@ export default function AdminCoursesPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    courses.map((course) => (
+                    filteredCourses.map((course) => (
                         <Card
                             key={course.id}
                             className="group overflow-hidden rounded-[2.5rem] border-2 border-transparent dark:bg-slate-900/50 shadow-sm hover:shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-2 bg-white dark:hover:border-primary/20 relative"
