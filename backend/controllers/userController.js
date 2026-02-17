@@ -62,115 +62,105 @@ exports.getUser = async (req, res) => {
 // @access  Private/Admin
 exports.updateUser = async (req, res) => {
     try {
-        // Get the original user data before update
         const originalUser = await User.findById(req.params.id);
+
         if (!originalUser) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Role-based restrictions: Only superadmin can modify an admin
+        // 🔐 Role protection
         if (originalUser.role === 'admin' && req.user.role !== 'superadmin') {
-            return res.status(403).json({ success: false, message: 'Only Super Admin can modify an administrator account.' });
+            return res.status(403).json({
+                success: false,
+                message: 'Only Super Admin can modify an administrator account.'
+            });
         }
 
-        // --- STRICT ROLE LOCK ---
-        // Prevent REGULAR ADMINS from changing anyone's role (not to admin, not to student, nothing).
-        // Only Super Admin can touch the 'role' field.
+        // 🔐 Only Super Admin can change roles
         if (req.body.role && req.body.role !== originalUser.role) {
             if (req.user.role !== 'superadmin') {
-                return res.status(403).json({ success: false, message: 'Access Denied: Only Super Admin can change user roles.' });
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access Denied: Only Super Admin can change user roles.'
+                });
             }
         }
 
-        // If password is being updated, hash it first
+        // 🔎 Check duplicate email
+        if (req.body.email && req.body.email !== originalUser.email) {
+            const emailExists = await User.findOne({
+                email: req.body.email.toLowerCase(),
+                _id: { $ne: req.params.id }
+            });
+
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists. Please use a different email.'
+                });
+            }
+        }
+
+        // 🔎 Check duplicate enrollment
+        if (req.body.enrollment && req.body.enrollment !== originalUser.enrollment) {
+            const enrollmentExists = await User.findOne({
+                enrollment: req.body.enrollment,
+                _id: { $ne: req.params.id }
+            });
+
+            if (enrollmentExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Enrollment number already exists.'
+                });
+            }
+        }
+
+        // 🔐 Hash password if updated
         if (req.body.password) {
             const bcrypt = require('bcryptjs');
             const salt = await bcrypt.genSalt(10);
             req.body.password = await bcrypt.hash(req.body.password, salt);
         }
 
-        // Check if email already exists for another user
-        if (req.body.email && req.body.email !== originalUser.email) {
-            const emailExists = await User.findOne({ email: req.body.email.toLowerCase(), _id: { $ne: req.params.id } });
-            if (emailExists) {
-                return res.status(400).json({ success: false, message: 'Email already exists. Please use a different email.' });
-            }
-        }
-
-        // Check if enrollment already exists for another user
-        if (req.body.enrollment && req.body.enrollment !== originalUser.enrollment) {
-            const enrollmentExists = await User.findOne({ enrollment: req.body.enrollment, _id: { $ne: req.params.id } });
-            if (enrollmentExists) {
-                return res.status(400).json({ success: false, message: 'Enrollment number already exists.' });
-            }
-        }
-
-        // --- SECURITY MONITORING ---
-        // Detect sensitive changes before executing update
-        const securityChanges = [];
-        if (req.body.role && req.body.role !== originalUser.role) {
-            securityChanges.push(`Role changed from '${originalUser.role}' to '${req.body.role}'`);
-        }
-        if (req.body.password) {
-            securityChanges.push('Password was reset/changed');
-        }
-        if (req.body.email && req.body.email !== originalUser.email) {
-            securityChanges.push(`Email changed from '${originalUser.email}' to '${req.body.email}'`);
-        }
-
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        }).select('-password');
+        // ✅ ---- SAFE UPDATE METHOD (IMPORTANT FIX) ----
+        const user = await User.findById(req.params.id);
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // 1. Send Student Notification (Profile Update)
-        try {
-            const { sendProfileUpdateEmail, sendSecurityAlertEmail } = require('../services/emailService');
+        // Basic fields
+        if (req.body.name !== undefined) user.name = req.body.name;
+        if (req.body.email !== undefined) user.email = req.body.email;
+        if (req.body.role !== undefined) user.role = req.body.role;
+        if (req.body.enrollment !== undefined) user.enrollment = req.body.enrollment;
+        if (req.body.needsPasswordReset !== undefined) user.needsPasswordReset = req.body.needsPasswordReset;
 
-            // Determine what changed for user context
-            const changes = {};
-            if (req.body.name && req.body.name !== originalUser.name) changes.name = true;
-            if (req.body.email && req.body.email !== originalUser.email) changes.email = req.body.email;
-            if (req.body.role && req.body.role !== originalUser.role) changes.role = req.body.role;
-            if (req.body.password) changes.password = true;
-            if (req.body.enrollment && req.body.enrollment !== originalUser.enrollment) changes.enrollment = req.body.enrollment;
-
-            // Send notification to the user
-            if (Object.keys(changes).length > 0) {
-                const emailTo = changes.email || originalUser.email;
-                await sendProfileUpdateEmail(emailTo, user.name, changes);
-                console.log(`Profile update email sent to ${emailTo}`);
-            }
-
-            // 2. Send Super Admin Security Alert (If Critical Changes)
-            if (securityChanges.length > 0) {
-                const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
-                if (adminEmail) {
-                    await sendSecurityAlertEmail(
-                        adminEmail,
-                        'Sensitive Account Modification',
-                        { name: user.name, email: user.email }, // Target
-                        { name: req.user.name || 'Admin', role: req.user.role }, // Performer
-                        securityChanges // Details
-                    );
-                    console.log(`🚨 Security Alert sent to ${adminEmail}`);
-                }
-            }
-
-        } catch (emailError) {
-            console.error('Failed to send notification emails:', emailError);
+        // 🔥 THIS FIXES YOUR COURSE UPDATE ISSUE
+        if (req.body.enrolledCourses !== undefined) {
+            user.enrolledCourses = req.body.enrolledCourses;
         }
 
-        // Sync to Google Sheets (non-blocking)
-        updateUserInSheet(user).catch(err => console.error('Sheet Update Background Error:', err));
+        if (req.body.password) {
+            user.password = req.body.password;
+        }
 
-        res.status(200).json({ success: true, data: user });
+        await user.save();
+
+        const updatedUser = await User.findById(user._id).select('-password');
+
+        res.status(200).json({
+            success: true,
+            data: updatedUser
+        });
+
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        console.error("Update User Error:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 

@@ -135,7 +135,10 @@ export default function AdminUsersPage() {
     const handleEditClick = async (user: User) => {
         setSelectedUser(user);
         setSelectedRole(user.role);
-        setSelectedEnrollments(normalizeCourseIds(user.enrolledCourses || []));
+        
+        setSelectedEnrollments(
+    normalizeCourseIds(user.enrolledCourses || [])
+);
 
         if (user.role === 'user') {
             setIsFetchingDetails(true);
