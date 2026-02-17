@@ -44,6 +44,11 @@ export default function AdminUsersPage() {
 
     // Password visibility state
     const [showGeneratedPassword, setShowGeneratedPassword] = useState(false);
+    const [editName, setEditName] = useState("");
+    const [editEmail, setEditEmail] = useState("");
+    const [editEnrollment, setEditEnrollment] = useState("");
+    const [editPassword, setEditPassword] = useState("");
+    const [editNeedsPasswordReset, setEditNeedsPasswordReset] = useState(false);
 
     const filteredUsers = users.filter(u =>
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -135,10 +140,13 @@ export default function AdminUsersPage() {
     const handleEditClick = async (user: User) => {
         setSelectedUser(user);
         setSelectedRole(user.role);
-        
-        setSelectedEnrollments(
-    normalizeCourseIds(user.enrolledCourses || [])
-);
+        setEditName(user.name || "");
+        setEditEmail(user.email || "");
+        setEditEnrollment(user.enrollment || "");
+        setEditPassword("");
+        setEditNeedsPasswordReset(!!user.needsPasswordReset);
+
+        setSelectedEnrollments(normalizeCourseIds(user.enrolledCourses || []));
 
         if (user.role === 'user') {
             setIsFetchingDetails(true);
@@ -157,18 +165,16 @@ export default function AdminUsersPage() {
         e.preventDefault();
         if (!selectedUser) return;
         setLoading(true);
-        const formData = new FormData(e.currentTarget);
-        const resetRequired = formData.get("needsPasswordReset") === "on";
 
         try {
             await updateUser(selectedUser.id, {
-                name: formData.get("name") as string,
-                email: formData.get("email") as string,
+                name: editName,
+                email: editEmail,
                 role: selectedRole as "admin" | "user",
-                enrollment: formData.get("enrollment") as string,
-                password: (formData.get("password") as string) || undefined,
+                enrollment: editEnrollment,
+                password: editPassword || undefined,
                 enrolledCourses: normalizeCourseIds(selectedEnrollments),
-                needsPasswordReset: resetRequired
+                needsPasswordReset: editNeedsPasswordReset
             });
             setSelectedUser(null);
             toast.success("User updated successfully.");
@@ -509,11 +515,24 @@ export default function AdminUsersPage() {
                             <TabsContent value="basic" className="space-y-5 mt-0">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Name</Label>
-                                    <Input name="name" defaultValue={selectedUser?.name} className="h-12 rounded-xl" required />
+                                    <Input
+                                        name="name"
+                                        value={editName}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditName(e.target.value)}
+                                        className="h-12 rounded-xl"
+                                        required
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">Email</Label>
-                                    <Input name="email" type="email" defaultValue={selectedUser?.email} className="h-12 rounded-xl" required />
+                                    <Input
+                                        name="email"
+                                        type="email"
+                                        value={editEmail}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditEmail(e.target.value)}
+                                        className="h-12 rounded-xl"
+                                        required
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2 text-primary">
@@ -522,6 +541,8 @@ export default function AdminUsersPage() {
                                             <Input
                                                 name="password"
                                                 type={showGeneratedPassword ? "text" : "password"}
+                                                value={editPassword}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditPassword(e.target.value)}
                                                 className="h-12 rounded-xl border-indigo-100 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white pr-10"
                                             />
                                             <Button
@@ -537,7 +558,12 @@ export default function AdminUsersPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-bold uppercase tracking-widest opacity-60 px-1">User ID</Label>
-                                        <Input name="enrollment" defaultValue={selectedUser?.enrollment} className="h-12 rounded-xl" />
+                                        <Input
+                                            name="enrollment"
+                                            value={editEnrollment}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditEnrollment(e.target.value)}
+                                            className="h-12 rounded-xl"
+                                        />
                                     </div>
                                 </div>
 
@@ -558,7 +584,12 @@ export default function AdminUsersPage() {
                                 </div>
 
                                 <div className="flex items-center space-x-2 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-                                    <Checkbox id="needsPasswordReset" name="needsPasswordReset" defaultChecked={selectedUser?.needsPasswordReset} />
+                                    <Checkbox
+                                        id="needsPasswordReset"
+                                        name="needsPasswordReset"
+                                        checked={editNeedsPasswordReset}
+                                        onCheckedChange={(checked: boolean | "indeterminate") => setEditNeedsPasswordReset(checked === true)}
+                                    />
                                     <label
                                         htmlFor="needsPasswordReset"
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-indigo-900"
