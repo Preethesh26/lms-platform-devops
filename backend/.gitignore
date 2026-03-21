@@ -3,3 +3,24 @@ node_modules
 .DS_Store
 dist
 server.log
+
+# Utility/dev scripts
+checkEnrollments.js
+clearEnrollments.js
+createDemoAdmin.js
+createDemoStudent.js
+createSuperAdmin.js
+migrateDatabase.js
+migrateUsersToSheets.js
+obfuscate.js
+resetAdmin.js
+resetGoogleSheet.js
+seedStaging.js
+showAdminCredentials.js
+testAdminEmail.js
+testBrevoEmail.js
+testEmail.js
+testQuizFlow.js
+testSignupFlow.js
+upgradeSuperAdmin.js
+verify_backend.sh
