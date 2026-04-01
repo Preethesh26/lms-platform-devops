@@ -16,7 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - '5000:5000'
+      - '10000:10000'
     env_file:
       - backend/.env        # MONGODB_URI points to Atlas lms_dev
     restart: unless-stopped

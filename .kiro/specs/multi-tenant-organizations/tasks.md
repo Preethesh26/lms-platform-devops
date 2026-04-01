@@ -216,7 +216,7 @@ Extend the existing single-tenant LMS into a multi-tenant platform by introducin
     - Optionally seed a default Organization and its Org_Admin user for local development
     - _Requirements: 3.6, 11.3_
 
-- [ ] 16. Final checkpoint — Ensure all tests pass
+- [x] 16. Final checkpoint — Ensure all tests pass
   - Run the full test suite (backend + frontend). Verify backward compatibility: existing admin login without `organizationId` still works, legacy documents still appear in legacy queries. Ask the user if questions arise.
 
 ## Notes
