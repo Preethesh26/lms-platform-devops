@@ -25,11 +25,11 @@ pipeline {
 
     // Credentials stored in Jenkins → Manage Credentials
     environment {
-        DOCKERHUB_USERNAME  = 'preethesh26'  // Docker Hub username
+        DOCKERHUB_USERNAME  = 'preethesh26'
         DOCKERHUB_TOKEN     = credentials('DOCKERHUB_TOKEN')
-        RENDER_DEPLOY_HOOK  = credentials('RENDER_DEPLOY_HOOK')   // https://api.render.com/deploy/srv-d76bg8s50q8c73aecaag?key=N4-XhYw_C2U
-        NETLIFY_HOOK        = credentials('NETLIFY_HOOK')          // https://api.netlify.com/build_hooks/69ccb90178e45323b8ba465e
-        NOTIFY_WEBHOOK      = credentials('NOTIFY_WEBHOOK')        // Slack/Teams (optional)
+        RENDER_DEPLOY_HOOK  = credentials('RENDER_DEPLOY_HOOK')
+        NETLIFY_HOOK        = credentials('NETLIFY_HOOK')
+        NOTIFY_WEBHOOK      = credentials('NOTIFY_WEBHOOK')
         MONGODB_URI         = credentials('MONGODB_URI')
         JWT_SECRET          = credentials('JWT_SECRET')
         BREVO_API_KEY       = credentials('BREVO_API_KEY')
