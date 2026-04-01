@@ -16,16 +16,24 @@ const LOCKOUT_MS = 15 * 60 * 1000;
 
 // Generate next sequential ORG-NNN id
 const generateOrganizationId = async () => {
-    const last = await Organization.findOne({}, { organizationId: 1 }).sort({ organizationId: -1 });
+    // Sort by createdAt descending to get the latest org, then parse its ID
+    const last = await Organization.findOne({}, { organizationId: 1 }).sort({ createdAt: -1 });
     let next = 1;
     if (last && last.organizationId) {
         const num = parseInt(last.organizationId.replace('ORG-', ''), 10);
-        next = num + 1;
+        if (!isNaN(num)) next = num + 1;
     }
     const candidate = `ORG-${String(next).padStart(3, '0')}`;
-    // Retry on collision
     const exists = await Organization.findOne({ organizationId: candidate });
-    if (exists) return generateOrganizationId();
+    if (exists) {
+        // Collision — find the actual max and increment
+        const all = await Organization.find({}, { organizationId: 1 });
+        const max = all.reduce((m, o) => {
+            const n = parseInt(o.organizationId.replace('ORG-', ''), 10);
+            return isNaN(n) ? m : Math.max(m, n);
+        }, 0);
+        return `ORG-${String(max + 1).padStart(3, '0')}`;
+    }
     return candidate;
 };
 
