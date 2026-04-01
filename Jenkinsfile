@@ -72,7 +72,7 @@ pipeline {
                             --build-arg VITE_API_URL=http://localhost:5000/api \
                             -t ${env.DOCKERHUB_USERNAME}/lms-frontend:${env.DEPLOY_SHA} \
                             -t ${env.DOCKERHUB_USERNAME}/lms-frontend:local \
-                            .
+                            ./frontend
                     """
 
                     echo "Building backend image..."
