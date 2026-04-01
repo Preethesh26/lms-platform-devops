@@ -41,6 +41,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-*.json
+# Service account credentials (never commit these)
 lms-platform-66f35-b91a4f3d5f02.json
-*.json
