@@ -1,0 +1,52 @@
+# ============================================================
+# DOCKER COMPOSE — LOCAL DEVELOPMENT
+# Run everything locally with: docker compose up
+# Stop and clean up with:      docker compose down -v
+# ============================================================
+
+version: '3.8'
+
+services:
+
+  # ── MongoDB (local database for development) ──────────────
+  mongo:
+    image: mongo:7-jammy
+    ports:
+      - '27017:27017'       # accessible at localhost:27017
+    volumes:
+      - mongo_data:/data/db # data persists between restarts
+    restart: unless-stopped
+
+  # ── Backend (Node.js/Express API) ─────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'         # accessible at localhost:5000
+    env_file:
+      - backend/.env        # loads your local .env file
+    environment:
+      # Override MONGODB_URI to point to the local mongo container
+      - MONGODB_URI=mongodb://mongo:27017/lms_dev
+    depends_on:
+      - mongo               # wait for mongo to start first
+    restart: unless-stopped
+
+  # ── Frontend (React/Vite served by Nginx) ─────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Tell the frontend where the backend API is
+        - VITE_API_URL=http://localhost:5000/api
+    ports:
+      - '5173:80'           # accessible at localhost:5173
+    depends_on:
+      - backend             # wait for backend to start first
+    restart: unless-stopped
+
+# Named volume so MongoDB data survives container restarts
+volumes:
+  mongo_data:
