@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
         return res.status(401).json({ success: false, message: 'Not authorized' });
     }
 
-    // Super admins bypass org scope — they have cross-org access
+    // Super admins and org super admins bypass org scope check at middleware level
     if (req.user.role === 'superadmin') {
         return next();
     }

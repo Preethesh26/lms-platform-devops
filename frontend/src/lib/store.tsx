@@ -31,7 +31,7 @@ export type User = {
     name: string;
     enrollment: string;
     email: string;
-    role: "admin" | "user" | "superadmin";
+    role: "admin" | "user" | "superadmin" | "org_superadmin";  // org_superadmin = top admin within an org
     enrolledCourses: string[];
     password?: string;
     needsPasswordReset?: boolean;

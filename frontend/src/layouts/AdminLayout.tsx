@@ -22,7 +22,7 @@ export default function AdminLayout() {
     // Redirection Logic: Ensure user is on the correct prefix
     useEffect(() => {
         if (!isInitialized) return;
-        const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+        const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin' || currentUser?.role === 'org_superadmin';
         if (!currentUser || !isAdmin) return;
 
         const path = location.pathname;
@@ -35,7 +35,7 @@ export default function AdminLayout() {
 
     useEffect(() => {
         if (isInitialized) {
-            const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+            const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin' || currentUser?.role === 'org_superadmin';
             if (!currentUser || !isAdmin) {
                 const isDemoPath = location.pathname.startsWith('/demo/');
                 navigate(isDemoPath ? "/demo/login" : "/admin/login");
@@ -53,7 +53,7 @@ export default function AdminLayout() {
     );
 
     // If not admin/superadmin (and waiting for redirect), don't render content
-    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin' || currentUser?.role === 'org_superadmin';
     if (!currentUser || !isAdmin) return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
             <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
@@ -152,7 +152,7 @@ export default function AdminLayout() {
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-black truncate">{currentUser.name}</p>
                                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                        {currentUser.role === 'superadmin' ? 'Super Admin' : currentUser.role}
+                                        {currentUser.role === 'superadmin' ? 'Super Admin' : currentUser.role === 'org_superadmin' ? 'Org Super Admin' : currentUser.role}
                                     </p>
                                 </div>
                                 <Button

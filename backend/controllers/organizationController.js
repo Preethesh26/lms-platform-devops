@@ -53,12 +53,12 @@ exports.createOrganization = async (req, res) => {
             adminPassphrase
         });
 
-        // Create the org admin user
+        // Create the org super admin user (top admin for this org)
         const adminUser = await User.create({
             name: adminName || `${name} Admin`,
             email: adminEmail,
             password: adminPassword || `Admin@${organizationId}`,
-            role: 'admin',
+            role: 'org_superadmin',  // org-level super admin, manages admins within their org
             organizationId: org._id,
             enrollment: `${organizationId}-ADMIN`
         });

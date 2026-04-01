@@ -81,7 +81,7 @@ function App() {
                         } />
                         <Route path="/demo/login" element={<AdminLoginPage />} />
                         <Route element={
-                            <ProtectedRoute roles={['admin', 'superadmin']}>
+                            <ProtectedRoute roles={['admin', 'org_superadmin', 'superadmin']}>
                                 <AdminLayout />
                             </ProtectedRoute>
                         }>
