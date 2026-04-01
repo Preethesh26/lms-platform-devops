@@ -11,9 +11,9 @@ import { Shield, Key, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { step1, step2, step3 } from '@/lib/superAdminApi';
+import { step1, step2, step3, step4 } from '@/lib/superAdminApi';
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4;
 
 export default function SuperAdminLogin() {
     const navigate = useNavigate();
@@ -28,6 +28,8 @@ export default function SuperAdminLogin() {
     const [passphrase, setPassphrase] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const [otp, setOtp] = useState('');
 
     const handleStep1 = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,10 +67,15 @@ export default function SuperAdminLogin() {
         setLoading(true);
         try {
             const res = await step3(stepToken, email, password);
-            // Store super admin token separately from org admin token
-            localStorage.setItem('superadmin_token', res.data.token);
-            localStorage.setItem('superadmin_user', JSON.stringify(res.data.user));
-            navigate('/superadmin/dashboard');
+            if (res.data.requires2FA) {
+                // 2FA required — move to step 4
+                setStepToken(res.data.stepToken);
+                setCurrentStep(4);
+            } else {
+                localStorage.setItem('superadmin_token', res.data.token);
+                localStorage.setItem('superadmin_user', JSON.stringify(res.data.user));
+                navigate('/superadmin/dashboard');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Invalid credentials');
         } finally {
@@ -76,8 +83,24 @@ export default function SuperAdminLogin() {
         }
     };
 
-    const stepIcons = [Key, Shield, Lock];
-    const stepLabels = ['Secret Key', 'Portal Passphrase', 'Credentials'];
+    const handleStep4 = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            const res = await step4(stepToken, otp);
+            localStorage.setItem('superadmin_token', res.data.token);
+            localStorage.setItem('superadmin_user', JSON.stringify(res.data.user));
+            navigate('/superadmin/dashboard');
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Invalid OTP code');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const stepIcons = [Key, Shield, Lock, Shield];
+    const stepLabels = ['Secret Key', 'Portal Passphrase', 'Credentials', '2FA Verification'];
     const StepIcon = stepIcons[currentStep - 1];
 
     return (
@@ -86,7 +109,7 @@ export default function SuperAdminLogin() {
 
                 {/* Step indicator */}
                 <div className="flex items-center justify-center gap-2 mb-8">
-                    {[1, 2, 3].map((s) => (
+                    {[1, 2, 3, 4].map((s) => (
                         <div key={s} className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                                 s < currentStep ? 'bg-green-600 text-white' :
@@ -95,7 +118,7 @@ export default function SuperAdminLogin() {
                             }`}>
                                 {s < currentStep ? '✓' : s}
                             </div>
-                            {s < 3 && <div className={`w-8 h-0.5 ${s < currentStep ? 'bg-green-600' : 'bg-slate-800'}`} />}
+                            {s < 4 && <div className={`w-8 h-0.5 ${s < currentStep ? 'bg-green-600' : 'bg-slate-800'}`} />}
                         </div>
                     ))}
                 </div>
@@ -203,6 +226,30 @@ export default function SuperAdminLogin() {
                         </div>
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? 'Signing in...' : 'Sign In'}
+                        </Button>
+                    </form>
+                )}
+
+                {/* Step 4: 2FA OTP */}
+                {currentStep === 4 && (
+                    <form onSubmit={handleStep4} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-slate-400 text-xs uppercase tracking-widest">Authenticator Code</Label>
+                            <Input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                maxLength={6}
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                placeholder="000000"
+                                autoFocus required
+                                className="bg-slate-800 border-slate-700 text-white text-center text-2xl tracking-widest font-mono"
+                            />
+                            <p className="text-slate-600 text-xs text-center">Enter the 6-digit code from your authenticator app</p>
+                        </div>
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? 'Verifying...' : 'Verify & Sign In'}
                         </Button>
                     </form>
                 )}

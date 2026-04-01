@@ -187,7 +187,88 @@ exports.step3 = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        // All steps passed — clear rate limit and issue full JWT (no organizationId)
+        // All steps passed — check if 2FA is enabled
+        clearAttempts(ip);
+
+        if (user.twoFactorEnabled) {
+            // Issue a step3 token — frontend must complete 2FA
+            const step3Token = generateStepToken(3, { userId: user._id.toString() });
+            return res.status(200).json({
+                success: true,
+                requires2FA: true,
+                stepToken: step3Token
+            });
+        }
+
+        // No 2FA — issue full JWT
+        const token = jwt.sign(
+            { id: user._id, role: 'superadmin' },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRE || '7d' }
+        );
+
+        res.status(200).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: 'superadmin',
+                twoFactorEnabled: user.twoFactorEnabled
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Step 4 — Verify 2FA OTP, issue full JWT
+// @route   POST /api/superadmin/auth/step4
+// @access  Public (requires valid step3 token)
+exports.step4 = async (req, res) => {
+    try {
+        const ip = req.ip || req.connection.remoteAddress;
+        const rateCheck = checkRateLimit(ip);
+
+        if (rateCheck.locked) {
+            return res.status(429).json({
+                success: false,
+                message: `Too many attempts. Try again in ${rateCheck.minutesLeft} minutes.`
+            });
+        }
+
+        const { stepToken, otp } = req.body;
+
+        // Verify step3 token
+        let decoded;
+        try {
+            decoded = jwt.verify(stepToken, process.env.JWT_SECRET);
+        } catch {
+            recordFailure(ip);
+            return res.status(401).json({ success: false, message: 'Invalid or expired step token' });
+        }
+
+        if (decoded.step !== 3 || !decoded.userId) {
+            recordFailure(ip);
+            return res.status(401).json({ success: false, message: 'Invalid step token' });
+        }
+
+        const user = await User.findById(decoded.userId).select('+twoFactorSecret');
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'User not found' });
+        }
+
+        // Verify OTP
+        const { authenticator } = require('otplib');
+        const isValid = authenticator.check(otp, user.twoFactorSecret);
+        if (!isValid) {
+            recordFailure(ip);
+            return res.status(401).json({ success: false, message: 'Invalid OTP code' });
+        }
+
+        // 2FA passed — issue full JWT
         clearAttempts(ip);
 
         const token = jwt.sign(
@@ -203,7 +284,8 @@ exports.step3 = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: 'superadmin'
+                role: 'superadmin',
+                twoFactorEnabled: user.twoFactorEnabled
             }
         });
 

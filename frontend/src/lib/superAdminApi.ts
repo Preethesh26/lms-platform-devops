@@ -26,9 +26,13 @@ export const step1 = (secretKey: string) =>
 export const step2 = (stepToken: string, passphrase: string) =>
     api.post('/superadmin/auth/step2', { stepToken, passphrase });
 
-// Step 3: Verify email + password, get full JWT
+// Step 3: Verify email + password, get full JWT (or step3 token if 2FA required)
 export const step3 = (stepToken: string, email: string, password: string) =>
     api.post('/superadmin/auth/step3', { stepToken, email, password });
+
+// Step 4: Verify 2FA OTP (only if 2FA is enabled on the super admin account)
+export const step4 = (stepToken: string, otp: string) =>
+    api.post('/superadmin/auth/step4', { stepToken, otp });
 
 // ── Organization management ───────────────────────────────
 
