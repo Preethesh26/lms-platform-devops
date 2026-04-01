@@ -36,6 +36,7 @@ import AdminLayout from './layouts/AdminLayout';
 import { ThemeProvider } from './components/theme-provider';
 import { StoreProvider } from './lib/store';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminGate from './components/AdminGate';
 
 function App() {
     return (
@@ -68,8 +69,12 @@ function App() {
                         <Route path="/test/:slug/take" element={<TestPlayer />} />
                         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-                        {/* Admin Routes */}
-                        <Route path="/admin/login" element={<AdminLoginPage />} />
+                        {/* Admin Routes — login is gated behind a secret key */}
+                        <Route path="/admin/login" element={
+                            <AdminGate>
+                                <AdminLoginPage />
+                            </AdminGate>
+                        } />
                         <Route path="/demo/login" element={<AdminLoginPage />} />
                         <Route element={
                             <ProtectedRoute roles={['admin', 'superadmin']}>
