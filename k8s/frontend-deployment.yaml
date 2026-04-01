@@ -1,0 +1,40 @@
+# ============================================================
+# FRONTEND DEPLOYMENT — LOCAL DEV
+# Jenkins replaces GIT_SHA with the actual commit hash
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms-frontend
+  namespace: lms-production
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: lms-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: lms-frontend
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-pull-secret
+      containers:
+        - name: frontend
+          image: DOCKERHUB_USERNAME/lms-frontend:GIT_SHA  # Jenkins replaces this
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

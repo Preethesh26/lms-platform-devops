@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const { metricsMiddleware, metricsHandler } = require('./middleware/metrics');
 
 // Route imports
 const authRoutes = require('./routes/auth');
@@ -56,6 +57,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+app.use(metricsMiddleware);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -79,8 +81,11 @@ app.use(errorHandler);
 
 // Health check
 app.get('/api/health', (req, res) => {
-    res.status(200).json({ success: true, message: 'Server is running' });
+    res.status(200).json({ status: 'ok' });
 });
+
+// Prometheus metrics
+app.get('/metrics', metricsHandler);
 
 const PORT = process.env.PORT || 5000;
 

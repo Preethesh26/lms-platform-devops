@@ -1,0 +1,20 @@
+# ============================================================
+# KUBERNETES NAMESPACES — LOCAL DEV
+# Three isolated environments on your local k3s/Minikube
+# Apply: kubectl apply -f k8s/namespaces.yaml
+# ============================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lms-dev          # for feature development
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lms-staging      # for pre-release testing
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lms-production   # mirrors the live setup locally

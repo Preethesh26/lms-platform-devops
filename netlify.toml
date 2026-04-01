@@ -9,7 +9,7 @@
 
 [build.environment]
   # Backend API URL
-  VITE_API_URL = "https://lms-platform-l92a.onrender.com/api"
+  VITE_API_URL = "https://lms-platform-devops.onrender.com/api"
 
 # SPA redirect rules
 [[redirects]]
