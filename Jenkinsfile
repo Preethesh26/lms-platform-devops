@@ -60,6 +60,7 @@ pipeline {
             }
         }
 
+
         // ── Stage 2: Build Docker images locally ──────────────
         // Builds on your laptop — not pushed to Docker Hub yet
         stage('Build Images') {
