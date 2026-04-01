@@ -35,6 +35,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 import { ThemeProvider } from './components/theme-provider';
 import { StoreProvider } from './lib/store';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
@@ -70,7 +71,11 @@ function App() {
                         {/* Admin Routes */}
                         <Route path="/admin/login" element={<AdminLoginPage />} />
                         <Route path="/demo/login" element={<AdminLoginPage />} />
-                        <Route element={<AdminLayout />}>
+                        <Route element={
+                            <ProtectedRoute roles={['admin', 'superadmin']}>
+                                <AdminLayout />
+                            </ProtectedRoute>
+                        }>
                             {/* Standard Admin Routes */}
                             <Route path="/admin/dashboard" element={<AdminDashboard />} />
                             <Route path="/admin/courses" element={<AdminCoursesPage />} />
