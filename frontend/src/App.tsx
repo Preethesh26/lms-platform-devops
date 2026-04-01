@@ -39,6 +39,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminGate from './components/AdminGate';
 import SuperAdminLogin from './pages/superadmin/Login';
 import SuperAdminDashboard from './pages/superadmin/Dashboard';
+import SuperAdminOverview from './pages/superadmin/Overview';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 
 function App() {
@@ -120,7 +121,7 @@ function App() {
                         {/* Super Admin Routes — completely separate from org admin */}
                         <Route path="/superadmin/login" element={<SuperAdminLogin />} />
                         <Route element={<SuperAdminLayout />}>
-                            <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+                            <Route path="/superadmin/dashboard" element={<SuperAdminOverview />} />
                             <Route path="/superadmin/organizations" element={<SuperAdminDashboard />} />
                         </Route>
                     </Routes>
