@@ -73,6 +73,15 @@ app.use('/api/certificate', certificateRoutes);
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/upload', require('./routes/upload'));
 
+// Multi-tenant routes
+app.use('/api/superadmin/auth', require('./routes/superAdminAuth'));
+app.use('/api/superadmin', require('./routes/superAdmin'));
+app.use('/api/organizations', require('./routes/organizations'));
+
+// Org scope middleware — applied to all routes that need tenant isolation
+// Controllers use req.organizationId (set by requireOrgScope) to filter queries
+const requireOrgScope = require('./middleware/requireOrgScope');
+
 // Serve uploads statically
 app.use('/uploads', express.static('uploads'));
 

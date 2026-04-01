@@ -6,7 +6,9 @@ const Quiz = require('../models/Quiz');
 // @access  Public
 exports.getCourses = async (req, res) => {
     try {
-        const courses = await Course.find();
+        // Scope by organizationId if present (org admin/user), otherwise return all (legacy/superadmin)
+        const filter = req.organizationId ? { organizationId: req.organizationId } : {};
+        const courses = await Course.find(filter);
         res.status(200).json({ success: true, count: courses.length, data: courses });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -63,11 +65,17 @@ exports.getCourse = async (req, res) => {
 // @access  Private/Admin
 exports.createCourse = async (req, res) => {
     try {
-        const titleExists = await Course.findOne({ title: req.body.title });
+        const filter = req.organizationId
+            ? { title: req.body.title, organizationId: req.organizationId }
+            : { title: req.body.title };
+        const titleExists = await Course.findOne(filter);
         if (titleExists) {
             return res.status(400).json({ success: false, message: 'A course with this title already exists.' });
         }
-        const course = await Course.create(req.body);
+        // Auto-attach organizationId if present
+        const courseData = { ...req.body };
+        if (req.organizationId) courseData.organizationId = req.organizationId;
+        const course = await Course.create(courseData);
         res.status(201).json({ success: true, data: course });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });

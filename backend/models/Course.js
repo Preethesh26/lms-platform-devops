@@ -66,6 +66,13 @@ const courseSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    // Multi-tenant: which organization this course belongs to (null = legacy)
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        default: null,
+        index: true
     }
 }, {
     toJSON: { virtuals: true },

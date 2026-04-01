@@ -103,7 +103,14 @@ const testSchema = new mongoose.Schema({
     // Proctoring settings
     maxWarnings: {
         type: Number,
-        default: 0 // 0 means no limit (warning only)
+        default: 0
+    },
+    // Multi-tenant: which organization this test belongs to (null = legacy)
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        default: null,
+        index: true
     }
 }, {
     timestamps: true

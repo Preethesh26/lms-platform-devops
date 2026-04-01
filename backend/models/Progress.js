@@ -34,4 +34,14 @@ const progressSchema = new mongoose.Schema({
 // Compound index to ensure one progress record per user per lesson
 progressSchema.index({ user: 1, course: 1, lessonId: 1 }, { unique: true });
 
+// Multi-tenant: which organization this progress belongs to (null = legacy)
+progressSchema.add({
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        default: null,
+        index: true
+    }
+});
+
 module.exports = mongoose.model('Progress', progressSchema);

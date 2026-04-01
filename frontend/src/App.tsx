@@ -37,6 +37,9 @@ import { ThemeProvider } from './components/theme-provider';
 import { StoreProvider } from './lib/store';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminGate from './components/AdminGate';
+import SuperAdminLogin from './pages/superadmin/Login';
+import SuperAdminDashboard from './pages/superadmin/Dashboard';
+import SuperAdminLayout from './layouts/SuperAdminLayout';
 
 function App() {
     return (
@@ -113,6 +116,13 @@ function App() {
                             <Route path="/demo/support" element={<SupportInbox />} />
                         </Route>
                         <Route path="*" element={<NotFound />} />
+
+                        {/* Super Admin Routes — completely separate from org admin */}
+                        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+                        <Route element={<SuperAdminLayout />}>
+                            <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+                            <Route path="/superadmin/organizations" element={<SuperAdminDashboard />} />
+                        </Route>
                     </Routes>
                     {/* <Toaster /> */}
                 </Router>

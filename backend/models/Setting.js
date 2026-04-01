@@ -17,6 +17,13 @@ const settingSchema = new mongoose.Schema({
     updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    // Multi-tenant: which organization this setting belongs to (null = legacy/global)
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        default: null,
+        index: true
     }
 }, {
     timestamps: true

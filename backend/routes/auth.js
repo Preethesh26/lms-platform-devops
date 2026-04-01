@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, getMe, setup2FA, enable2FA, verify2FA, disable2FA, impersonate, masterUnlock } = require('../controllers/authController');
+const { register, login, getMe, setup2FA, enable2FA, verify2FA, disable2FA, impersonate, masterUnlock, adminLogin } = require('../controllers/authController');
 const { forgotPassword, resetPassword } = require('../controllers/passwordController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/admin-login', adminLogin);  // Org admin login with organizationId
 router.get('/me', protect, getMe);
 
 router.post('/forgot-password', forgotPassword);

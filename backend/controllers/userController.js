@@ -6,7 +6,9 @@ const { updateUserInSheet, deleteUserFromSheet } = require('../services/googleSh
 // @access  Private/Admin
 exports.getUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password');
+        // Scope by organizationId if present
+        const filter = req.organizationId ? { organizationId: req.organizationId } : {};
+        const users = await User.find(filter).select('-password');
         res.status(200).json({ success: true, count: users.length, data: users });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -84,6 +86,14 @@ exports.updateUser = async (req, res) => {
                     message: 'Access Denied: Only Super Admin can change user roles.'
                 });
             }
+        }
+
+        // 🔐 Org admins cannot assign superadmin role
+        if (req.body.role === 'superadmin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Cannot assign superadmin role'
+            });
         }
 
         // 🔎 Check duplicate email

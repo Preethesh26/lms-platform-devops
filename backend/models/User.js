@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Please provide an email'],
-        unique: true,
         lowercase: true,
         trim: true,
         match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
@@ -66,11 +65,22 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    // Multi-tenant: which organization this user belongs to (null = legacy)
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        default: null,
+        index: true
     }
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
+
+// Compound unique index: email must be unique within an organization
+// Same email can exist in different organizations
+userSchema.index({ email: 1, organizationId: 1 }, { unique: true, sparse: true });
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {

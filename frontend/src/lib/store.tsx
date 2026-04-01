@@ -39,6 +39,7 @@ export type User = {
     xp: number;
     streak: number;
     level: number;
+    organizationId?: string;  // Multi-tenant: org this user belongs to
 };
 
 

@@ -17,6 +17,7 @@ export default function AdminLogin() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState<'login' | '2fa'>('login');
+    const [orgId, setOrgId] = useState<string>('');
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -25,9 +26,9 @@ export default function AdminLogin() {
         setLoading(true);
 
         try {
-            const response = await authAPI.login({ email, password });
+            // Use admin-login endpoint which supports organizationId
+            const response = await authAPI.adminLogin({ email, password, organizationId: orgId || undefined });
 
-            // Check for 2FA requirement
             if (response.data.requires2FA) {
                 setRequires2FA(true, response.data.tempToken);
                 setStep('2fa');
@@ -37,14 +38,12 @@ export default function AdminLogin() {
 
             const { token, user } = response.data;
 
-            // Check if user is admin or superadmin
             if (user.role !== 'admin' && user.role !== 'superadmin') {
                 setError("You don't have admin access.");
                 setLoading(false);
                 return;
             }
 
-            // Use store action to update global state immediately
             await loginUser(user, token);
 
             const isDemoAdmin = user.email === 'demo-admin@academypro.com';

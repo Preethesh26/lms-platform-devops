@@ -5,9 +5,9 @@ const qrcode = require('qrcode');
 const { updateStreak } = require('../utils/gamificationUtils');
 
 
-// Generate JWT Token
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+// Generate JWT Token — supports extra claims for org scoping
+const generateToken = (id, extraClaims = {}) => {
+    return jwt.sign({ id, ...extraClaims }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE || '7d'
     });
 };
@@ -370,6 +370,79 @@ exports.impersonate = async (req, res) => {
         });
     } catch (error) {
         console.error('Impersonation error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Org Admin Login (requires organizationId + email + password)
+// @route   POST /api/auth/admin-login
+// @access  Public
+exports.adminLogin = async (req, res) => {
+    try {
+        const { email, password, organizationId } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Please provide email and password' });
+        }
+
+        // Legacy login: no organizationId provided
+        if (!organizationId) {
+            return exports.login(req, res);
+        }
+
+        // Find the organization
+        const Organization = require('../models/Organization');
+        const org = await Organization.findOne({ organizationId }).select('+adminPassphrase');
+
+        if (!org) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        if (!org.isActive) {
+            return res.status(403).json({ success: false, message: 'Organization is inactive' });
+        }
+
+        // Find user by email within this organization
+        const user = await User.findOne({
+            email: email.toLowerCase(),
+            organizationId: org._id
+        }).select('+password');
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        if (user.role !== 'admin' && user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Admin access required' });
+        }
+
+        // Issue JWT with organizationId claim
+        const token = generateToken(user._id, {
+            organizationId: org._id,
+            role: user.role
+        });
+
+        res.status(200).json({
+            success: true,
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role,
+                organizationId: org._id,
+                orgName: org.name,
+                enrollment: user.enrollment,
+                twoFactorEnabled: user.twoFactorEnabled
+            }
+        });
+
+    } catch (error) {
+        console.error('Admin login error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
