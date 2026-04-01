@@ -24,3 +24,6 @@ testQuizFlow.js
 testSignupFlow.js
 upgradeSuperAdmin.js
 verify_backend.sh
+
+# Seed/utility scripts — run locally only
+createSuperAdmin.js
