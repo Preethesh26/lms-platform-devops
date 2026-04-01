@@ -54,3 +54,25 @@ export const getOrgStats = (id: string) =>
 
 export const getAllUsers = (orgId?: string) =>
     api.get('/superadmin/users', { params: orgId ? { orgId } : {} });
+
+// ── Organization detail operations ────────────────────────
+
+export const deleteOrganization = (id: string) =>
+    api.delete(`/superadmin/organizations/${id}`);
+
+export const getOrgUsers = (id: string) =>
+    api.get(`/superadmin/organizations/${id}/users`);
+
+export const createOrgUser = (id: string, data: {
+    name: string; email: string; password: string; role?: string; enrollment?: string;
+}) => api.post(`/superadmin/organizations/${id}/users`, data);
+
+export const updateOrgUser = (orgId: string, userId: string, data: {
+    name?: string; email?: string; role?: string; password?: string;
+}) => api.put(`/superadmin/organizations/${orgId}/users/${userId}`, data);
+
+export const deleteOrgUser = (orgId: string, userId: string) =>
+    api.delete(`/superadmin/organizations/${orgId}/users/${userId}`);
+
+export const getOrgCourses = (id: string) =>
+    api.get(`/superadmin/organizations/${id}/courses`);

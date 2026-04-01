@@ -283,3 +283,162 @@ exports.verifyPassphrase = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Delete organization
+// @route   DELETE /api/superadmin/organizations/:id
+// @access  Super Admin
+exports.deleteOrganization = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        await Organization.findByIdAndDelete(req.params.id);
+
+        await AuditLog.create({
+            performedBy: req.user.id,
+            action: 'DELETE_ORG',
+            affectedOrganizationId: org.organizationId,
+            affectedResourceId: org._id,
+            affectedResourceType: 'Organization',
+            metadata: { name: org.name }
+        });
+
+        res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get all users in an organization
+// @route   GET /api/superadmin/organizations/:id/users
+// @access  Super Admin
+exports.getOrgUsers = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        const users = await User.find({ organizationId: org._id }).select('-password -twoFactorSecret');
+        res.status(200).json({ success: true, data: users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Create a user in an organization
+// @route   POST /api/superadmin/organizations/:id/users
+// @access  Super Admin
+exports.createOrgUser = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        const { name, email, password, role = 'user', enrollment } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: 'name, email, and password are required' });
+        }
+
+        // Prevent creating superadmin via this route
+        if (role === 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Cannot assign superadmin role' });
+        }
+
+        const user = await User.create({
+            name, email, password,
+            role,
+            organizationId: org._id,
+            enrollment: enrollment || `${org.organizationId}-${Date.now()}`
+        });
+
+        await AuditLog.create({
+            performedBy: req.user.id,
+            action: 'CREATE_USER',
+            affectedOrganizationId: org.organizationId,
+            affectedResourceId: user._id,
+            affectedResourceType: 'User',
+            metadata: { email, role }
+        });
+
+        res.status(201).json({ success: true, data: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Update a user in an organization
+// @route   PUT /api/superadmin/organizations/:id/users/:userId
+// @access  Super Admin
+exports.updateOrgUser = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        const user = await User.findOne({ _id: req.params.userId, organizationId: org._id });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found in this organization' });
+
+        const { name, email, role, password } = req.body;
+        if (role === 'superadmin') {
+            return res.status(403).json({ success: false, message: 'Cannot assign superadmin role' });
+        }
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (role) user.role = role;
+        if (password) user.password = password;
+
+        await user.save();
+
+        await AuditLog.create({
+            performedBy: req.user.id,
+            action: 'UPDATE_USER',
+            affectedOrganizationId: org.organizationId,
+            affectedResourceId: user._id,
+            affectedResourceType: 'User',
+            metadata: { email: user.email }
+        });
+
+        res.status(200).json({ success: true, data: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Delete a user from an organization
+// @route   DELETE /api/superadmin/organizations/:id/users/:userId
+// @access  Super Admin
+exports.deleteOrgUser = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        const user = await User.findOneAndDelete({ _id: req.params.userId, organizationId: org._id });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found in this organization' });
+
+        await AuditLog.create({
+            performedBy: req.user.id,
+            action: 'DELETE_USER',
+            affectedOrganizationId: org.organizationId,
+            affectedResourceId: user._id,
+            affectedResourceType: 'User',
+            metadata: { email: user.email }
+        });
+
+        res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Get all courses in an organization
+// @route   GET /api/superadmin/organizations/:id/courses
+// @access  Super Admin
+exports.getOrgCourses = async (req, res) => {
+    try {
+        const org = await Organization.findById(req.params.id);
+        if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
+
+        const courses = await Course.find({ organizationId: org._id });
+        res.status(200).json({ success: true, data: courses });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

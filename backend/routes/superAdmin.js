@@ -12,7 +12,13 @@ const {
     createOrganization,
     listOrganizations,
     updateOrganization,
-    getOrgStats
+    deleteOrganization,
+    getOrgStats,
+    getOrgUsers,
+    createOrgUser,
+    updateOrgUser,
+    deleteOrgUser,
+    getOrgCourses
 } = require('../controllers/organizationController');
 const User = require('../models/User');
 
@@ -23,7 +29,13 @@ router.use(protect, requireSuperAdmin);
 router.get('/organizations', listOrganizations);
 router.post('/organizations', createOrganization);
 router.put('/organizations/:id', updateOrganization);
+router.delete('/organizations/:id', deleteOrganization);
 router.get('/organizations/:id/stats', getOrgStats);
+router.get('/organizations/:id/users', getOrgUsers);
+router.post('/organizations/:id/users', createOrgUser);
+router.put('/organizations/:id/users/:userId', updateOrgUser);
+router.delete('/organizations/:id/users/:userId', deleteOrgUser);
+router.get('/organizations/:id/courses', getOrgCourses);
 
 // Cross-org user listing (filterable by orgId query param)
 router.get('/users', async (req, res) => {
