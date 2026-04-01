@@ -40,6 +40,7 @@ import AdminGate from './components/AdminGate';
 import SuperAdminLogin from './pages/superadmin/Login';
 import SuperAdminDashboard from './pages/superadmin/Dashboard';
 import SuperAdminOverview from './pages/superadmin/Overview';
+import SuperAdminSecurity from './pages/superadmin/Security';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 
 function App() {
@@ -123,6 +124,7 @@ function App() {
                         <Route element={<SuperAdminLayout />}>
                             <Route path="/superadmin/dashboard" element={<SuperAdminOverview />} />
                             <Route path="/superadmin/organizations" element={<SuperAdminDashboard />} />
+                            <Route path="/superadmin/security" element={<SuperAdminSecurity />} />
                         </Route>
                     </Routes>
                     {/* <Toaster /> */}

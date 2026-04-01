@@ -6,7 +6,7 @@
 
 import { useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Building2, LayoutDashboard, LogOut, Shield } from 'lucide-react';
+import { Building2, LayoutDashboard, LogOut, Shield, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function SuperAdminLayout() {
@@ -45,6 +45,7 @@ export default function SuperAdminLayout() {
     const navItems = [
         { to: '/superadmin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { to: '/superadmin/organizations', label: 'Organizations', icon: Building2 },
+        { to: '/superadmin/security', label: 'Security & 2FA', icon: Settings },
     ];
 
     return (
