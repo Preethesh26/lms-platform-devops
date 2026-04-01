@@ -297,13 +297,12 @@ export default function CoursePlayerPage() {
 
             setProcessingStep('success');
 
-            const courseId = course.id;
-            // Wait to show success checkmark, then redirect into enrolled course
+            // Wait to show success checkmark, then redirect to My Learning
             setTimeout(() => {
                 setShowPaymentDialog(false);
                 setIsEnrolled(true);
                 setPaymentLoading(false);
-                navigate(`/courses/${courseId}`);
+                navigate('/my-learning');
             }, 2000); // Show success for 2 seconds
 
         } catch (error) {
