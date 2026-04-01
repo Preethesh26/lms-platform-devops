@@ -1,14 +1,10 @@
 # ============================================================
 # GITHUB ACTIONS — CI/CD PIPELINE
 #
-# On every push:
-#   1. Lint and build the frontend
-#   2. Check the backend for syntax errors
-#
-# On push to main only:
-#   3. Build Docker images → push to Docker Hub
-#   4. Trigger Render to redeploy the backend
-#   5. Netlify auto-deploys the frontend
+# Database per environment:
+#   local/docker-compose → lms_dev     (local MongoDB)
+#   staging branch       → lms_staging (Atlas)
+#   main branch          → lms_production (Atlas)
 # ============================================================
 
 name: CI/CD
@@ -63,11 +59,13 @@ jobs:
         run: node --check server.js
         working-directory: backend
 
-  # ── Job 3: Build Docker images and push to Docker Hub ─────
-  build-and-deploy:
+  # ── Job 3: Build and deploy (main branch only) ────────────
+  # Uses lms_production database
+  build-and-deploy-production:
     needs: [lint-build-frontend, check-backend]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -92,9 +90,51 @@ jobs:
         with:
           context: ./backend
           push: true
+          build-args: MONGODB_URI=${{ secrets.MONGODB_URI }}
           tags: |
             preethesh26/lms-backend:${{ github.sha }}
             preethesh26/lms-backend:latest
 
-      - name: Trigger Render backend deploy
+      # Trigger Render to redeploy with lms_production DB
+      - name: Deploy to Render (production)
         run: curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+  # ── Job 4: Build and deploy (staging branch only) ─────────
+  # Uses lms_staging database
+  build-and-deploy-staging:
+    needs: [lint-build-frontend, check-backend]
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: preethesh26
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          build-args: VITE_API_URL=https://lms-platform-devops.onrender.com/api
+          tags: |
+            preethesh26/lms-frontend:${{ github.sha }}
+            preethesh26/lms-frontend:staging
+
+      - name: Build and push backend image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          build-args: MONGODB_URI=${{ secrets.MONGODB_URI_STAGING }}
+          tags: |
+            preethesh26/lms-backend:${{ github.sha }}
+            preethesh26/lms-backend:staging
+
+      # Trigger Render staging deploy hook
+      - name: Deploy to Render (staging)
+        run: curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}"
