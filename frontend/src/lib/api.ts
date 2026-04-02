@@ -57,20 +57,28 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Only auto-logout on authentication errors, not on permission errors
-        // For example, students getting 401 on /users is expected and shouldn't log them out
-        if (error.response?.status === 401 || error.response?.status === 403) {
-            const url = error.config?.url || '';
+        const status = error.response?.status;
+        const message = error.response?.data?.message || '';
+        const url = error.config?.url || '';
 
-            // Only logout if it's an auth-related endpoint (not /users, /courses, etc.)
-            // This prevents students from being logged out when they can't access admin endpoints
+        // If org is inactive — force full logout and redirect to admin login
+        if (status === 403 && message === 'Organization is inactive') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            sessionStorage.removeItem('admin_gate_verified_org');
+            window.location.href = '/admin/login';
+            return Promise.reject(error);
+        }
+
+        // Only auto-logout on authentication errors for auth endpoints
+        if (status === 401 || status === 403) {
             const isAuthEndpoint = url.includes('/auth/') || url.includes('/me');
 
             if (isAuthEndpoint && localStorage.getItem('token')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userData');
+                sessionStorage.removeItem('admin_gate_verified_org');
 
-                // Smart Redirect: Use admin login if we are in admin/demo area
                 const isManagementArea = window.location.pathname.startsWith('/admin') ||
                     window.location.pathname.startsWith('/demo');
 

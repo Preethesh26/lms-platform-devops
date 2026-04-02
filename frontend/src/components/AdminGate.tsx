@@ -39,8 +39,16 @@ export default function AdminGate({ children, onOrgVerified }: AdminGateProps) {
     useEffect(() => {
         const sessionOrg = sessionStorage.getItem(SESSION_KEY);
         if (sessionOrg) {
-            setVerified(true);
-            onOrgVerified?.(sessionOrg);
+            // Verify the org is still active before trusting the session
+            axios.get(`${API_URL}/organizations/passphrase-check`, { params: { orgId: sessionOrg } })
+                .then(() => {
+                    setVerified(true);
+                    onOrgVerified?.(sessionOrg);
+                })
+                .catch(() => {
+                    // Org inactive or not found — clear session, force re-login
+                    sessionStorage.removeItem(SESSION_KEY);
+                });
         }
     }, []);
 
