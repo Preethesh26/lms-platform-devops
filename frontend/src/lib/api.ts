@@ -66,6 +66,7 @@ api.interceptors.response.use(
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
             sessionStorage.removeItem('admin_gate_verified_org');
+            localStorage.removeItem('admin_last_org_id'); // clear remembered org too
             window.location.href = '/admin/login';
             return Promise.reject(error);
         }

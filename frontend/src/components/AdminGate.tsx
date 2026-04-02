@@ -22,10 +22,12 @@ interface AdminGateProps {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const SESSION_KEY = 'admin_gate_verified_org';
+const LAST_ORG_KEY = 'admin_last_org_id'; // remembers org ID across sessions
 
 export default function AdminGate({ children, onOrgVerified }: AdminGateProps) {
     const [verified, setVerified] = useState(false);
-    const [orgId, setOrgId] = useState('');
+    // Pre-fill org ID from last session but don't skip passphrase
+    const [orgId, setOrgId] = useState(() => localStorage.getItem(LAST_ORG_KEY) || '');
     const [passphrase, setPassphrase] = useState('');
     const [step, setStep] = useState<'org' | 'passphrase'>('org');
     const [orgName, setOrgName] = useState('');
@@ -48,6 +50,17 @@ export default function AdminGate({ children, onOrgVerified }: AdminGateProps) {
                 .catch(() => {
                     // Org inactive or not found — clear session, force re-login
                     sessionStorage.removeItem(SESSION_KEY);
+                });
+        } else if (localStorage.getItem(LAST_ORG_KEY)) {
+            // Org ID remembered — skip to passphrase step directly
+            const savedOrg = localStorage.getItem(LAST_ORG_KEY)!;
+            axios.get(`${API_URL}/organizations/passphrase-check`, { params: { orgId: savedOrg } })
+                .then(res => {
+                    setOrgName(res.data.orgName);
+                    setStep('passphrase'); // skip org ID entry, go straight to passphrase
+                })
+                .catch(() => {
+                    localStorage.removeItem(LAST_ORG_KEY); // org no longer valid
                 });
         }
     }, []);
@@ -102,8 +115,9 @@ export default function AdminGate({ children, onOrgVerified }: AdminGateProps) {
                 passphrase
             });
             if (res.data.valid) {
-                // Store verified org in session
+                // Store verified org in session and remember org ID for next time
                 sessionStorage.setItem(SESSION_KEY, orgId.toUpperCase());
+                localStorage.setItem(LAST_ORG_KEY, orgId.toUpperCase());
                 onOrgVerified?.(orgId.toUpperCase());
                 setVerified(true);
             }

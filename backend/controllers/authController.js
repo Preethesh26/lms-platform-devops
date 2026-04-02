@@ -151,11 +151,11 @@ exports.login = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        if ((user.role === 'admin' || user.role === 'superadmin') && user.email !== 'demo-admin@academypro.com' && user.twoFactorEnabled) {
+        if ((user.role === 'admin' || user.role === 'superadmin' || user.role === 'org_superadmin') && user.email !== 'demo-admin@academypro.com' && user.twoFactorEnabled) {
             return res.status(200).json({
                 success: true,
                 requires2FA: true,
-                tempToken: generateToken(user._id) // Short-lived token for 2FA verification step
+                tempToken: generateToken(user._id)
             });
         }
 
@@ -419,6 +419,15 @@ exports.adminLogin = async (req, res) => {
 
         if (user.role !== 'admin' && user.role !== 'superadmin' && user.role !== 'org_superadmin') {
             return res.status(403).json({ success: false, message: 'Admin access required' });
+        }
+
+        // Trigger 2FA if enabled
+        if (user.twoFactorEnabled && user.email !== 'demo-admin@academypro.com') {
+            return res.status(200).json({
+                success: true,
+                requires2FA: true,
+                tempToken: generateToken(user._id)
+            });
         }
 
         // Issue JWT with organizationId claim
