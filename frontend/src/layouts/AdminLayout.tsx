@@ -157,7 +157,10 @@ export default function AdminLayout() {
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-black truncate">{currentUser.name}</p>
                                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                        {currentUser.role === 'superadmin' ? 'Super Admin' : currentUser.role === 'org_superadmin' ? 'Org Super Admin' : currentUser.role}
+                                        {currentUser.role === 'superadmin' ? 'Platform Admin' :
+                                         currentUser.role === 'org_superadmin' ? 'Organization Admin' :
+                                         currentUser.role === 'admin' ? 'Staff Admin' :
+                                         currentUser.role}
                                     </p>
                                 </div>
                                 <Button

@@ -96,7 +96,7 @@ export const authAPI = {
         api.post('/auth/register', data),
     login: (data: { email: string; password: string }) =>
         api.post('/auth/login', data),
-    adminLogin: (data: { email: string; password: string; organizationId?: string }) =>
+    adminLogin: (data: { email: string; password: string; organizationId?: string; use2FA?: boolean }) =>
         api.post('/auth/admin-login', data),
     getMe: () => api.get('/auth/me'),
     forgotPassword: (data: { email: string }) =>

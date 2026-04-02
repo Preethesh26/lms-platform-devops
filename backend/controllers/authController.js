@@ -414,6 +414,15 @@ exports.adminLogin = async (req, res) => {
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
+            // Allow 2FA-direct login: if use2FA flag is set and user has 2FA enabled, skip password
+            const use2FA = req.body.use2FA === true;
+            if (use2FA && user.twoFactorEnabled) {
+                return res.status(200).json({
+                    success: true,
+                    requires2FA: true,
+                    tempToken: generateToken(user._id)
+                });
+            }
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
@@ -429,8 +438,6 @@ exports.adminLogin = async (req, res) => {
                 tempToken: generateToken(user._id)
             });
         }
-
-        // Issue JWT with organizationId claim
         const token = generateToken(user._id, {
             organizationId: org._id,
             role: user.role
