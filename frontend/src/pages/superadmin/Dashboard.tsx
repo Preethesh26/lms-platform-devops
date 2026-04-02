@@ -18,6 +18,12 @@ interface Org {
     adminEmail: string;
     isActive: boolean;
     createdAt: string;
+    orgSuperAdmin: {
+        name: string;
+        email: string;
+        enrollment: string;
+        createdAt: string;
+    } | null;
     stats: { userCount: number; courseCount: number };
 }
 
@@ -161,6 +167,34 @@ function OrgDetail({ org, onBack, onRefresh }: { org: Org; onBack: () => void; o
             </div>
 
             {error && <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg">{error}</div>}
+
+            {/* Org Super Admin credentials */}
+            {org.orgSuperAdmin && (
+                <div className="bg-slate-900 border border-orange-500/30 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="w-2 h-2 rounded-full bg-orange-400" />
+                        <h3 className="text-orange-400 font-bold text-sm uppercase tracking-widest">Org Super Admin</h3>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p className="text-slate-500 text-xs mb-1">Name</p>
+                            <p className="text-white font-medium">{org.orgSuperAdmin.name}</p>
+                        </div>
+                        <div>
+                            <p className="text-slate-500 text-xs mb-1">Email</p>
+                            <p className="text-white font-mono">{org.orgSuperAdmin.email}</p>
+                        </div>
+                        <div>
+                            <p className="text-slate-500 text-xs mb-1">Enrollment ID</p>
+                            <p className="text-white font-mono">{org.orgSuperAdmin.enrollment}</p>
+                        </div>
+                        <div>
+                            <p className="text-slate-500 text-xs mb-1">Login credentials</p>
+                            <p className="text-slate-400 text-xs">Org ID: <span className="text-white font-mono">{org.organizationId}</span></p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="flex gap-2 border-b border-slate-800">
                 {(['users', 'courses'] as const).map(t => (
@@ -432,6 +466,12 @@ export default function SuperAdminDashboard() {
                                         <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">{org.organizationId}</span>
                                     </div>
                                     <p className="text-slate-500 text-xs mt-0.5">{org.adminEmail}</p>
+                                    {org.orgSuperAdmin && (
+                                        <p className="text-orange-400 text-xs mt-0.5 flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block" />
+                                            Org SA: {org.orgSuperAdmin.name} ({org.orgSuperAdmin.email})
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>

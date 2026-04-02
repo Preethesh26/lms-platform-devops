@@ -107,11 +107,12 @@ exports.listOrganizations = async (req, res) => {
     try {
         const orgs = await Organization.find({}).sort({ createdAt: -1 });
 
-        // Get stats for each org
+        // Get stats + org super admin details for each org
         const orgsWithStats = await Promise.all(orgs.map(async (org) => {
-            const [userCount, courseCount] = await Promise.all([
+            const [userCount, courseCount, orgSuperAdmin] = await Promise.all([
                 User.countDocuments({ organizationId: org._id, role: 'user' }),
-                Course.countDocuments({ organizationId: org._id })
+                Course.countDocuments({ organizationId: org._id }),
+                User.findOne({ organizationId: org._id, role: 'org_superadmin' }).select('name email enrollment createdAt')
             ]);
 
             return {
@@ -121,6 +122,12 @@ exports.listOrganizations = async (req, res) => {
                 isActive: org.isActive,
                 createdAt: org.createdAt,
                 _id: org._id,
+                orgSuperAdmin: orgSuperAdmin ? {
+                    name: orgSuperAdmin.name,
+                    email: orgSuperAdmin.email,
+                    enrollment: orgSuperAdmin.enrollment,
+                    createdAt: orgSuperAdmin.createdAt
+                } : null,
                 stats: { userCount, courseCount }
             };
         }));
