@@ -9,6 +9,6 @@ const router = express.Router();
 router.get('/', getSettings);
 
 // Admin only route to update
-router.put('/', protect, authorize('admin', 'superadmin'), updateSettings);
+router.put('/', protect, authorize('admin', 'org_superadmin', 'superadmin'), updateSettings);
 
 module.exports = router;

@@ -18,7 +18,7 @@ router.post('/2fa/setup', protect, setup2FA);
 router.post('/2fa/enable', protect, enable2FA);
 router.post('/2fa/disable', protect, disable2FA);
 router.post('/2fa/verify', protect, verify2FA);
-router.post('/impersonate', protect, authorize('admin', 'superadmin'), impersonate);
+router.post('/impersonate', protect, authorize('admin', 'org_superadmin', 'superadmin'), impersonate);
 router.post('/master-unlock', masterUnlock);
 
 module.exports = router;

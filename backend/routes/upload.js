@@ -22,6 +22,6 @@ const upload = multer({
 });
 
 // Only admins can upload thumbnails
-router.post('/', protect, authorize('admin', 'superadmin'), upload.single('image'), uploadImage);
+router.post('/', protect, authorize('admin', 'org_superadmin', 'superadmin'), upload.single('image'), uploadImage);
 
 module.exports = router;

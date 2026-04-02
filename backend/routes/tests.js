@@ -30,18 +30,18 @@ router.use(protect);
 
 // Admin routes
 router.route('/')
-    .get(authorize('admin', 'superadmin'), getAllTests)
-    .post(authorize('admin', 'superadmin'), createTest);
+    .get(authorize('admin', 'org_superadmin', 'superadmin'), getAllTests)
+    .post(authorize('admin', 'org_superadmin', 'superadmin'), createTest);
 
 router.route('/:id')
-    .get(authorize('admin', 'superadmin'), getTest)
-    .put(authorize('admin', 'superadmin'), updateTest)
-    .delete(authorize('admin', 'superadmin'), deleteTest);
+    .get(authorize('admin', 'org_superadmin', 'superadmin'), getTest)
+    .put(authorize('admin', 'org_superadmin', 'superadmin'), updateTest)
+    .delete(authorize('admin', 'org_superadmin', 'superadmin'), deleteTest);
 
-router.put('/:id/publish', authorize('admin', 'superadmin'), togglePublish);
-router.get('/:id/stats', authorize('admin', 'superadmin'), getTestStats);
-router.get('/:id/attempts', authorize('admin', 'superadmin'), getTestAttempts); // Added route
-router.post('/:id/send-invitations', authorize('admin', 'superadmin'), sendInvitations);
+router.put('/:id/publish', authorize('admin', 'org_superadmin', 'superadmin'), togglePublish);
+router.get('/:id/stats', authorize('admin', 'org_superadmin', 'superadmin'), getTestStats);
+router.get('/:id/attempts', authorize('admin', 'org_superadmin', 'superadmin'), getTestAttempts); // Added route
+router.post('/:id/send-invitations', authorize('admin', 'org_superadmin', 'superadmin'), sendInvitations);
 
 // User routes
 // Use protectOrTestToken so both logged-in users and guest test takers can submit
