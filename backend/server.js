@@ -27,28 +27,50 @@ const app = express();
 // Middleware
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
-
-        // Normalize comparison (remove trailing slash if present)
-        const normalize = (url) => url ? url.replace(/\/$/, '') : '';
+        const normalize = (url) => (url ? url.replace(/\/$/, '') : '');
         const incoming = normalize(origin);
-        const allowed = normalize(allowedOrigin);
 
-        // Allow: 
-        // 1. Exact match with FRONTEND_URL
-        // 2. Localhost (for development)
-        // 3. Any Vercel Preview URL (.vercel.app)
+        // Comma-separated list, e.g. "https://app.vercel.app,https://staging.vercel.app"
+        const allowedList = (process.env.FRONTEND_URL || 'http://localhost:5173')
+            .split(',')
+            .map((s) => normalize(s.trim()))
+            .filter(Boolean);
+
+        const isLocalhostOrigin = (url) => {
+            if (!url) return false;
+            try {
+                const u = new URL(url);
+                return (
+                    u.protocol === 'http:' &&
+                    (u.hostname === 'localhost' || u.hostname === '127.0.0.1')
+                );
+            } catch {
+                return false;
+            }
+        };
+
+        // Allow:
+        // 1. Non-browser / same-origin (no Origin header)
+        // 2. Exact match to any entry in FRONTEND_URL
+        // 3. Any http://localhost or http://127.0.0.1 port (Vite may use 5174+ if 5173 is taken)
+        // 4. Any Vercel preview / production host (*.vercel.app)
         const isAllowed =
             !origin ||
-            incoming === allowed ||
+            allowedList.includes(incoming) ||
+            isLocalhostOrigin(incoming) ||
             (incoming && incoming.endsWith('.vercel.app'));
 
         if (isAllowed) {
-            // If it's a Vercel preview, echo back the origin so the browser accepts it
-            const responseOrigin = (incoming && incoming.endsWith('.vercel.app')) ? origin : allowedOrigin;
-            callback(null, responseOrigin);
+            // Reflect the request Origin when present so credentialed requests work on that host:port
+            if (!origin) {
+                callback(null, true);
+            } else {
+                callback(null, origin);
+            }
         } else {
-            console.log(`[CORS] Blocked. Origin: ${origin} | Expected: ${allowedOrigin} or *.vercel.app`);
+            console.log(
+                `[CORS] Blocked. Origin: ${origin} | Allowed: ${allowedList.join(', ')} or localhost or *.vercel.app`
+            );
             callback(new Error('Not allowed by CORS'));
         }
     },

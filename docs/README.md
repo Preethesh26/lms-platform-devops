@@ -20,6 +20,10 @@ These documents outline the technical approach for major features:
 
 - **[project_documentation.md](./project_documentation.md)** - Developer-focused architecture and onboarding overview
 
+## Interview preparation & DevOps
+
+- **[interview_and_devops_guide.md](./interview_and_devops_guide.md)** - Concepts to review for technical interviews (stack-aligned) and how DevOps is implemented in this repo (CI/CD, Docker, Render, Vercel, Kubernetes)
+
 ## Walkthroughs
 
 Step-by-step guides for completed features:
@@ -40,7 +44,8 @@ Step-by-step guides for completed features:
 1. **Before implementing a feature:** Read the relevant implementation plan
 2. **After completing a feature:** Review the walkthrough
 3. **For deployment:** Follow deployment.md
-4. **Track progress:** Update task.md
+4. **For interviews / DevOps study:** See interview_and_devops_guide.md
+5. **Track progress:** Update task.md
 
 ## Note
 
