@@ -96,6 +96,14 @@ exports.updateUser = async (req, res) => {
             });
         }
 
+        // 🔐 Org super admins can only create 'admin' or 'user' roles within their org
+        if (req.user.role === 'org_superadmin' && req.body.role === 'org_superadmin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Org Super Admin cannot create another Org Super Admin. Contact the platform super admin.'
+            });
+        }
+
         // 🔎 Check duplicate email
         if (req.body.email && req.body.email !== originalUser.email) {
             const emailExists = await User.findOne({

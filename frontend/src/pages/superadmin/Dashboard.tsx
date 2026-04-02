@@ -107,9 +107,17 @@ function OrgDetail({ org, onBack, onRefresh }: { org: Org; onBack: () => void; o
     };
 
     const roleColor = (role: string) => {
+        if (role === 'org_superadmin') return 'bg-orange-500/10 text-orange-400';
         if (role === 'admin') return 'bg-blue-500/10 text-blue-400';
         if (role === 'superadmin') return 'bg-purple-500/10 text-purple-400';
         return 'bg-slate-700 text-slate-400';
+    };
+
+    const roleLabel = (role: string) => {
+        if (role === 'org_superadmin') return 'Org Super Admin';
+        if (role === 'admin') return 'Admin';
+        if (role === 'superadmin') return 'Platform Super Admin';
+        return 'Student';
     };
 
     return (
@@ -173,7 +181,30 @@ function OrgDetail({ org, onBack, onRefresh }: { org: Org; onBack: () => void; o
                     </div>
                     {loading ? <p className="text-slate-500 text-sm">Loading...</p> : (
                         <div className="space-y-2">
-                            {users.map(user => (
+                            {/* Show org super admin first */}
+                            {users.filter(u => u.role === 'org_superadmin').map(user => (
+                                <div key={user._id} className="bg-slate-800 border border-orange-500/30 rounded-lg p-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400 font-bold text-sm">
+                                            {user.name?.[0]?.toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-white text-sm font-medium">{user.name}</p>
+                                                <span className="text-xs bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-bold">Org Super Admin</span>
+                                            </div>
+                                            <p className="text-slate-500 text-xs">{user.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button variant="ghost" size="sm" className="text-slate-500 hover:text-white h-8 w-8 p-0" onClick={() => setEditUser(user)}>
+                                            <Edit2 className="w-3.5 h-3.5" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                            {/* Then show admins and users */}
+                            {users.filter(u => u.role !== 'org_superadmin').map(user => (
                                 <div key={user._id} className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-white font-bold text-sm">
@@ -185,7 +216,7 @@ function OrgDetail({ org, onBack, onRefresh }: { org: Org; onBack: () => void; o
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-xs px-2 py-0.5 rounded font-bold ${roleColor(user.role)}`}>{user.role}</span>
+                                        <span className={`text-xs px-2 py-0.5 rounded font-bold ${roleColor(user.role)}`}>{roleLabel(user.role)}</span>
                                         <Button variant="ghost" size="sm" className="text-slate-500 hover:text-white h-8 w-8 p-0" onClick={() => setEditUser(user)}>
                                             <Edit2 className="w-3.5 h-3.5" />
                                         </Button>
@@ -252,9 +283,10 @@ function OrgDetail({ org, onBack, onRefresh }: { org: Org; onBack: () => void; o
                             <Label className="text-slate-400 text-xs">Role</Label>
                             <select value={userForm.role} onChange={e => setUserForm({...userForm, role: e.target.value})}
                                 className="w-full bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm">
-                                <option value="user">User (Student)</option>
-                                <option value="admin">Admin</option>
+                                <option value="user">Student (User)</option>
+                                <option value="admin">Admin (manages courses & users)</option>
                             </select>
+                            <p className="text-slate-600 text-xs">Org Super Admin is created by the platform super admin only.</p>
                         </div>
                         <div className="flex gap-3 pt-2">
                             <Button type="button" variant="ghost" className="flex-1 text-slate-400" onClick={() => setShowAddUser(false)}>Cancel</Button>
