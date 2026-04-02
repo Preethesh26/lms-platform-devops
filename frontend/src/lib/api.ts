@@ -124,7 +124,9 @@ export const usersAPI = {
         api.post(`/users/${userId}/enroll`, { courseId }),
     bulkUpload: (formData: FormData) => api.post('/users/bulk-upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    }),
+    createAdmin: (data: { name: string; email: string; password: string }) =>
+        api.post('/users/create-admin', data),
 };
 
 // Support API

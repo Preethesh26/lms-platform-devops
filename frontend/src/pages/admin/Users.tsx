@@ -304,10 +304,10 @@ export default function AdminUsersPage() {
                                             <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
                                             <TabsTrigger
                                                 value="admin"
-                                                className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                disabled={currentUser?.role !== 'superadmin'}
+                                                className={`rounded-lg font-bold ${(currentUser?.role !== 'superadmin' && currentUser?.role !== 'org_superadmin') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                disabled={currentUser?.role !== 'superadmin' && currentUser?.role !== 'org_superadmin'}
                                             >
-                                                Admin {currentUser?.role !== 'superadmin' && " (Super Admin Only)"}
+                                                Admin
                                             </TabsTrigger>
                                         </TabsList>
                                     </Tabs>
@@ -574,8 +574,8 @@ export default function AdminUsersPage() {
                                             <TabsTrigger value="user" className="rounded-lg font-bold">User</TabsTrigger>
                                             <TabsTrigger
                                                 value="admin"
-                                                className={`rounded-lg font-bold ${currentUser?.role !== 'superadmin' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                disabled={currentUser?.role !== 'superadmin' && selectedUser?.role !== 'admin'}
+                                                className={`rounded-lg font-bold ${(currentUser?.role !== 'superadmin' && currentUser?.role !== 'org_superadmin') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                disabled={currentUser?.role !== 'superadmin' && currentUser?.role !== 'org_superadmin'}
                                             >
                                                 Admin
                                             </TabsTrigger>

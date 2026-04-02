@@ -68,6 +68,11 @@ export default function AdminLayout() {
         { to: `${currentPrefix}/tests`, label: "Tests", icon: ClipboardList, category: "Management" },
         { to: `${currentPrefix}/support`, label: "Help Tickets", icon: MessageSquare, category: "Support" },
         { to: `${currentPrefix}/settings`, label: "Settings", icon: SettingsIcon, category: "System" },
+        // Org Super Admin can manage admins under their org
+        ...(currentUser?.role === 'org_superadmin' ? [
+            { to: `${currentPrefix}/users`, label: "Manage Admins", icon: UserSearch, category: "System" }
+        ] : []),
+        // Platform superadmin and regular admin see account resolver
         ...(currentUser?.role === 'admin' || currentUser?.role === 'superadmin' ? [
             { to: `${currentPrefix}/account-resolver`, label: "Account Resolver", icon: UserSearch, category: "System" }
         ] : []),

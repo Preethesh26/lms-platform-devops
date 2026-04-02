@@ -70,38 +70,39 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // 🔐 Role protection
-        if (originalUser.role === 'admin' && req.user.role !== 'superadmin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only Super Admin can modify an administrator account.'
-            });
+        // 🔐 Role protection — who can modify whom
+        if (originalUser.role === 'admin') {
+            // Only superadmin or org_superadmin (within same org) can modify an admin
+            const isSameOrg = req.user.organizationId &&
+                originalUser.organizationId &&
+                req.user.organizationId.toString() === originalUser.organizationId.toString();
+
+            if (req.user.role !== 'superadmin' && !(req.user.role === 'org_superadmin' && isSameOrg)) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Only Super Admin or Org Super Admin can modify an administrator account.'
+                });
+            }
         }
 
-        // 🔐 Only Super Admin can change roles
+        // 🔐 Role changes — who can change to what
         if (req.body.role && req.body.role !== originalUser.role) {
-            if (req.user.role !== 'superadmin') {
+            if (req.user.role === 'superadmin') {
+                // Platform superadmin can change any role
+            } else if (req.user.role === 'org_superadmin') {
+                // Org superadmin can only assign 'admin' or 'user' within their org
+                if (!['admin', 'user'].includes(req.body.role)) {
+                    return res.status(403).json({
+                        success: false,
+                        message: 'Org Super Admin can only assign admin or user roles.'
+                    });
+                }
+            } else {
                 return res.status(403).json({
                     success: false,
                     message: 'Access Denied: Only Super Admin can change user roles.'
                 });
             }
-        }
-
-        // 🔐 Org admins cannot assign superadmin role
-        if (req.body.role === 'superadmin' && req.user.role !== 'superadmin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Cannot assign superadmin role'
-            });
-        }
-
-        // 🔐 Org super admins can only create 'admin' or 'user' roles within their org
-        if (req.user.role === 'org_superadmin' && req.body.role === 'org_superadmin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Org Super Admin cannot create another Org Super Admin. Contact the platform super admin.'
-            });
         }
 
         // 🔎 Check duplicate email
