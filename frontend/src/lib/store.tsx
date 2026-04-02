@@ -251,6 +251,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                     console.error('Failed to verify session:', error);
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
+                    sessionStorage.removeItem('admin_gate_verified_org'); // force org ID re-entry on next login
                     setCurrentUser(null);
 
                     // If verification fails, we STILL need to initialize so the UI can redirect to login
@@ -505,6 +506,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const logoutUser = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userData');
+        sessionStorage.removeItem('admin_gate_verified_org'); // force org ID re-entry
         setCurrentUser(null);
         setUsers([]);
         setCourses([]);

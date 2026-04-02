@@ -77,7 +77,7 @@ api.interceptors.response.use(
             if (isAuthEndpoint && localStorage.getItem('token')) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userData');
-                sessionStorage.removeItem('admin_gate_verified_org');
+                sessionStorage.removeItem('admin_gate_verified_org'); // force org ID re-entry
 
                 const isManagementArea = window.location.pathname.startsWith('/admin') ||
                     window.location.pathname.startsWith('/demo');
