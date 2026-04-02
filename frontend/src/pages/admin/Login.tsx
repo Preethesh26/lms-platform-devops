@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { authAPI } from "@/lib/api";
 import { Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { useStore } from "@/lib/store";
 
-export default function AdminLogin() {
+export default function AdminLogin({ orgId: propOrgId = '' }: { orgId?: string }) {
     const { setRequires2FA, verify2FA, loginUser } = useStore();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,8 +17,13 @@ export default function AdminLogin() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState<'login' | '2fa'>('login');
-    const [orgId, setOrgId] = useState<string>('');
+    const [orgId, setOrgId] = useState<string>(propOrgId);
     const navigate = useNavigate();
+
+    // Sync orgId when AdminGate passes it after verification
+    useEffect(() => {
+        if (propOrgId) setOrgId(propOrgId);
+    }, [propOrgId]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,7 +31,6 @@ export default function AdminLogin() {
         setLoading(true);
 
         try {
-            // Use admin-login endpoint which supports organizationId
             const response = await authAPI.adminLogin({ email, password, organizationId: orgId || undefined });
 
             if (response.data.requires2FA) {
@@ -38,7 +42,7 @@ export default function AdminLogin() {
 
             const { token, user } = response.data;
 
-            if (user.role !== 'admin' && user.role !== 'superadmin') {
+            if (user.role !== 'admin' && user.role !== 'superadmin' && user.role !== 'org_superadmin') {
                 setError("You don't have admin access.");
                 setLoading(false);
                 return;
@@ -64,7 +68,7 @@ export default function AdminLogin() {
 
         const success = await verify2FA(otp);
         if (success) {
-            navigate("/admin/dashboard"); // Only real admins have 2FA, so always go to real dashboard
+            navigate("/admin/dashboard");
         } else {
             setError("Invalid OTP code. Please try again.");
             setLoading(false);
@@ -81,7 +85,7 @@ export default function AdminLogin() {
                     </CardTitle>
                     <CardDescription className="text-center">
                         {step === 'login'
-                            ? "Enter your credentials to access the admin panel"
+                            ? orgId ? `Signing in to ${orgId}` : "Enter your credentials to access the admin panel"
                             : "Enter the code from your Authenticator App"}
                     </CardDescription>
                 </CardHeader>
@@ -98,7 +102,7 @@ export default function AdminLogin() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="admin@lms.com"
+                                    placeholder="admin@org.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -124,11 +128,7 @@ export default function AdminLogin() {
                                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
-                                        {showPassword ? (
-                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                        ) : (
-                                            <Eye className="h-4 w-4 text-muted-foreground" />
-                                        )}
+                                        {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                                     </Button>
                                 </div>
                             </div>
@@ -167,10 +167,7 @@ export default function AdminLogin() {
                                 type="button"
                                 variant="ghost"
                                 className="w-full text-xs text-muted-foreground"
-                                onClick={() => {
-                                    setStep('login');
-                                    setRequires2FA(false, null);
-                                }}
+                                onClick={() => { setStep('login'); setRequires2FA(false, null); }}
                             >
                                 Back to Login
                             </Button>

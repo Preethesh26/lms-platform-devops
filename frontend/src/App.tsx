@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
 // import { Toaster } from "@/components/ui/toaster"
 
 // Pages (will be moved/refactored)
@@ -38,6 +39,16 @@ import { StoreProvider } from './lib/store';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminGate from './components/AdminGate';
 import SuperAdminLogin from './pages/superadmin/Login';
+
+// Wrapper that passes orgId from AdminGate to AdminLoginPage
+function AdminGateWrapper() {
+    const [orgId, setOrgId] = useState('');
+    return (
+        <AdminGate onOrgVerified={setOrgId}>
+            <AdminLoginPage orgId={orgId} />
+        </AdminGate>
+    );
+}
 import SuperAdminDashboard from './pages/superadmin/Dashboard';
 import SuperAdminOverview from './pages/superadmin/Overview';
 import SuperAdminSecurity from './pages/superadmin/Security';
@@ -76,9 +87,7 @@ function App() {
 
                         {/* Admin Routes — login is gated behind a secret key */}
                         <Route path="/admin/login" element={
-                            <AdminGate>
-                                <AdminLoginPage />
-                            </AdminGate>
+                            <AdminGateWrapper />
                         } />
                         <Route path="/demo/login" element={<AdminLoginPage />} />
                         <Route element={
